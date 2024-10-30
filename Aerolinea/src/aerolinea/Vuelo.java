@@ -37,7 +37,6 @@ public class Vuelo {
 		this.cantidadSecciones = cantidadSecciones;
 		this.porcentajeImpuesto = porcentajeImpuesto;
 		
-		
 	}
 	
 }

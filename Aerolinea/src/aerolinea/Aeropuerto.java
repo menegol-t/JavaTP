@@ -2,7 +2,7 @@ package aerolinea;
 
 public class Aeropuerto 
 {
-	String nombre; 
+	String nombre;
 	String locacion;
 	String direccion;
 	boolean esNacional;

@@ -49,7 +49,7 @@ public class Pasajero
 		asientos.add(asiento);
 	}
 	
-	//Auxiliar
+	//Auxiliar 
 	
 	private Cliente consultarCliente()
 	{

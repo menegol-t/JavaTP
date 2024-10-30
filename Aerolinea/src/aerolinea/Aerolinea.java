@@ -1,5 +1,6 @@
 package aerolinea;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -109,5 +110,5 @@ public class Aerolinea implements IAerolinea
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+	 
 }

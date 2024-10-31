@@ -51,7 +51,7 @@ public class Pasajero
 	
 	//Auxiliar
 	
-	private Cliente consultarCliente()
+	public Cliente consultarCliente()
 	{
 		return cliente;
 	}

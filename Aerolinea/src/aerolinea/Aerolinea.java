@@ -1,5 +1,6 @@
 package aerolinea;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +10,12 @@ public class Aerolinea implements IAerolinea
 
 		private String nombre;
 		private int cuit;
-		private HashMap<int, Vuelo> Vuelos;
+		private HashMap<Integer, Vuelo> Vuelos;
 		private LinkedList<Aeropuerto> Aeropuertos;
-		private HashMap<int, Cliente> clientes;
+		private HashMap<Integer, Cliente> clientes;
 	
 	
-	public void Aeropuerto(String nombre, int cuit, HashMap<int codigoVuelo, Vuelo vuelo> Vuelos, LinkedList<Aeropuerto> Aeropuertos, HashMap<int clienteDni, Cliente cliente> clientes)
+	public void Aeropuerto(String nombre, int cuit, HashMap<Integer, Vuelo> Vuelos, LinkedList<Aeropuerto> Aeropuertos, HashMap<Integer, Cliente> clientes)
 	{
 		
 		this.nombre = nombre;
@@ -109,6 +110,13 @@ public class Aerolinea implements IAerolinea
 	public String detalleDeVuelo(String codVuelo) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	//Auxiliar
+	
+	public HashMap<Integer, Cliente> consultarClientes()
+	{
+		return clientes;
 	}
 	 
 }

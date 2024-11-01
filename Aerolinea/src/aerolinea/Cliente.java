@@ -5,10 +5,10 @@ public class Cliente
 
 	private Integer dni;
 	private String nombre;
-	private int telefono;
+	private String  telefono;
 	
 	
-	public Cliente(Integer dni, String nombre, int telefono)
+	public Cliente(Integer dni, String nombre, String telefono)
 	{
 		this.dni = dni;
 		this.nombre = nombre;

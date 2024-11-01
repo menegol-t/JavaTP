@@ -9,27 +9,33 @@ public class Aerolinea implements IAerolinea
 {
 
 		private String nombre;
-		private int cuit;
+		private String cuit;
 		private HashMap<Integer, Vuelo> Vuelos;
 		private LinkedList<Aeropuerto> Aeropuertos;
 		private HashMap<Integer, Cliente> clientes;
 	
 	
-	public void Aeropuerto(String nombre, int cuit, HashMap<Integer, Vuelo> Vuelos, LinkedList<Aeropuerto> Aeropuertos, HashMap<Integer, Cliente> clientes)
+	public void Aereolinea(String nombre, String cuit) throws Exception
 	{
+		
+		if(!(nombre != null && nombre.length() > 0 && cuit != null && cuit.length() > 0)) throw new Exception("Valor de parametros invalido!!");
 		
 		this.nombre = nombre;
 		this.cuit = cuit;
-		this.Vuelos = Vuelos;
-		this.Aeropuertos = Aeropuertos;
-		this.clientes = clientes;
+		this.Vuelos = new HashMap<>();
+		this.Aeropuertos = new LinkedList<>();
+		this.clientes = new HashMap<>();
 	}
 	
 
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
 	{
+		Integer Dni = new Integer(Integer.valueOf(dni));
 		
+		Cliente cliente = new Cliente(Dni, nombre, telefono);
+		
+		((HashMap<Integer, Cliente>) clientes).put(cliente.consultarDni(), cliente);
 		
 	}
 

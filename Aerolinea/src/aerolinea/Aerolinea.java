@@ -33,7 +33,8 @@ public class Aerolinea implements IAerolinea
 		 un codigo de asiento, el cual no poseemos en la funcion, es mas sencillo una lista la cual recorrer.
 		 y como NO nos solicitan complejiodad O(1) creo que es apropiado (reviar linea
 		*/
-		private HashMap<Integer, LinkedList<Asiento>> AsientosDisponiblesPorVuelo; 
+		private HashMap<Integer, LinkedList<Asiento>> AsientosDisponiblesPorVuelo;
+		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
 		
 	
 	public Aerolinea(String nombre, String cuit) //Aca no se puede usar excepciones o hay que cambiar Principal.java
@@ -47,12 +48,20 @@ public class Aerolinea implements IAerolinea
 			this.Aeropuertos = new LinkedList<>();
 			this.clientes = new HashMap<>();
 			this.AsientosDisponiblesPorVuelo = new HashMap<>();
+			this.codigoBase = 100;
 			
 		}
 		
 		else System.out.println("Valor de parametros invalido!!");
 	}
 	
+	
+	private Integer obtenerCodigo()		//En base a la variable global, se generan los codigos para cada objeto.
+	{
+		codigoBase = codigoBase + 1;
+		
+		return codigoBase;
+	}
 
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
@@ -65,6 +74,8 @@ public class Aerolinea implements IAerolinea
 		
 	}
 
+	
+	
 	@Override
 	public void registrarAeropuerto(String nombre, String pais, String provincia, String direccion) 
 	{	
@@ -142,7 +153,10 @@ public class Aerolinea implements IAerolinea
 
 	@Override
 	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
-		// TODO Auto-generated method stub
+		Integer Dni = dni;
+		
+		Cliente cliente = clientes.get(Dni);
+		
 		return 0;
 	}
 

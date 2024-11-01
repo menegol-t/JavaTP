@@ -1,6 +1,7 @@
 package aerolinea;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Vuelo {
@@ -9,7 +10,7 @@ public class Vuelo {
 	private Aeropuerto destino;
 	private Aeropuerto origen;
 	private int totalAsientos;
-	private LinkedList <Asiento> asientosDisponibles;
+	private LinkedList <Asiento> asientosVendidos;
 	private int totalTripulantes;
 	private LinkedList <Pasajero> pasajeros;
 	private Date fechaSalida;
@@ -17,19 +18,17 @@ public class Vuelo {
 	private int cantidadSecciones;
 	private int porcentajeImpuesto;
 	
-	private Aerolinea aerolinea;
-
-	public Vuelo(int codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, LinkedList <Asiento> asientosDisponibles, int totalTripulantes, 
-			LinkedList <Pasajero> pasajeros, Date fechaSalida, Date fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, Aerolinea aerolinea) throws Exception
+	public Vuelo(int codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, LinkedList <Asiento> asientosVendidos, int totalTripulantes, 
+			LinkedList <Pasajero> pasajeros, Date fechaSalida, Date fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados) throws Exception
 	
 	{
 		
-		if(aerolinea != null) {
+		if(ClientesRegistrados != null) {
 			
 			boolean valido = true;
 			
 			for (Pasajero pasajero : pasajeros)
-				valido &= aerolinea.consultarClientes().containsValue(pasajero.consultarCliente());
+				valido &= ClientesRegistrados.containsValue(pasajero.consultarCliente());
 			
 			if (!(valido && cantidadSecciones > 0 && porcentajeImpuesto > 0 && totalAsientos > 0 && totalTripulantes > 0 && 
 				origen != null && destino != null &&  fechaSalida != null &&  fechaLlegada != null))
@@ -40,7 +39,7 @@ public class Vuelo {
 			this.destino = destino;
 			this.origen = origen;
 			this.totalAsientos =  totalAsientos;
-			this.asientosDisponibles = asientosDisponibles;
+			this.asientosVendidos = asientosVendidos;
 			this.totalTripulantes= totalTripulantes;
 			this.pasajeros= pasajeros;
 			this.fechaSalida= fechaSalida;
@@ -52,5 +51,27 @@ public class Vuelo {
 		else throw new Exception("Valor de parametros invalido!!");
 		
 	}
+	
+	
+	public int consultarCantidadPasajeros()
+	{
+		return pasajeros.size(); 
+	}
+	
+	public LinkedList<Asiento> consultarAsientosVendidos() 
+	{
+		return asientosVendidos;
+	}
+	
+	public Aeropuerto consultarOrigen()
+	{
+		return origen;
+	}
+	
+	public Aeropuerto consultarDestino()
+	{
+		return destino;
+	}
+	
 	
 }

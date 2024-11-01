@@ -5,13 +5,18 @@ public class Asiento
 
 	private int codigo;
 	private int seccion;
+	private String clase;
 	
-	public Asiento(int codigo, int seccion) throws Exception
+	//Validar si precio entra aca
+	private double precio;
+	
+	public Asiento(int codigo, int seccion, String clase) throws Exception
 	{
-		if (!(codigo > 0 && seccion > 0)) throw new Exception("Valor de parametros invalido!!");
+		if (!(codigo > 0 && seccion > 0 && clase != null)) throw new Exception("Valor de parametros invalido!!");
 		
 		this.codigo = codigo;
 		this.seccion = seccion;
+		this.clase = clase;
 	}
 	
 	
@@ -25,4 +30,14 @@ public class Asiento
 		return codigo;
 	}
 	
+	public String consultarClase()
+	{
+		return clase;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "-------------------\nCodigo: "+codigo + "\nPrecio: "+precio+"\nClase: "+clase+"\n-------------------";
+	}
 }

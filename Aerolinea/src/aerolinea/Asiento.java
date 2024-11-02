@@ -22,24 +22,29 @@ public class Asiento
 	}
 	
 	
-	public int consultarSeccion()
+	public int getSeccion()
 	{
 		return seccion;
 	}
 	
-	public int consultarCodigo()
+	public int getCodigo()
 	{
 		return codigo;
 	}
 	
-	public String consultarClase()
+	public String getClase()
 	{
 		return clase;
 	}
 	
-	public boolean estaOcupado() 
+	public boolean getOcupado() 
 	{
 		return ocupado;
+	}
+	
+	public void setOcupado(boolean aOcupar) 
+	{
+		ocupado = aOcupar;
 	}
 	
 	@Override

@@ -17,7 +17,10 @@ public class Vuelo {
 	private Date fechaLlegada;
 	private int cantidadSecciones;
 	private int porcentajeImpuesto;
-	
+	//Acordate que el vuelo se genera SIN asientos vendidos, ess se van sumando despues. 
+	//No se porque tenemos un "pasajeros" y un "clientesRegistrados".
+	//Lo de cantidad de secciones deberiamos revisarlo.
+	//asientosVendidos deberia ser un hashMap
 	public Vuelo(int codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, LinkedList <Asiento> asientosVendidos, int totalTripulantes, 
 			LinkedList <Pasajero> pasajeros, Date fechaSalida, Date fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados) throws Exception
 	

@@ -53,7 +53,7 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	
-	private Integer obtenerCodigo()		//En base a la variable global, se generan los codigos para cada objeto.
+	private Integer generarCodigo()		//En base a la variable global, se generan los codigos para cada objeto.
 	{
 		codigoBase = codigoBase + 1;
 		
@@ -151,7 +151,7 @@ public class Aerolinea implements IAerolinea
 		for(Asiento asiento : AsientosPorVuelo)
 		{
 			// Registramos: (codigoAsiento, el asiento impreso)
-			retorno.put(asiento.consultarCodigo(), asiento.toString());
+			retorno.put(asiento.getCodigo(), asiento.toString());
 		}
 			
 		return retorno;
@@ -172,11 +172,24 @@ public class Aerolinea implements IAerolinea
 		
 		if(vuelo == null) throw new RuntimeException("venderPasaje: El codigo de vuelo provisto no pertenece a un vuelo registrado.");
 		
-		//ahora neceisto buscar en todos los asientos disponibles del vuelo especifco, un asiento en particular por su codigo
+		Asiento asiento = asientosDisponiblesPorVuelo.get(codVuelo).get(nroAsiento);
 		
-		//Asiento asiento = asientosDisponibles(codVuelo).get(vuelo); 
+		if(asiento == null) throw new RuntimeException("venderPasaje: El asiento solicitado no esta disponible.");
 		
-		return 0;
+		asientosDisponiblesPorVuelo.get(codVuelo).remove(nroAsiento); //Si encontre el asiento como libre, lo saco del listado
+		
+		asiento.setOcupado(aOcupar); //Pongo el asiento si esta ocupado o descoupado.
+		
+		//Dentro de VUELO hay que hacer el metodo de registrar asiento. 
+/*Mi idea es, yo le paso al vuelo el cliente y el asiento. Con eso, vuelo tiene todo lo que necesita. 
+ * Vuelo adentro tiene un dicionario HashMap<Dni, Pasajero> pasajeros . Ahora, el encargado de construir sus pasajeros conforme se van sumado es el vuelo mismo, entonces vuelo tiene que hacer los sigueintes chequeos:
+ * Como un mismo clinete puede tener varios asientos, pero siempre es el mismo pasajero, con estos datos que le paso debe fijarse si el Cliente ya existe adentro del diccionario de pasajeros
+ * Si el cliente que le estoy pasando no figura como pasajero, great, genera un pasajero (recordemos que pasajero adentro tiene una propiedad que es el objeto Cliente que yo le paso aca) y un diccionario de asientos, que para empezar solo tiene ste asiento que le paso.
+ * Si el pasajero ya estaba en el vuelo, y solo esta sumando un asiento (cosa que nos damos cuenta buscando al pasajero por su dni, y viendo si ya existia), sencillamente nos metemos al pasajero y añadimos otro asiento.*/
+
+		//vuelo.registrarAsiento(asiento, cliente);
+		
+		return generarCodigo();
 	}
 
 	

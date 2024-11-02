@@ -1,55 +1,55 @@
 package aerolinea;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class Aerolinea implements IAerolinea 
 {
 
 		private String nombre;
 		private String cuit;
+		
+		// para: 
 		private HashMap<String, Vuelo> vuelos;
+		
 		private LinkedList<Aeropuerto> aeropuertos;
+		
 		private HashMap<Integer, Cliente> clientes;
 		
-		/*
-		diccionario<codVuelo, AsientosLibres> AsientosDisponibles
-
-		diccionario<codAsiento, asiento> AsientosLibres
-
-		asiento
-		this.seccion
-		this.precio 
-		*/
+		
+		private HashMap<String, Double> FacturacionPorDestino;
+		
+		// para: asientosDisponibles, venderPasaje
 		
 		//El sistema conoce todos los asientos libres por vuelo
-		
-		//				codVuelo, diccionario<codAsiento, Asiento>
-		//private HashMap<Integer, HashMap<Integer, Asiento>> AsientosDisponiblesPorVuelo; 
-						
-		
+				
+		//		       codVuelo, diccionario<codAsiento, Asiento>
 		private HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo;
+		
+		// para: venderPasaje
 		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
 		
 	
 	public Aerolinea(String nombre, String cuit) //Aca no se puede usar excepciones o hay que cambiar Principal.java
 	{
 		
-		if(nombre != null && nombre.length() > 0 && cuit != null && cuit.length() > 0) {
+		if(!(nombre != null && nombre.length() > 0 && cuit != null && cuit.length() > 0))
+			throw new RuntimeException("Valor de parametros invalido!!");
 			
 			this.nombre = nombre;
 			this.cuit = cuit;
-			//this.Vuelos = new HashMap<>();
+			this.vuelos = new HashMap<>();
 			this.aeropuertos = new LinkedList<>();
 			this.clientes = new HashMap<>();
 			this.asientosDisponiblesPorVuelo = new HashMap<>();
 			this.codigoBase = 100;
+			this.FacturacionPorDestino  = new HashMap<>();
 			
-		}
 		
-		else System.out.println("Valor de parametros invalido!!");
 	}
 	
 	
@@ -112,7 +112,13 @@ public class Aerolinea implements IAerolinea
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, double[] precios, int[] cantAsientos) 
 	{
-		// TODO Auto-generated method stub
+		
+		/*Tenemos que: 1) crear un Nacional, 2) agregarlo a la lista de vuelos (polimorfismo), 
+		 			   3) generar codigo (el cual retornaremos) y 4) almacenar <codigo, asientosLibres>
+		 			   5) Agregar en el diccionario de vuelos*/
+		
+		
+		
 		return null;
 	}
 
@@ -146,15 +152,16 @@ public class Aerolinea implements IAerolinea
 		
 		Integer codigoVuelo = Integer.parseInt(codVuelo);
 		
-		LinkedList< Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codigoVuelo);
+		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codigoVuelo);
 		
-		for(Asiento asiento : AsientosPorVuelo)
-		{
-			// Registramos: (codigoAsiento, el asiento impreso)
-			retorno.put(asiento.consultarCodigo(), asiento.toString());
+		Iterator<HashMap.Entry<Integer, Asiento>> iterador = AsientosPorVuelo.entrySet().iterator();
+	    
+	    while (iterador.hasNext()) {
+			HashMap.Entry<Integer, Asiento> entrada = iterador.next();
+			retorno.put(entrada.getKey(), entrada.getValue().toString());
 		}
-			
-		return retorno;
+	    
+	    return retorno;
 	}
 
 	
@@ -191,7 +198,53 @@ public class Aerolinea implements IAerolinea
 	
 	@Override
 	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
-		// TODO Auto-generated method stub
+		
+		//Version O(1) cuidado
+		
+		/* 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
+		 * 2) Acceder al pasajero con el dni en el diccionario pasajeros
+		 * 3) Guardar 3 valores, datos del asiento en cuestion, en Pasajero
+		 * 						 cantidad de consumo del cliente (double consumo) en Pasajero
+		 * 						 destino del vuelo (String) en Vuelo
+		 * 
+		 * 4) Borrar el asiento en el Pasajero
+		 * 5) Crear un nuevo asiento y agregarlo en el diccionario "AsientosDisponiblesPorVuelo" con el codigo de vuelo
+		 * 6) Restar el costo al total por destino en el diccionario "FacturacionPorDestino", utilizando el destino guardado
+		 * */
+		
+		//1)
+		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
+		
+		//2)
+		Pasajero pasajero = vuelo.consultarPasajeros().get(dni);
+		
+		//3)
+		Aeropuerto aeropuertoDestino = vuelo.consultarDestino();
+		String destino = aeropuertoDestino.consultarLocacion();
+		
+		double consumo = pasajero.consultarCosto();
+		
+		int codigoAsiento = pasajero.consultarAsiento(nroAsiento).consultarCodigo();//ACA VER SI MEJOR SE GENERA NUEVO CODIGO DE ASIENTO
+		int seccion = pasajero.consultarAsiento(nroAsiento).consultarSeccion();
+		String clase = pasajero.consultarAsiento(nroAsiento).consultarClase();
+		boolean ocupado = false;
+		
+		//4)
+		pasajero.eliminarASiento(nroAsiento);
+		
+		//5)
+		Asiento redisponible = new Asiento(codigoAsiento, seccion, clase, ocupado); 
+		
+		asientosDisponiblesPorVuelo.get(codVuelo).remove(codigoAsiento);
+		asientosDisponiblesPorVuelo.get(codVuelo).put(codigoAsiento, redisponible);
+		
+		//6)
+		double facturado = FacturacionPorDestino.get(destino);
+		FacturacionPorDestino.put(destino, facturado - consumo);
+		
+		
+		int cantAsientos = pasajero.consultarCantAsientos(); //O(1)
+		if(cantAsientos == 0) vuelo.eliminarPasajero(dni);
 		
 	}
 

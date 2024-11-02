@@ -8,12 +8,11 @@ public class Asiento
 	private String clase;
 	private boolean ocupado;
 	
-	//Validar si precio entra aca
-	private double precio;
-	
-	public Asiento(int codigo, int seccion, String clase, boolean ocupado) throws Exception
+	public Asiento(int codigo, int seccion, String clase, boolean ocupado)
 	{
-		if (!(codigo > 0 && seccion > 0 && clase != null)) throw new Exception("Valor de parametros invalido!!");
+		if (!(codigo > 0 && seccion > 0 && seccion <= 3 && clase != null)) 
+			
+			throw new RuntimeException("Valor de parametros invalido!!");
 		
 		this.codigo = codigo;
 		this.seccion = seccion;
@@ -42,9 +41,17 @@ public class Asiento
 		return ocupado;
 	}
 	
-	@Override
+	@Override //La reescribimos en cada clase vuelo para agregar la logica
 	public String toString()
 	{
-		return "-------------------\nCodigo: "+codigo + "\nPrecio: "+precio+"\nClase: "+clase+"\nEn uso: "+ocupado+"\n-------------------";
+		StringBuilder retorno = new StringBuilder();
+		
+		retorno.append("Codigo: ");
+		retorno.append(codigo);
+		retorno.append("Seccion: ");
+		retorno.append(seccion);
+		
+		return retorno.toString();
+
 	}
 }

@@ -26,4 +26,9 @@ public class Aeropuerto
 	{
 		return direccion;
 	}
+	
+	public String consultarLocacion()
+	{
+		return locacion;
+	}
 }

@@ -32,13 +32,16 @@ public class Cliente
 	
 	public String toString() 
 	{
-		StringBuilder st = new StringBuilder();
+		StringBuilder st = new StringBuilder("Cliente: ");
 		
 		st.append(dni);
+		st.append(" - ");
 		
 		st.append(nombre);
+		st.append(" - ");
 		
 		st.append(telefono);
+		st.append("\n");
 		
 		return st.toString();
 	}

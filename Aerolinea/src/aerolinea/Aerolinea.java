@@ -1,6 +1,8 @@
 package aerolinea;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -142,24 +144,24 @@ public class Aerolinea implements IAerolinea
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
 		
 		//codAsiento, clase y precio
-		Map<Integer, String> retorno = new HashMap();
+		Map<Integer, String> retorno = new HashMap<>();
 		
 		Integer codigoVuelo = Integer.parseInt(codVuelo);
 		
-		LinkedList< Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codigoVuelo);
+		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codigoVuelo);
 		
-		for(Asiento asiento : AsientosPorVuelo)
-		{
-			// Registramos: (codigoAsiento, el asiento impreso)
-			retorno.put(asiento.getCodigo(), asiento.toString());
+		Iterator<HashMap.Entry<Integer, Asiento>> iterador = AsientosPorVuelo.entrySet().iterator();
+	    
+	    while (iterador.hasNext()) {
+			HashMap.Entry<Integer, Asiento> entrada = iterador.next();
+			retorno.put(entrada.getKey(), entrada.getValue().toString());
 		}
-			
-		return retorno;
+	    
+	    return retorno;
 	}
 
 	
-	//aOcupar indica si el asiento que será ocupado por el cliente, o si solo lo compro para viajar más cómodo.
-	// Devuelve un código de pasaje único que se genera incrementalmente sin distinguir entre tipos de vuelos.
+	
 	@Override
 	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
 		Integer Dni = dni;
@@ -196,7 +198,11 @@ public class Aerolinea implements IAerolinea
 	
 	@Override
 	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
-		// TODO Auto-generated method stub
+		
+//IREP: Recibe Fechas con el formato "dd/mm/aaaa".
+		
+		List <String> codVuelosSimilares = new ArrayList<String>();
+		
 		return null;
 	}
 

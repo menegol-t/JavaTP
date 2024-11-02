@@ -10,8 +10,8 @@ public class Aerolinea implements IAerolinea
 
 		private String nombre;
 		private String cuit;
-		//private HashMap<Integer, Vuelo> Vuelos; --> De momento no se utiliza
-		private LinkedList<Aeropuerto> Aeropuertos;
+		private HashMap<String, Vuelo> vuelos;
+		private LinkedList<Aeropuerto> aeropuertos;
 		private HashMap<Integer, Cliente> clientes;
 		
 		/*
@@ -33,7 +33,7 @@ public class Aerolinea implements IAerolinea
 		 un codigo de asiento, el cual no poseemos en la funcion, es mas sencillo una lista la cual recorrer.
 		 y como NO nos solicitan complejiodad O(1) creo que es apropiado (reviar linea
 		*/
-		private HashMap<Integer, LinkedList<Asiento>> AsientosDisponiblesPorVuelo;
+		private HashMap<Integer, LinkedList<Asiento>> asientosDisponiblesPorVuelo;
 		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
 		
 	
@@ -45,9 +45,9 @@ public class Aerolinea implements IAerolinea
 			this.nombre = nombre;
 			this.cuit = cuit;
 			//this.Vuelos = new HashMap<>();
-			this.Aeropuertos = new LinkedList<>();
+			this.aeropuertos = new LinkedList<>();
 			this.clientes = new HashMap<>();
-			this.AsientosDisponiblesPorVuelo = new HashMap<>();
+			this.asientosDisponiblesPorVuelo = new HashMap<>();
 			this.codigoBase = 100;
 			
 		}
@@ -63,6 +63,8 @@ public class Aerolinea implements IAerolinea
 		return codigoBase;
 	}
 
+	
+	
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
 	{	
@@ -93,7 +95,7 @@ public class Aerolinea implements IAerolinea
 			catch(Exception Exception) {
 				 Exception.printStackTrace();
 			}
-			Aeropuertos.add(nuevo);
+			aeropuertos.add(nuevo);
 		}
 		else
 		{
@@ -103,11 +105,12 @@ public class Aerolinea implements IAerolinea
 			catch(Exception Exception) {
 				Exception.printStackTrace();
 			}
-			Aeropuertos.add(nuevo);
+			aeropuertos.add(nuevo);
 		}
 	}
 	
 
+	
 	@Override
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, double[] precios, int[] cantAsientos) 
@@ -116,6 +119,8 @@ public class Aerolinea implements IAerolinea
 		return null;
 	}
 
+	
+	
 	@Override
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) 
@@ -124,6 +129,8 @@ public class Aerolinea implements IAerolinea
 		return null;
 	}
 
+	
+	
 	@Override
 	public String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
 			int dniComprador, int[] acompaniantes) 
@@ -132,6 +139,8 @@ public class Aerolinea implements IAerolinea
 		return null;
 	}
 
+	
+	
 	@Override
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
 		
@@ -140,7 +149,7 @@ public class Aerolinea implements IAerolinea
 		
 		Integer codigoVuelo = Integer.parseInt(codVuelo);
 		
-		LinkedList< Asiento> AsientosPorVuelo = AsientosDisponiblesPorVuelo.get(codigoVuelo);
+		LinkedList< Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codigoVuelo);
 		
 		for(Asiento asiento : AsientosPorVuelo)
 		{
@@ -151,47 +160,70 @@ public class Aerolinea implements IAerolinea
 		return retorno;
 	}
 
+	
+	//aOcupar indica si el asiento que será ocupado por el cliente, o si solo lo compro para viajar más cómodo.
+	// Devuelve un código de pasaje único que se genera incrementalmente sin distinguir entre tipos de vuelos.
 	@Override
 	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
 		Integer Dni = dni;
 		
-		Cliente cliente = clientes.get(Dni);
+		Cliente pasajero = clientes.get(Dni);
 		
-		if(cliente == null) return 0;
+		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
+		
+		Vuelo vuelo = vuelos.get(codVuelo);
+		
+		if(vuelo == null) throw new RuntimeException("venderPasaje: El codigo de vuelo provisto no pertenece a un vuelo registrado.");
+		
+		//ahora neceisto buscar en todos los asientos disponibles del vuelo especifco, un asiento en particular por su codigo
+		
+		//Asiento asiento = asientosDisponibles(codVuelo).get(vuelo); 
 		
 		return 0;
 	}
 
+	
+	
 	@Override
 	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	
+	
 	@Override
 	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	
+	
 	@Override
 	public void cancelarPasaje(int dni, int codPasaje) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	
+	
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	
+	
 	@Override
 	public double totalRecaudado(String destino) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	
+	
 	@Override
 	public String detalleDeVuelo(String codVuelo) {
 		// TODO Auto-generated method stub

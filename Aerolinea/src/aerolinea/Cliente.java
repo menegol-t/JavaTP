@@ -13,10 +13,33 @@ public class Cliente
 		this.dni = dni;
 		this.nombre = nombre;
 		this.telefono =telefono; 
-	}
+	} 
 	
 	public Integer consultarDni()
 	{
 		return dni;
+	}
+	
+	public String consultarNombre() 
+	{
+		return nombre;
+	}
+	
+	public String consultarTelefono() 
+	{
+		return telefono;
+	}
+	
+	public String toString() 
+	{
+		StringBuilder st = new StringBuilder();
+		
+		st.append(dni);
+		
+		st.append(nombre);
+		
+		st.append(telefono);
+		
+		return st.toString();
 	}
 }

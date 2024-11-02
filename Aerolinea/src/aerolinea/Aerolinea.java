@@ -157,6 +157,8 @@ public class Aerolinea implements IAerolinea
 		
 		Cliente cliente = clientes.get(Dni);
 		
+		if(cliente == null) return 0;
+		
 		return 0;
 	}
 

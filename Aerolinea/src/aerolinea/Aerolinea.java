@@ -28,12 +28,9 @@ public class Aerolinea implements IAerolinea
 		
 		//				codVuelo, diccionario<codAsiento, Asiento>
 		//private HashMap<Integer, HashMap<Integer, Asiento>> AsientosDisponiblesPorVuelo; 
+						
 		
-		/*Esta implementacion me parece mas acertada, porque cada vez que quiera acceder a un asiento necesito
-		 un codigo de asiento, el cual no poseemos en la funcion, es mas sencillo una lista la cual recorrer.
-		 y como NO nos solicitan complejiodad O(1) creo que es apropiado (reviar linea
-		*/
-		private HashMap<Integer, LinkedList<Asiento>> asientosDisponiblesPorVuelo;
+		private HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo;
 		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
 		
 	

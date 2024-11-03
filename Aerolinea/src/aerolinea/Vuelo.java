@@ -61,24 +61,24 @@ public class Vuelo {
 	}
 	
 	
-	public int consultarCantidadPasajeros()
+	public int getCantidadPasajeros()
 	{
 		return pasajeros.size(); 
 	}
 	
-	public Aeropuerto consultarOrigen()
+	public Aeropuerto getOrigen()
 	{
 		return origen;
 	}
 	
-	public Aeropuerto consultarDestino()
+	public Aeropuerto getDestino()
 	{
 		return destino;
 	}
 	
 	//Aux
 	
-	public HashMap<Integer, Pasajero> consultarPasajeros()
+	public HashMap<Integer, Pasajero> getPasajeros()
 	{
 		return pasajeros;
 	}

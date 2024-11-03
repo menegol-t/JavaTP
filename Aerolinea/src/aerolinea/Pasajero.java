@@ -20,12 +20,12 @@ public class Pasajero
 		this.cliente = cliente;
 	}
 	
-	public Asiento consultarAsiento(Integer codigoAsiento)
+	public Asiento getAsiento(Integer codigoAsiento)
 	{
 		return asientos.get(codigoAsiento);
 	}
 	
-	public int consultarCantAsientos()
+	public int getCantAsientos()
 	{
 		return asientos.size();
 	}
@@ -35,24 +35,24 @@ public class Pasajero
 		refrigeriosConsumidos += 1;
 	}
 	
-	public int consultarRefrigeriosConsumidos()
+	public int getRefrigeriosConsumidos()
 	{
 		return refrigeriosConsumidos;
 	}
 	
-	public void registrarCosto(double costo)
-	{
-		this.costo = costo;
-	}
-	
-	public double consultarCosto()
+	public double getCosto()
 	{
 		return costo;
 	}
 	
+	public void setCosto(double costo)
+	{
+		this.costo = costo;
+	}
+	
 	public void asignarAsiento(Asiento asiento) 
 	{	
-		asientos.put(asiento.consultarCodigo(), asiento);
+		asientos.put(asiento.getCodigo(), asiento);
 	}
 	
 	public void eliminarASiento(Integer id)

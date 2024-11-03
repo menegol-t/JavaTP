@@ -70,7 +70,7 @@ public class Aerolinea implements IAerolinea
 		
 		Cliente cliente = new Cliente(Dni, nombre, telefono);
 		
-		((HashMap<Integer, Cliente>) clientes).put(cliente.consultarDni(), cliente);
+		((HashMap<Integer, Cliente>) clientes).put(cliente.getDni(), cliente);
 		
 	}
 
@@ -196,7 +196,7 @@ public class Aerolinea implements IAerolinea
 
 		//vuelo.registrarAsiento(asiento, cliente);
 		
-		return generarCodigo();
+		return obtenerCodigo();
 	}
 
 	
@@ -231,17 +231,17 @@ public class Aerolinea implements IAerolinea
 		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
 		
 		//2)
-		Pasajero pasajero = vuelo.consultarPasajeros().get(dni);
+		Pasajero pasajero = vuelo.getPasajeros().get(dni);
 		
 		//3)
-		Aeropuerto aeropuertoDestino = vuelo.consultarDestino();
-		String destino = aeropuertoDestino.consultarLocacion();
+		Aeropuerto aeropuertoDestino = vuelo.getDestino();
+		String destino = aeropuertoDestino.getLocacion();
 		
-		double consumo = pasajero.consultarCosto();
+		double consumo = pasajero.getCosto();
 		
-		int codigoAsiento = pasajero.consultarAsiento(nroAsiento).consultarCodigo();//ACA VER SI MEJOR SE GENERA NUEVO CODIGO DE ASIENTO
-		int seccion = pasajero.consultarAsiento(nroAsiento).consultarSeccion();
-		String clase = pasajero.consultarAsiento(nroAsiento).consultarClase();
+		int codigoAsiento = pasajero.getAsiento(nroAsiento).getCodigo();//ACA VER SI MEJOR SE GENERA NUEVO CODIGO DE ASIENTO
+		int seccion = pasajero.getAsiento(nroAsiento).getSeccion();
+		String clase = pasajero.getAsiento(nroAsiento).getClase();
 		boolean ocupado = false;
 		
 		//4)
@@ -258,7 +258,7 @@ public class Aerolinea implements IAerolinea
 		FacturacionPorDestino.put(destino, facturado - consumo);
 		
 		
-		int cantAsientos = pasajero.consultarCantAsientos(); //O(1)
+		int cantAsientos = pasajero.getCantAsientos(); //O(1)
 		if(cantAsientos == 0) vuelo.eliminarPasajero(dni);
 		
 	}

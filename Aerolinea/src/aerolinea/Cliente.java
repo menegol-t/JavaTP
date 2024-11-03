@@ -15,17 +15,17 @@ public class Cliente
 		this.telefono =telefono; 
 	} 
 	
-	public Integer consultarDni()
+	public Integer getDni()
 	{
 		return dni;
 	}
 	
-	public String consultarNombre() 
+	public String getNombre() 
 	{
 		return nombre;
 	}
 	
-	public String consultarTelefono() 
+	public String getTelefono() 
 	{
 		return telefono;
 	}

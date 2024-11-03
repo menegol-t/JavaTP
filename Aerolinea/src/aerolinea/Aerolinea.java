@@ -2,13 +2,13 @@ package aerolinea;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class Aerolinea implements IAerolinea 
 {
@@ -55,16 +55,19 @@ public class Aerolinea implements IAerolinea
 		
 	}
 	
-	
-	private Integer obtenerCodigo()		//En base a la variable global, se generan los codigos para cada objeto.
+/*Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int. */
+	private Integer obtenerCodigo()
 	{
 		codigoBase = codigoBase + 1;
 		
 		return codigoBase;
 	}
-	
-	private LocalDate convertirEnFecha(String fecha) 
-	{
+
+/*Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
+ * para saber cuanto es la fecha dada + 1 semana. Esto me permite lidiar con casos donde por ejemplo, si mi fecha 
+ * dada es 29/12/2024, el resultado dado va a ser 5/1/2025, sin tener que meterme a programar el string. */
+	private LocalDate obtenerFecha(String fecha) 
+	{	
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
 		try {
@@ -216,20 +219,68 @@ public class Aerolinea implements IAerolinea
 		return obtenerCodigo();
 	}
 
-	
+	/** - 11. 
+	 * devuelve una lista de códigos de vuelos. que estén entre fecha dada y hasta una semana despues. La lista estará vacía si no se encuentran vuelos similares. La Fecha es la fecha de salida.
+	 * 
+	 * Genero un nuevo array para devolver
+	 * Convierto la fecha en un objeto para despues calcular la diferencia entre aca y una semana
+	 * En este array meto todos los vuelos cuyo origen y destino matcheen con los parametros 
+	*/
 	
 	@Override
-	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
+	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
+	{
 		//IREP: Recibe Fechas con el formato "dd/mm/aaaa".
 		
+		//Genero la lista de vuelos vacia. 
 		List <String> codVuelosSimilares = new ArrayList<String>();
 		
+		//Convierto el String a un objeto fecha para manipularlo
+		LocalDate fecha = obtenerFecha(Fecha);
 		
-		
-		return null;
+		return verificarVuelosSimilares(codVuelosSimilares, origen, destino, fecha);
 	}
 
+	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fecha)
+	{
+		//Itero sobre todos los vuelos
+		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
+		
+		while (it.hasNext()) {
+			
+			Vuelo vueloActual = (Vuelo) it.next();
+			
+			//Si el vuelo cumple con los parametros, sumo su codigo al array de vuelos similares. 
+			if(vueloEsSimilar(vueloActual, origen, destino, fecha)) codVuelosSimilares.add(vueloActual.getCodigo());
+		}
+		
+		return codVuelosSimilares;
+	}
 	
+	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fecha) 
+	{
+		//Si el destino del vuelo es el mismo que el dado
+		if(vuelo.getDestino().getDireccion().equals(destino) &&
+			
+				//Y el origen del vuelo es el mismo que el dado
+				vuelo.getOrigen().getDireccion().equals(origen) &&
+					
+					//Y el vuelo esta a una semana (o menos) de partir
+					estaAUnaSemana(fecha, obtenerFecha(vuelo.getFechaSalida())))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean estaAUnaSemana(LocalDate fecha, LocalDate fechaSalida) 
+	{
+		long diasEntreFechas = ChronoUnit.DAYS.between(fecha, fechaSalida);
+
+		//Retorna si los dias entre las dos fechas son menores o no a una semana.
+        return Math.abs(diasEntreFechas) < 7;
+	}
 	
 	@Override
 	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {

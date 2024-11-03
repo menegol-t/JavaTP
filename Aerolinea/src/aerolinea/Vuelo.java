@@ -7,22 +7,22 @@ import java.util.LinkedList;
 
 public class Vuelo {
 
-	private int codigo;
+	private String codigo;
 	private Aeropuerto destino;
 	private Aeropuerto origen;
 	private int totalAsientos;
 	private int totalTripulantes;
 	
 	private HashMap <Integer, Pasajero> pasajeros;
-	private Date fechaSalida;
-	private Date fechaLlegada;
+	private String fechaSalida;
+	private String fechaLlegada;
 	private int cantidadSecciones;
 	private int porcentajeImpuesto;
 	
 	
 	
-	public Vuelo(int codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, HashMap <Integer, Pasajero> pasajeros, 
-				 Date fechaSalida, Date fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados)
+	public Vuelo(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, HashMap <Integer, Pasajero> pasajeros, 
+				 String fechaSalida, String fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados)
 	
 	{
 		
@@ -61,6 +61,11 @@ public class Vuelo {
 	}
 	
 	
+	public String getCodigo() 
+	{
+		return codigo;
+	}
+	
 	public int getCantidadPasajeros()
 	{
 		return pasajeros.size(); 
@@ -74,6 +79,11 @@ public class Vuelo {
 	public Aeropuerto getDestino()
 	{
 		return destino;
+	}
+	
+	public String getFechaSalida() 
+	{
+		return fechaSalida;
 	}
 	
 	//Aux

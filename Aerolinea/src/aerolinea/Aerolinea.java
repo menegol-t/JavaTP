@@ -148,12 +148,12 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
 		
-		//codAsiento, clase y precio
 		Map<Integer, String> retorno = new HashMap<>();
 		
-		Integer codigoVuelo = Integer.parseInt(codVuelo);
-//OJO que codigoVuelo es un String. 
-		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codigoVuelo);
+		//OJO que codigoVuelo es un String.
+		//Integer codigoVuelo = Integer.parseInt(codVuelo);
+		
+		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codVuelo);
 		
 		Iterator<HashMap.Entry<Integer, Asiento>> iterador = AsientosPorVuelo.entrySet().iterator();
 	    

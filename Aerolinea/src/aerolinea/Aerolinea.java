@@ -185,7 +185,19 @@ public class Aerolinea implements IAerolinea
 	    return retorno;
 	}
 
-	
+	/**
+	* 8 y 9 devuelve el codigo del pasaje comprado.
+	* Los pasajeros que compran pasajes deben estar registrados como clientes, con todos sus datos, antes de realizar la compra. Devuelve el codigo del pasaje y lanza una excepción si no puede venderlo.
+	* aOcupar indica si el asiento que será ocupado por el cliente, o si solo lo compro para viajar más cómodo.
+	* Devuelve un código de pasaje único que se genera incrementalmente sin distinguir entre tipos de vuelos.
+	* 
+	* Obtiene el cliente, el vuelo y asiento de asientosDisponiblesPorVuelo. Si alguno de estos no se consigue, excepcion.
+	* Una vez conseguidos todos los datos, se borra el asiento de asientosDisponiblesPorVuelo
+	* Al asiento se le establece si esta ocupado o no
+	* Se registra el asiento vendido adentro del vuelo
+	* Por ultimo se genera un codigo de pasaje y se retorna.
+	*  
+	*/
 	
 	@Override
 	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
@@ -203,9 +215,11 @@ public class Aerolinea implements IAerolinea
 		
 		if(asiento == null) throw new RuntimeException("venderPasaje: El asiento solicitado no esta disponible.");
 		
-		asientosDisponiblesPorVuelo.get(codVuelo).remove(nroAsiento); //Si encontre el asiento como libre, lo saco del listado
+		//Si encontre el asiento en el listado de asientos libres, perfecto, lo remuevo. Si no lo encontre ya estaba vendido y tiro excepcion. 
+		asientosDisponiblesPorVuelo.get(codVuelo).remove(nroAsiento); 
 		
-		asiento.setOcupado(aOcupar); //Pongo el asiento si esta ocupado o descoupado.
+		//Pongo el asiento en el estado que me solicitaron, ocupado o desocupado.
+		asiento.setOcupado(aOcupar); 
 		
 		//Dentro de VUELO hay que hacer el metodo de registrar asiento. 
 /*Mi idea es, yo le paso al vuelo el cliente y el asiento. Con eso, vuelo tiene todo lo que necesita. 
@@ -214,8 +228,10 @@ public class Aerolinea implements IAerolinea
  * Si el cliente que le estoy pasando no figura como pasajero, great, genera un pasajero (recordemos que pasajero adentro tiene una propiedad que es el objeto Cliente que yo le paso aca) y un diccionario de asientos, que para empezar solo tiene ste asiento que le paso.
  * Si el pasajero ya estaba en el vuelo, y solo esta sumando un asiento (cosa que nos damos cuenta buscando al pasajero por su dni, y viendo si ya existia), sencillamente nos metemos al pasajero y añadimos otro asiento.*/
 
+		//Registro el asiento vendido.
 		//vuelo.registrarAsiento(asiento, cliente);
 		
+		//Retorno el codigo de pasaje. 
 		return obtenerCodigo();
 	}
 

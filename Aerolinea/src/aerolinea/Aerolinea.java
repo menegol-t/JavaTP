@@ -185,6 +185,10 @@ public class Aerolinea implements IAerolinea
 	    return retorno;
 	}
 
+	
+	
+	@Override
+	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	/**
 	* 8 y 9 devuelve el codigo del pasaje comprado.
 	* Los pasajeros que compran pasajes deben estar registrados como clientes, con todos sus datos, antes de realizar la compra. Devuelve el codigo del pasaje y lanza una excepción si no puede venderlo.
@@ -198,9 +202,7 @@ public class Aerolinea implements IAerolinea
 	* Por ultimo se genera un codigo de pasaje y se retorna.
 	*  
 	*/
-	
-	@Override
-	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
+	{
 		Integer Dni = dni;
 		
 		Cliente pasajero = clientes.get(Dni);
@@ -235,7 +237,13 @@ public class Aerolinea implements IAerolinea
 		return obtenerCodigo();
 	}
 
-	/** - 11. 
+	
+	
+	@Override
+	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
+	
+	/*IREP: Recibe Fechas con el formato "dd/mm/aaaa".
+	 * * - 11. 
 	 * devuelve una lista de códigos de vuelos. que estén entre fecha dada y hasta una semana despues. La lista estará vacía si no se encuentran vuelos similares. La Fecha es la fecha de salida.
 	 * 
 	 * Genero un nuevo array para devolver
@@ -243,11 +251,7 @@ public class Aerolinea implements IAerolinea
 	 * En este array meto todos los vuelos cuyo origen y destino matcheen con los parametros 
 	*/
 	
-	@Override
-	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
-	{
-		//IREP: Recibe Fechas con el formato "dd/mm/aaaa".
-		
+	{	
 		//Genero la lista de vuelos vacia. 
 		List <String> codVuelosSimilares = new ArrayList<String>();
 		
@@ -258,6 +262,9 @@ public class Aerolinea implements IAerolinea
 	}
 
 	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fecha)
+	/*
+	 * Añade a la lista los vuelos que cumplan con mismo destino, origen y estar a una semana de la fecha.
+	 * */
 	{
 		//Itero sobre todos los vuelos
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
@@ -274,6 +281,9 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fecha) 
+	/*
+	 * Verifica 1 por 1 los vuelos que se le dan para ver si cumple con las condiciones. Si esto se da, retorna true. 
+	 * */
 	{
 		//Si el destino del vuelo es el mismo que el dado
 		if(vuelo.getDestino().getDireccion().equals(destino) &&
@@ -291,19 +301,24 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	private boolean estaAUnaSemana(LocalDate fecha, LocalDate fechaSalida) 
+	/*
+	 * Verifica si 2 fechas dadas se encuentran a una semana, en cuyo caso retorna true. Si no, false.
+	 * Importante, solo se retorna true si fechaSalida es posterior a fecha. 
+	 * Es decir, si fechaSalida es el 1/1/2000 y fecha es 2/1/2000, retorna false, 
+	 * porque lo que nos interese es que fechaSalida sea hasta una semana despues de fecha.  
+	 * */
 	{
 		long diasEntreFechas = ChronoUnit.DAYS.between(fecha, fechaSalida);
 
-		//Retorna si los dias entre las dos fechas son menores o no a una semana.
-        return Math.abs(diasEntreFechas) < 7;
+		//Retorna true si la diferencia entre fecha y fechaSalida es menor a una semana CUANDO fechaSalida es posterior a fecha. 
+        return Math.abs(diasEntreFechas) < 7 && diasEntreFechas > 0;
 	}
 	
 	@Override
 	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
 		
-		//Version O(1) cuidado
-		
-		/* 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
+		/* Version O(1) cuidado
+		 * 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
 		 * 2) Acceder al pasajero con el dni en el diccionario pasajeros
 		 * 3) Guardar 3 valores, datos del asiento en cuestion, en Pasajero
 		 * 						 cantidad de consumo del cliente (double consumo) en Pasajero

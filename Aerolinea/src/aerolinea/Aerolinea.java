@@ -1,5 +1,7 @@
 package aerolinea;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,6 +61,21 @@ public class Aerolinea implements IAerolinea
 		codigoBase = codigoBase + 1;
 		
 		return codigoBase;
+	}
+	
+	private LocalDate convertirEnFecha(String fecha) 
+	{
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		
+		try {
+			
+            LocalDate objetoFecha= LocalDate.parse(fecha, formato);
+            return objetoFecha;
+            
+		}catch(Exception e){
+			throw new RuntimeException("La fecha es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
+		}
+		
 	}
 
 	
@@ -206,6 +223,9 @@ public class Aerolinea implements IAerolinea
 		//IREP: Recibe Fechas con el formato "dd/mm/aaaa".
 		
 		List <String> codVuelosSimilares = new ArrayList<String>();
+		
+		
+		
 		return null;
 	}
 

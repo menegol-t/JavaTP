@@ -118,6 +118,7 @@ public class Aerolinea implements IAerolinea
 				nuevo = new Aeropuerto(nombre, provincia, direccion, esNacional);	
 			}
 			catch(Exception Exception) {
+//IMPORTANTE: Acordarse que TODAS las excepciones ahora son RuntimeException
 				 Exception.printStackTrace();
 			}
 			aeropuertos.add(nuevo);

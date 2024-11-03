@@ -14,32 +14,25 @@ public class Aerolinea implements IAerolinea
 {
 
 		private String nombre;
+		
 		private String cuit;
 		
-		// para: 
 		private HashMap<String, Vuelo> vuelos;
 		
 		private LinkedList<Aeropuerto> aeropuertos;
 		
 		private HashMap<Integer, Cliente> clientes;
 		
+		private HashMap<String, Double> facturacionPorDestino;
 		
-		private HashMap<String, Double> FacturacionPorDestino;
-		
-		// para: asientosDisponibles, venderPasaje
-		
-		//El sistema conoce todos los asientos libres por vuelo
-				
-		//		       codVuelo, diccionario<codAsiento, Asiento>
 		private HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo;
 		
-		// para: venderPasaje
 		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
 		
 	
-	public Aerolinea(String nombre, String cuit) //Aca no se puede usar excepciones o hay que cambiar Principal.java
+	public Aerolinea(String nombre, String cuit)
 	{
-		
+		//Che hay que convertir todas estas validaciones en una funcion...
 		if(!(nombre != null && nombre.length() > 0 && cuit != null && cuit.length() > 0))
 			throw new RuntimeException("Valor de parametros invalido!!");
 			
@@ -50,23 +43,31 @@ public class Aerolinea implements IAerolinea
 			this.clientes = new HashMap<>();
 			this.asientosDisponiblesPorVuelo = new HashMap<>();
 			this.codigoBase = 100;
-			this.FacturacionPorDestino  = new HashMap<>();
+			this.facturacionPorDestino  = new HashMap<>();
 			
 		
 	}
 	
-/*Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int. */
+
+	
 	private Integer obtenerCodigo()
+	/*
+	 * Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int.
+	 * */
 	{
 		codigoBase = codigoBase + 1;
 		
 		return codigoBase;
 	}
 
-/*Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
- * para saber cuanto es la fecha dada + 1 semana. Esto me permite lidiar con casos donde por ejemplo, si mi fecha 
- * dada es 29/12/2024, el resultado dado va a ser 5/1/2025, sin tener que meterme a programar el string. */
+
+	
 	private LocalDate obtenerFecha(String fecha) 
+	/*
+	 * Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
+	 * para saber cuanto es la fecha dada + 1 semana. Esto me permite lidiar con casos donde por ejemplo, si mi fecha 
+	 * dada es 29/12/2024, el resultado + 1 semana sera 5/1/2025, sin tener que meterme a contar cambios de mes o año un string. 
+	 * */
 	{	
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
@@ -85,6 +86,9 @@ public class Aerolinea implements IAerolinea
 	
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
+	/*
+	 * Hay que hacer validaciones de nombre string telefono etc etc...
+	 * */
 	{	
 		Integer Dni = dni;
 		
@@ -98,6 +102,9 @@ public class Aerolinea implements IAerolinea
 	
 	@Override
 	public void registrarAeropuerto(String nombre, String pais, String provincia, String direccion) 
+	/*
+	 * Hay que hacer validaciones de nombre != null, pais !=null, etc etc...
+	 * */
 	{	
 		boolean esNacional = false;
 		
@@ -242,8 +249,8 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
 	
-	/*IREP: Recibe Fechas con el formato "dd/mm/aaaa".
-	 * * - 11. 
+	/* IREP: Recibe Fechas con el formato "dd/mm/aaaa".
+	 * - 11. 
 	 * devuelve una lista de códigos de vuelos. que estén entre fecha dada y hasta una semana despues. La lista estará vacía si no se encuentran vuelos similares. La Fecha es la fecha de salida.
 	 * 
 	 * Genero un nuevo array para devolver
@@ -315,19 +322,43 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	@Override
-	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
-		
-		/* Version O(1) cuidado
-		 * 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
-		 * 2) Acceder al pasajero con el dni en el diccionario pasajeros
-		 * 3) Guardar 3 valores, datos del asiento en cuestion, en Pasajero
-		 * 						 cantidad de consumo del cliente (double consumo) en Pasajero
-		 * 						 destino del vuelo (String) en Vuelo
-		 * 
-		 * 4) Borrar el asiento en el Pasajero
-		 * 5) Crear un nuevo asiento y agregarlo en el diccionario "AsientosDisponiblesPorVuelo" con el codigo de vuelo
-		 * 6) Restar el costo al total por destino en el diccionario "FacturacionPorDestino", utilizando el destino guardado
-		 * */
+	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) 
+	/*
+	 * Se borra el pasaje y se libera el lugar para que pueda comprarlo otro cliente.
+	 * IMPORTANTE: Se debe resolver en O(1).
+	 * 
+	 * COMENTARIOS TOMAS ------
+	 * Se busca el pasajero en el vuelo, se obtiene su asiento buscandolo por el nro de asiento en el diccionario de asientos del pasajero. Aca pueden pasar 2 cosas:
+	 *  - Si el pasajero tiene multiples asientos, genial, se devuelve una copia del asiento en cuestion, y se elimina del diccionario de asientos del pasajero.
+	 *  - Si el pasajero solo tenia ESTE asiento, se devuelve una copia del asiento en cuestion pero se borra el pasajero del array de pasajeros. Porque si un pasajero no tiene asiento, ya no es pasajero.
+	 * 
+	 * Una vez hecho esto, el asiento que habiamos retornado se vuelve a guardar en asientosDisponiblesPorVuelo, 
+	 * HAY QUE ACORDARNOS antes de guardarlo en setear asiento.ocupado en false
+	 * 
+	 * 
+	 * Respecto a los comentarios de abajo, en el punto 3, para que necesitamos guardar todos esos valores?
+	 * Creo que solo guardando el asiento estamos, total es solo para guardarlo en asientosDisponiblesPorVuelo de vuelta.
+	 * No necesitamos guardar lo que consume el cliente, solo restarle el valor del asiento a su costo. 
+	 * Este valor es el mismo que vamos a restar en facturacionPorDestino
+	 * 
+	 * Si guardamos el asiento, el punto 5 de crear un nuevo asiento nos lo salteamos y solo lo guardamos en asientosDisponiblesPorVuelo
+	 * 
+	 * ------------------------
+	 *  
+	 * 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
+	 * 2) Acceder al pasajero con el dni en el diccionario pasajeros
+	 * 
+	 * 
+	 * 3) Guardar 3 valores, datos del asiento en cuestion, en Pasajero
+	 * 						 cantidad de consumo del cliente (double consumo) en Pasajero
+	 * 						 destino del vuelo (String) en Vuelo
+	 * 
+	 * 4) Borrar el asiento en el Pasajero
+	 * 5) Crear un nuevo asiento y agregarlo en el diccionario "AsientosDisponiblesPorVuelo" con el codigo de vuelo
+	 * 6) Restar el costo al total por destino en el diccionario "facturacionPorDestino", utilizando el destino guardado
+	 * */
+	
+	{
 		
 		//1)
 		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
@@ -337,8 +368,44 @@ public class Aerolinea implements IAerolinea
 		
 		//3)
 		Aeropuerto aeropuertoDestino = vuelo.getDestino();
+		/* Tom: Acordate que el "codigo" unico de cada aeropuerto es su nombre.
+		 * Podrias hacer solo un:
+		 * String destino = vuelo.getDestino().getNombre(); 
+		 */
 		String destino = aeropuertoDestino.getLocacion();
 		
+		/*
+		 * En la parte que sigue yo guardaria el asiento entero:
+		 * Asiento asiento = pasajero.getAsiento; 
+		 * 
+		 * Despues hay que sacarle el asiento:
+		 * pasajero.eliminarAsiento(nroAsiento);
+		 * 
+		 * Resetear el asiento (para que no este ocupado):
+		 * asiento.liberar(); Este metodo habria que crearlo
+		 * 
+		 * Asi ya tenemos el asiento guardado y directamente enganchamos ese en asientosDisponiblesPorVuelo:
+		 * asientosDisponiblesPorVuelo.add(asiento);
+		 * 
+		 * La parte del costo ya si se complica, capaz cada pasajero deberia tener un pasajero.calcularCosto()
+		 * que le calcula el costo en el momento, con su cantidad de asientos y demas. Entonces nosotros nos guardamos
+		 * la diferencia entre el costo antes de sacarle el asiento, y despues. Esta es la diferencia que restamos 
+		 * en facturacionPorDestino():
+		 * 
+		 * ANTES de sacar asiento:
+		 * 
+		 * double costoPrevio = pasajero.getCosto();
+		 * 
+		 *  //Le quitamos el asiento y demas
+		 *
+		 * pasajero.guardarCosto()
+		 * 
+		 * double costoActual = pasajero.getCosto()
+		 * 
+		 * double diferencia = costoPrevio - costoActual
+		 * 
+		 * Y esa diferencia la restamos a fecturacionPorDestino...
+		 * */
 		double consumo = pasajero.getCosto();
 		
 		int codigoAsiento = pasajero.getAsiento(nroAsiento).getCodigo();//ACA VER SI MEJOR SE GENERA NUEVO CODIGO DE ASIENTO
@@ -356,9 +423,12 @@ public class Aerolinea implements IAerolinea
 		asientosDisponiblesPorVuelo.get(codVuelo).put(codigoAsiento, redisponible);
 		
 		//6)
-		double facturado = FacturacionPorDestino.get(destino);
-		FacturacionPorDestino.put(destino, facturado - consumo);
+		double facturado = facturacionPorDestino.get(destino);
 		
+		/*
+		 * TOM: Aca le estas restando a facturacionPorDestino el precio del pasaje ANTES de sacarle el asiento 
+		 * */
+		facturacionPorDestino.put(destino, facturado - consumo);
 		
 		int cantAsientos = pasajero.getCantAsientos(); //O(1)
 		if(cantAsientos == 0) vuelo.eliminarPasajero(dni);

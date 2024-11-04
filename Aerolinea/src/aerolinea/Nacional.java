@@ -1,8 +1,6 @@
 package aerolinea;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class Nacional extends Vuelo {
 	
@@ -14,10 +12,11 @@ public class Nacional extends Vuelo {
 	
 	//Dado a que nos lo pasan por parametro, se almacena para facturacion
 	int precioPorRefrigerio;
-	
+	double precioAsientosPrimera; 
+	double precioAsientosSegunda;
 
-	public Nacional(int codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, LinkedList<Pasajero> pasajeros,
-					Date fechaSalida, Date fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados, 
+	public Nacional(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, HashMap <Integer, Pasajero> pasajeros,
+					String fechaSalida, String fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados, 
 					int limitePasPrimera, int limitePasaSegunda, int precioRefrigerio) 
 	{	
 		//Se crea la clase padre vuelo, por lo que su irep se mantiene
@@ -41,5 +40,7 @@ public class Nacional extends Vuelo {
 	}
 	
 	
+	
+
 	
 }

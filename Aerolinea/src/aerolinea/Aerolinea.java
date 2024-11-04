@@ -27,7 +27,10 @@ public class Aerolinea implements IAerolinea
 		
 		private HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo;
 		
-		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
+		private Integer codigoBaseNacional;		//Los codigos numericos se obtienen en base a esta variable.
+		private Integer codigoBaseInternacional;
+		private Integer codigoBasePrivados;
+		private Integer codigoBaseAsientos;
 		
 	
 	public Aerolinea(String nombre, String cuit)
@@ -42,7 +45,10 @@ public class Aerolinea implements IAerolinea
 			this.aeropuertos = new LinkedList<>();
 			this.clientes = new HashMap<>();
 			this.asientosDisponiblesPorVuelo = new HashMap<>();
-			this.codigoBase = 100;
+			this.codigoBaseNacional = 0;
+			this.codigoBaseInternacional = 0;
+			this.codigoBasePrivados= 0;
+			this.codigoBaseAsientos = 0;
 			this.facturacionPorDestino  = new HashMap<>();
 			
 		
@@ -50,14 +56,50 @@ public class Aerolinea implements IAerolinea
 	
 
 	
-	private Integer obtenerCodigo()
+	private Integer obtenerCodigo(String tipo)
 	/*
 	 * Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int.
+	 * 
+	 * Actualizacion:
+	 * 
+	 * Ahora hay 4 tipos de codigo, se pasa un string indicando que es cuadno se genera cada uno
+	 * 
+	 * NAC-10 es un codigo nacional valido
+	 * INT-341 es un codigo internacional valido
+	 * 
+	 * etc
+	 * 
 	 * */
 	{
-		codigoBase = codigoBase + 1;
 		
-		return codigoBase;
+		if(!(tipo != null && tipo.length() == 3)) throw new RuntimeException("Valor de parametros invalido!!");
+		
+		if((tipo).equals("NAC"))
+		{
+			codigoBaseNacional += 1;
+			return codigoBaseNacional;
+		}
+		
+		if((tipo).equals("INT"))
+		{
+			codigoBaseInternacional += 1;
+			return codigoBaseInternacional;
+		}
+		
+		if((tipo).equals("PRI"))
+		{
+			codigoBasePrivados += 1;
+			return codigoBasePrivados;
+		}
+		
+		if((tipo).equals("ASI"))
+		{
+			codigoBaseAsientos += 1;
+			return codigoBaseAsientos;
+		}
+		
+		else  throw new RuntimeException("El tipo de Codigo indicado no es valido!!");
+		
 	}
 
 
@@ -142,13 +184,24 @@ public class Aerolinea implements IAerolinea
 			double valorRefrigerio, double[] precios, int[] cantAsientos) 
 	{
 		
-		/*Tenemos que: 1) crear un Nacional, 2) agregarlo a la lista de vuelos (polimorfismo), 
-		 			   3) generar codigo (el cual retornaremos) y 4) almacenar <codigo, asientosLibres>
+		/*Tenemos que: 1) crear un codigo Nacional y un Nacional
+		 * 			   2) agregarlo a la lista de vuelos (polimorfismo), 
+		 			   3) generar codigo (el cual retornaremos) 
+		 			   4) almacenar <codigo, asientosLibres>
 		 			   5) Agregar en el diccionario de vuelos*/
 		
+		//1)
+		
+		Integer parteNumerica = obtenerCodigo("NAC");
+		String codigo = "";
+		codigo = "NAC-" + parteNumerica;
 		
 		
-		return null;
+		//Como los aeropuertos son strings, todavia tengo que encontrar la manera de armar los aeropuertos, quizas manejarlos con strings seria mejor.
+		//Nacional nuevoNacional = new Nacional(codigo, origen);
+		
+		
+		return codigo;
 	}
 
 	
@@ -345,18 +398,20 @@ public class Aerolinea implements IAerolinea
 	 * Si guardamos el asiento, el punto 5 de crear un nuevo asiento nos lo salteamos y solo lo guardamos en asientosDisponiblesPorVuelo
 	 * 
 	 * ------------------------
+	 * 
+	 * Actualizacion (Leo):
+	 * 
+	 * Ahora los asientos conocen sus precios, cuando se registra un vuelo Nacional o Internacional se le asigna
+	 * a cada asiento de cada seccion se le agrega el precio correspondiente, con ello se podra restar la diferencia a la recaudacion
+	 * 
+	 *  - Hay una funcion en la clase vuelo que realiza la logica de eliminar el asiento, de este modo el coedigo es mas limpio
 	 *  
 	 * 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
 	 * 2) Acceder al pasajero con el dni en el diccionario pasajeros
-	 * 
-	 * 
-	 * 3) Guardar 3 valores, datos del asiento en cuestion, en Pasajero
-	 * 						 cantidad de consumo del cliente (double consumo) en Pasajero
-	 * 						 destino del vuelo (String) en Vuelo
-	 * 
-	 * 4) Borrar el asiento en el Pasajero
-	 * 5) Crear un nuevo asiento y agregarlo en el diccionario "AsientosDisponiblesPorVuelo" con el codigo de vuelo
-	 * 6) Restar el costo al total por destino en el diccionario "facturacionPorDestino", utilizando el destino guardado
+	 * 3) Guardar el asiento y setearlo para reutilizarlo
+	 * 4) Borrar el asiento 
+	 * 5) Agregar el asiento en el diccionario "AsientosDisponiblesPorVuelo" con el codigo de vuelo
+	 * 6) Restar el precio del asiento al total por destino en el diccionario "facturacionPorDestino", utilizando el destino guardado
 	 * */
 	
 	{
@@ -368,68 +423,38 @@ public class Aerolinea implements IAerolinea
 		Pasajero pasajero = vuelo.getPasajeros().get(dni);
 		
 		//3)
+		Asiento redisponible = pasajero.getAsiento(nroAsiento);
+		redisponible.liberarAsiento();
+		
+		//4)
+		vuelo.eliminarAsiento(dni, nroAsiento);
+		
+		//5)
 		Aeropuerto aeropuertoDestino = vuelo.getDestino();
+		
 		/* Tom: Acordate que el "codigo" unico de cada aeropuerto es su nombre.
 		 * Podrias hacer solo un:
 		 * String destino = vuelo.getDestino().getNombre(); 
+		 * 
+		 * Leo: No se, el destino es necesario para la resta del precio del pasaje,
+		 * el diccionario facturacionPorDestino tiene como key el destino, no el nombre del aeropuerto
+		 * 
+		 * Entiendo que no dira Aeroparque --> 1000, sera algo como, Buenos aires, --> 1000 
+		 * 
 		 */
 		String destino = aeropuertoDestino.getLocacion();
-		
-		/*
-		 * En la parte que sigue yo guardaria el asiento entero:
-		 * Asiento asiento = pasajero.getAsiento; 
-		 * 
-		 * Despues hay que sacarle el asiento:
-		 * pasajero.eliminarAsiento(nroAsiento);
-		 * 
-		 * Resetear el asiento (para que no este ocupado):
-		 * asiento.liberar(); Este metodo habria que crearlo
-		 * 
-		 * Asi ya tenemos el asiento guardado y directamente enganchamos ese en asientosDisponiblesPorVuelo:
-		 * asientosDisponiblesPorVuelo.add(asiento);
-		 * 
-		 * La parte del costo ya si se complica, capaz cada pasajero deberia tener un pasajero.calcularCosto()
-		 * que le calcula el costo en el momento, con su cantidad de asientos y demas. Entonces nosotros nos guardamos
-		 * la diferencia entre el costo antes de sacarle el asiento, y despues. Esta es la diferencia que restamos 
-		 * en facturacionPorDestino():
-		 * 
-		 * ANTES de sacar asiento:
-		 * 
-		 * double costoPrevio = pasajero.getCosto();
-		 * 
-		 *  //Le quitamos el asiento y demas
-		 *
-		 * pasajero.guardarCosto()
-		 * 
-		 * double costoActual = pasajero.getCosto()
-		 * 
-		 * double diferencia = costoPrevio - costoActual
-		 * 
-		 * Y esa diferencia la restamos a fecturacionPorDestino...
-		 * */
-		double consumo = pasajero.getCosto();
-		
-		int codigoAsiento = pasajero.getAsiento(nroAsiento).getCodigo();//ACA VER SI MEJOR SE GENERA NUEVO CODIGO DE ASIENTO
-		int seccion = pasajero.getAsiento(nroAsiento).getSeccion();
-		String clase = pasajero.getAsiento(nroAsiento).getClase();
-		boolean ocupado = false;
-		
-		//4)
-		pasajero.eliminarASiento(nroAsiento);
-		
-		//5)
-		Asiento redisponible = new Asiento(codigoAsiento, seccion, clase, ocupado); 
-		
-		asientosDisponiblesPorVuelo.get(codVuelo).remove(codigoAsiento);
-		asientosDisponiblesPorVuelo.get(codVuelo).put(codigoAsiento, redisponible);
+		asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, redisponible);
 		
 		//6)
+		double precioAsiento = redisponible.getPrecio();
 		double facturado = facturacionPorDestino.get(destino);
 		
 		/*
 		 * TOM: Aca le estas restando a facturacionPorDestino el precio del pasaje ANTES de sacarle el asiento 
+		 * 
+		 * LEO: Ahora se resta DESPUES de eliminar el asiento
 		 * */
-		facturacionPorDestino.put(destino, facturado - consumo);
+		facturacionPorDestino.put(destino, facturado - precioAsiento);
 		
 		int cantAsientos = pasajero.getCantAsientos(); //O(1)
 		if(cantAsientos == 0) vuelo.eliminarPasajero(dni);

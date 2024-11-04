@@ -55,7 +55,7 @@ public class Pasajero
 		asientos.put(asiento.getCodigo(), asiento);
 	}
 	
-	public void eliminarASiento(Integer id)
+	public void eliminarAsiento(Integer id)
 	{
 		asientos.remove(id);
 	}

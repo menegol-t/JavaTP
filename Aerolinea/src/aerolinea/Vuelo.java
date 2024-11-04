@@ -98,4 +98,12 @@ public class Vuelo {
 	{
 		pasajeros.remove(id);
 	}
+	
+	public void eliminarAsiento(int dni, int numAsiento)
+	{
+		Pasajero pasajero = pasajeros.get(dni);
+		pasajero.eliminarAsiento(numAsiento);
+	}
+	
+	
 }

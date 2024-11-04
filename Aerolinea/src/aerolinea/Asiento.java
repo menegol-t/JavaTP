@@ -7,6 +7,7 @@ public class Asiento
 	private int seccion;
 	private String clase;
 	private boolean ocupado;
+	private double precio;
 	
 	public Asiento(int codigo, int seccion, String clase, boolean ocupado)
 	{
@@ -46,6 +47,16 @@ public class Asiento
 		ocupado = aOcupar;
 	}
 	
+	public void setPrecio(double val)
+	{
+		precio = val;
+	}
+	
+	public double getPrecio()
+	{
+		return precio;
+	}
+	
 	@Override //La reescribimos en cada clase vuelo para agregar la logica
 	public String toString()
 	{
@@ -58,5 +69,12 @@ public class Asiento
 		
 		return retorno.toString();
 
+	}
+	
+	//Aux
+	
+	public void liberarAsiento()
+	{
+		ocupado = false;
 	}
 }

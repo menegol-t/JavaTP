@@ -280,28 +280,30 @@ public class Aerolinea implements IAerolinea
 		return verificarVuelosSimilares(codVuelosSimilares, origen, destino, fecha);
 	}
 
-	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fecha)
+	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fechaAComparar)
 	/*
 	 * Añade a la lista los vuelos que cumplan con mismo destino, origen y estar a una semana de la fecha.
 	 * */
 	{
-		//Itero sobre todos los vuelos
+		//Genero un iterador de vuelos
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
 		
+		//Itero sobre todos los vuelos viendo si cumplen o no las condiciones. Si los cumplen, los añado a la lista a retornar.
 		while (it.hasNext()) {
 			
 			Vuelo vueloActual = (Vuelo) it.next();
 			
 			//Si el vuelo cumple con los parametros, sumo su codigo al array de vuelos similares. 
-			if(vueloEsSimilar(vueloActual, origen, destino, fecha)) codVuelosSimilares.add(vueloActual.getCodigo());
+			if(vueloEsSimilar(vueloActual, origen, destino, fechaAComparar)) codVuelosSimilares.add(vueloActual.getCodigo());
 		}
 		
 		return codVuelosSimilares;
 	}
 	
-	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fecha) 
+	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fechaAComparar) 
 	/*
-	 * Verifica 1 por 1 los vuelos que se le dan para ver si cumple con las condiciones. Si esto se da, retorna true. 
+	 * Verifica cada vuelo individual para ver si cumple con las condiciones (que tenga el mismo origen, mismo destino, 
+	 * y que su fecha de salida este a maximo 1 semana de la fecha a comparar). Si esto se da, retorna true. 
 	 * */
 	{
 		//Si el destino del vuelo es el mismo que el dado
@@ -311,7 +313,7 @@ public class Aerolinea implements IAerolinea
 				vuelo.getOrigen().getDireccion().equals(origen) &&
 					
 					//Y el vuelo esta a una semana (o menos) de partir
-					estaAUnaSemana(fecha, obtenerFecha(vuelo.getFechaSalida())))
+					estaAUnaSemana(fechaAComparar, obtenerFecha(vuelo.getFechaSalida())))
 		{
 			return true;
 		}
@@ -319,15 +321,15 @@ public class Aerolinea implements IAerolinea
 		return false;
 	}
 	
-	private boolean estaAUnaSemana(LocalDate fecha, LocalDate fechaSalida) 
+	private boolean estaAUnaSemana(LocalDate fechaAComparar, LocalDate fechaSalida) 
 	/*
 	 * Verifica si 2 fechas dadas se encuentran a una semana, en cuyo caso retorna true. Si no, false.
-	 * Importante, solo se retorna true si fechaSalida es posterior a fecha. 
-	 * Es decir, si fechaSalida es el 1/1/2000 y fecha es 2/1/2000, retorna false, 
-	 * porque lo que nos interese es que fechaSalida sea hasta una semana despues de fecha.  
+	 * Importante, solo se retorna true si fechaSalida es posterior a "fecha". 
+	 * Es decir, si fechaSalida es el 1/1/2000 y fechaAComparar es 2/1/2000, retorna false, 
+	 * porque lo que nos interesa es que fechaSalida sea hasta una semana despues de fechaAComparar.  
 	 * */
 	{
-		long diasEntreFechas = ChronoUnit.DAYS.between(fecha, fechaSalida);
+		long diasEntreFechas = ChronoUnit.DAYS.between(fechaAComparar, fechaSalida);
 
 		//Retorna true si la diferencia entre fecha y fechaSalida es menor a una semana CUANDO fechaSalida es posterior a fecha. 
         return Math.abs(diasEntreFechas) < 7 && diasEntreFechas > 0;
@@ -374,22 +376,25 @@ public class Aerolinea implements IAerolinea
 	
 	{
 		
-		//1)
+		//1) Obtengo el vuelo del diccionario de vuelos por su codigo. 
 		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
 		
-		//2)
+		//2) Dentro del vuelo, ingreso a sus pasajeros, y obtengo el pasajero particular por su dni.  
 		Pasajero pasajero = vuelo.getPasajeros().get(dni);
 		
-		//3)
+		//3) Busco el asiento particular dentro del pasajero, ya que este puede tener multiples. 
 		Asiento asiento = pasajero.getAsiento(nroAsiento);
 		
+		// Este asiento podria o no haber estado ocupado, asi que lo libero, porque lo voy a disponibilizar. 
 		asiento.liberarAsiento();
 		
-		//4)
+		//4) Quito el asiento conseguito del vuelo y del pasajero.
 		vuelo.eliminarAsiento(dni, nroAsiento);
 		
-		//5)
-		Aeropuerto aeropuertoDestino = vuelo.getDestino();
+		//5) Obtengo el destino al que iba el vuelo (o sea la locacion del aeropuerto de destino).
+		//Aeropuerto aeropuertoDestino = vuelo.getDestino();
+		//String destino = aeropuertoDestino.getLocacion();
+		String destino = vuelo.getDestino().getLocacion();
 		
 		/* Tom: Acordate que el "codigo" unico de cada aeropuerto es su nombre.
 		 * Podrias hacer solo un:
@@ -401,10 +406,11 @@ public class Aerolinea implements IAerolinea
 		 * Entiendo que no dira Aeroparque --> 1000, sera algo como, Buenos aires, --> 1000 
 		 * 
 		 */
-		String destino = aeropuertoDestino.getLocacion();
+		
+		//Añado el asiento que acabo de retirar, al diccionario de asientosDisponiblesPorVuelo, para disponibilizarlo.
 		asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, asiento);
 		
-		//6)
+		//6) 
 		double precioAsiento = asiento.getPrecio();
 		double facturado = facturacionPorDestino.get(destino);
 		
@@ -413,8 +419,12 @@ public class Aerolinea implements IAerolinea
 		 * 
 		 * LEO: Ahora se resta DESPUES de eliminar el asiento
 		 * */
+		
 		facturacionPorDestino.put(destino, facturado - precioAsiento);
 		
+		/* Un pasajero puede comprar varios asientos. Puede ser que solo cancele uno de multiples que tiene.
+		 * Pero si cancelo todos sus asientos, no va a volar. En el avio, asi que lo elimino.
+		 * Si sigue teniendo asientos, no toco nada. */
 		int cantAsientos = pasajero.getCantAsientos(); //O(1)
 		if(cantAsientos == 0) vuelo.eliminarPasajero(dni);
 		

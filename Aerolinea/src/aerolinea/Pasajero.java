@@ -77,7 +77,7 @@ public class Pasajero
 		}
 	}
 	
-	public Cliente consultarCliente()
+	public Cliente getCliente()
 	{
 		return cliente;
 	}

@@ -35,7 +35,7 @@ public class Vuelo {
 		    
 		    while (iterador.hasNext()) {
 				HashMap.Entry<Integer, Pasajero> entrada = iterador.next();
-				valido &= (ClientesRegistrados.containsValue(entrada.getValue().consultarCliente()));
+				valido &= (ClientesRegistrados.containsValue(entrada.getValue().getCliente()));
 			}
 			
 			

@@ -101,7 +101,7 @@ public class Aerolinea implements IAerolinea
 	private void stringInvalido(String s, String valor) 
 	{
 		if(s == null || s.length() == 0) {
-			StringBuilder st = new StringBuilder("Error, campo un valor vacio: ");
+			StringBuilder st = new StringBuilder("Error, ingresate un campo vacio: ");
 			
 			st.append(valor);
 			st.append("\n");
@@ -514,6 +514,7 @@ public class Aerolinea implements IAerolinea
 	*   
 	* Busco el vuelo en cuestion. 
 	* Saco su destino. 
+	* Hago una lista con todos los clientes. Hago el vuelo null. 
 	* Busco todos los vuelos con el mismo destino. 
 	* 
 	*
@@ -525,11 +526,13 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
-	
+	/** - 14
+	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 
+	* IMPORTANTE: Se debe resolver en O(1).
+	*/
 	@Override
 	public double totalRecaudado(String destino) {
-		// TODO Auto-generated method stub
-		return 0;
+		return facturacionPorDestino.get(destino);
 	}
 
 	

@@ -27,10 +27,7 @@ public class Aerolinea implements IAerolinea
 		
 		private HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo;
 		
-		private Integer codigoBaseNacional;		//Los codigos numericos se obtienen en base a esta variable.
-		private Integer codigoBaseInternacional;
-		private Integer codigoBasePrivados;
-		private Integer codigoBaseAsientos;
+		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
 		
 	
 	public Aerolinea(String nombre, String cuit)
@@ -45,10 +42,7 @@ public class Aerolinea implements IAerolinea
 			this.aeropuertos = new LinkedList<>();
 			this.clientes = new HashMap<>();
 			this.asientosDisponiblesPorVuelo = new HashMap<>();
-			this.codigoBaseNacional = 0;
-			this.codigoBaseInternacional = 0;
-			this.codigoBasePrivados= 0;
-			this.codigoBaseAsientos = 0;
+			this.codigoBase = 1;
 			this.facturacionPorDestino  = new HashMap<>();
 			
 		
@@ -56,50 +50,14 @@ public class Aerolinea implements IAerolinea
 	
 
 	
-	private Integer obtenerCodigo(String tipo)
+	private Integer obtenerCodigo()
 	/*
 	 * Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int.
-	 * 
-	 * Actualizacion:
-	 * 
-	 * Ahora hay 4 tipos de codigo, se pasa un string indicando que es cuadno se genera cada uno
-	 * 
-	 * NAC-10 es un codigo nacional valido
-	 * INT-341 es un codigo internacional valido
-	 * 
-	 * etc
-	 * 
 	 * */
 	{
+		codigoBase = codigoBase + 1;
 		
-		if(!(tipo != null && tipo.length() == 3)) throw new RuntimeException("Valor de parametros invalido!!");
-		
-		if((tipo).equals("NAC"))
-		{
-			codigoBaseNacional += 1;
-			return codigoBaseNacional;
-		}
-		
-		if((tipo).equals("INT"))
-		{
-			codigoBaseInternacional += 1;
-			return codigoBaseInternacional;
-		}
-		
-		if((tipo).equals("PRI"))
-		{
-			codigoBasePrivados += 1;
-			return codigoBasePrivados;
-		}
-		
-		if((tipo).equals("ASI"))
-		{
-			codigoBaseAsientos += 1;
-			return codigoBaseAsientos;
-		}
-		
-		else  throw new RuntimeException("El tipo de Codigo indicado no es valido!!");
-		
+		return codigoBase;
 	}
 
 
@@ -192,7 +150,7 @@ public class Aerolinea implements IAerolinea
 		
 		//1)
 		
-		Integer parteNumerica = obtenerCodigo("NAC");
+		Integer parteNumerica = obtenerCodigo();
 		String codigo = "";
 		codigo = "NAC-" + parteNumerica;
 		
@@ -423,8 +381,9 @@ public class Aerolinea implements IAerolinea
 		Pasajero pasajero = vuelo.getPasajeros().get(dni);
 		
 		//3)
-		Asiento redisponible = pasajero.getAsiento(nroAsiento);
-		redisponible.liberarAsiento();
+		Asiento asiento = pasajero.getAsiento(nroAsiento);
+		
+		asiento.liberarAsiento();
 		
 		//4)
 		vuelo.eliminarAsiento(dni, nroAsiento);
@@ -443,10 +402,10 @@ public class Aerolinea implements IAerolinea
 		 * 
 		 */
 		String destino = aeropuertoDestino.getLocacion();
-		asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, redisponible);
+		asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, asiento);
 		
 		//6)
-		double precioAsiento = redisponible.getPrecio();
+		double precioAsiento = asiento.getPrecio();
 		double facturado = facturacionPorDestino.get(destino);
 		
 		/*

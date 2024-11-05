@@ -80,6 +80,36 @@ public class Aerolinea implements IAerolinea
 		
 	}
 
+	/*
+	 * Con esta funcion detectamos si un numero es invalido, es decir si vale 0 o vale negativo.
+	 * */
+	private void intInvalidoCero(int i, String valor) 
+	{
+		if(i <= 0){
+			StringBuilder st = new StringBuilder("Error, ingresaste un valor invalido: ");
+		
+			st.append(valor);
+			st.append("\n");
+		
+			throw new RuntimeException(st.toString());
+		}
+	}
+	
+	/*
+	 * Con esta funcion valido si me pasaron un String vacio
+	 * */
+	private void stringInvalido(String s, String valor) 
+	{
+		if(s == null || s.length() == 0) {
+			StringBuilder st = new StringBuilder("Error, campo un valor vacio: ");
+			
+			st.append(valor);
+			st.append("\n");
+			
+			throw new RuntimeException(st.toString());
+		}
+	}
+	
 	
 	
 	@Override
@@ -214,8 +244,11 @@ public class Aerolinea implements IAerolinea
 	*  
 	*/
 	@Override
-	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
+	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar)
 	{
+		//Realizamos validaciones, si no pasa un check tiramos runtime exception. 
+		intInvalidoCero(dni, "DNI"); intInvalidoCero(nroAsiento, "Numero de asiento"); stringInvalido(codVuelo, "Codigo de vuelo");
+		
 		Integer Dni = dni;
 		
 		Cliente pasajero = clientes.get(Dni);
@@ -266,6 +299,9 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
 	{	
+		//Realizo validaciones, si no pasa tiro runtimeexception. 
+		stringInvalido(origen, "origen"); stringInvalido(destino, "destino"); stringInvalido(Fecha, "fecha"); 
+		
 		//Genero la lista de vuelos vacia. 
 		List <String> codVuelosSimilares = new ArrayList<String>();
 		

@@ -546,25 +546,52 @@ public class Aerolinea implements IAerolinea
 	*   . 11234126 - Jonathan - 33333311 - 545-PUB
 	*   
 	* Busco el vuelo en cuestion. 
-	* Saco su destino. 
-	* Hago una lista con todos los clientes. Hago el vuelo null. 
-	* Busco todos los vuelos con el mismo destino. 
+	* Guardo su destino.
+	* Hago una lista con todos los clientes del vuelo y la seccion de su asiento. 
+	* Itero sobre todos los vuelos con el mismo destino. 
+	* Uso asientosDisponiblesPorVuelo para buscar asientos en dichos vuelos que sean iguales o mejores que los de los clientes.
+	* De ahi invoco a venderPasaje para asignar ese asiento. 
+	* Conforme voy vendiendo pasajes voy sacando de la lista de clientes y voy añadiendolos a una lista nueva, con su toString y vuelo
+	* Los clientes que quedan en la lista anterior los paso a la lista nueva con su toString y CANCELADO
 	* 
-	*
 	*/
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
-		// TODO Auto-generated method stub
+		stringInvalido(codVuelo, "Codigo de vuelo"); 
+		
+		Vuelo vueloACancelar = vuelos.get(codVuelo);
+		
+		String destino = vueloACancelar.getDestino().getLocacion();
+		
+		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
+		
+		while (it.hasNext()) {
+			
+			Vuelo vueloActual = (Vuelo) it.next();
+			
+			if(vueloActual.getDestino().getLocacion() == destino) {
+				
+				String codigo = vueloActual.getCodigo();
+				
+			}
+
+			
+		}
+		
+		
 		return null;
 	}
 
 	
-	
+	/** - 14
+	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 
+	* IMPORTANTE: Se debe resolver en O(1).
+	*/
 	@Override
 	public double totalRecaudado(String destino) {
-		// TODO Auto-generated method stub
-		return 0;
+		return facturacionPorDestino.get(destino);
 	}
+
 
 	
 	

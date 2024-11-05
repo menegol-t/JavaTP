@@ -242,6 +242,10 @@ public class Aerolinea implements IAerolinea
 		//Pongo el asiento en el estado que me solicitaron, ocupado o desocupado.
 		asiento.setOcupado(aOcupar); 
 		
+		int codigo = obtenerCodigo();
+		
+		asiento.setCodPasaje(codigo);
+		
 		//Dentro de VUELO hay que hacer el metodo de registrar asiento. 
 /*Mi idea es, yo le paso al vuelo el cliente y el asiento. Con eso, vuelo tiene todo lo que necesita. 
  * Vuelo adentro tiene un dicionario HashMap<Dni, Pasajero> pasajeros . Ahora, el encargado de construir sus pasajeros conforme se van sumado es el vuelo mismo, entonces vuelo tiene que hacer los sigueintes chequeos:
@@ -252,8 +256,8 @@ public class Aerolinea implements IAerolinea
 		//Registro el asiento vendido.
 		//vuelo.registrarAsiento(asiento, cliente);
 		
-		//Retorno el codigo de pasaje. 
-		return obtenerCodigo();
+		return codigo;
+		
 	}
 
 	
@@ -431,10 +435,39 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
-	
+	/** 12-B
+	* Se cancela un pasaje dado el codigo de pasaje. 
+	* NO es necesario que se resuelva en O(1).
+	* 
+	* Para cancelar un pasaje (asiento), debo:
+	* Ubicar el vuelo del pasaje. 
+	* Ubicar el cliente, por su dni. 
+	* Finalmente, ubicar el pasaje en particular, por su codigo. Un cliente puede tener multiples pasajes (cada pasaje representa un asiento, como un ticket en el cine).
+	* Para esto ultimo, recorro todos los asientos posibles que puede tener el cliente. 
+	*/
 	@Override
 	public void cancelarPasaje(int dni, int codPasaje) {
-		// TODO Auto-generated method stub
+		
+		//Recorro todo el diccionario de vuelos
+		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
+		
+		//Genero una variable para no tener que recorrer absolutamente todos los vuelos una vez encontrado el cliente. 
+		boolean buscando = true;
+		
+		/* Como estoy cancelando un pasaje, ni bien encuentre al cliente que lo tiene, invoco a eliminarPasaje.
+		 * Si recorro todo y no encuentro al cliente, bueno, el pasaje ya estaba eliminado.*/
+		while (it.hasNext() && buscando) {
+			
+			Vuelo vueloActual = (Vuelo) it.next();
+
+			//Si encuentro al cliente, le elimino el pasaje y termino.  
+			if(vueloActual.getPasajero(dni) != null) 
+			{
+				vueloActual.eliminarPasaje(dni, codPasaje);
+				
+				buscando = false;
+			}
+		}
 		
 	}
 

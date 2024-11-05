@@ -4,6 +4,7 @@ public class Asiento
 {
 
 	private int codigo;
+	private int codPasaje;
 	private int seccion;
 	private String clase;
 	private boolean ocupado;
@@ -30,6 +31,11 @@ public class Asiento
 	public int getCodigo()
 	{
 		return codigo;
+	}
+	
+	public int getCodPasaje() 
+	{
+		return codPasaje;
 	}
 	
 	public String getClase()
@@ -71,7 +77,10 @@ public class Asiento
 
 	}
 	
-	//Aux
+	public void setCodPasaje(int codigo) 
+	{
+		codPasaje = codigo;
+	}
 	
 	public void liberarAsiento()
 	{

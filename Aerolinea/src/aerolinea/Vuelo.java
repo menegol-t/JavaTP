@@ -86,8 +86,6 @@ public class Vuelo {
 		return fechaSalida;
 	}
 	
-	//Aux
-	
 	public HashMap<Integer, Pasajero> getPasajeros()
 	{
 		return pasajeros;
@@ -99,11 +97,21 @@ public class Vuelo {
 		pasajeros.remove(id);
 	}
 	
+	public Pasajero getPasajero(int dni) 
+	{
+		return pasajeros.get(dni);
+	}
+	
 	public void eliminarAsiento(int dni, int numAsiento)
 	{
 		Pasajero pasajero = pasajeros.get(dni);
 		pasajero.eliminarAsiento(numAsiento);
 	}
 	
+	public void eliminarPasaje(int dni, int codPasaje) 
+	{
+		Pasajero pasajero= getPasajero(dni);
+		pasajero.eliminarPasaje(codPasaje);
+	}
 	
 }

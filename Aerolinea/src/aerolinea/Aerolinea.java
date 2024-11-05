@@ -19,7 +19,7 @@ public class Aerolinea implements IAerolinea
 		
 		private HashMap<String, Vuelo> vuelos;
 		
-		private LinkedList<Aeropuerto> aeropuertos;
+		private HashMap<String, Aeropuerto> aeropuertos;
 		
 		private HashMap<Integer, Cliente> clientes;
 		
@@ -39,7 +39,7 @@ public class Aerolinea implements IAerolinea
 			this.nombre = nombre;
 			this.cuit = cuit;
 			this.vuelos = new HashMap<>();
-			this.aeropuertos = new LinkedList<>();
+			this.aeropuertos = new HashMap<>();
 			this.clientes = new HashMap<>();
 			this.asientosDisponiblesPorVuelo = new HashMap<>();
 			this.codigoBase = 1;
@@ -82,7 +82,35 @@ public class Aerolinea implements IAerolinea
 		
 	}
 
+	/*
+	 * Con esta funcion detectamos si un numero es invalido, es decir si vale 0 o vale negativo.
+	 * */
+	private void intInvalidoCero(int i, String valor) 
+	{
+		if(i <= 0){
+			StringBuilder st = new StringBuilder("Error, ingresaste un valor invalido: ");
+		
+			st.append(valor);
+			st.append("\n");
+		
+			throw new RuntimeException(st.toString());
+		}
+	}
 	
+	/*
+	 * Con esta funcion valido si me pasaron un String vacio
+	 * */
+	private void stringInvalido(String s, String valor) 
+	{
+		if(s == null || s.length() == 0) {
+			StringBuilder st = new StringBuilder("Error, ingresate un campo vacio: ");
+			
+			st.append(valor);
+			st.append("\n");
+			
+			throw new RuntimeException(st.toString());
+		}
+	}
 	
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
@@ -115,23 +143,23 @@ public class Aerolinea implements IAerolinea
 			esNacional = true;
 			
 			try {
-				nuevo = new Aeropuerto(nombre, provincia, direccion, esNacional);	
+				nuevo = new Aeropuerto(nombre, provincia, direccion, pais, esNacional);	
 			}
 			catch(Exception Exception) {
 //IMPORTANTE: Acordarse que TODAS las excepciones ahora son RuntimeException
 				 Exception.printStackTrace();
 			}
-			aeropuertos.add(nuevo);
+			aeropuertos.put(direccion,nuevo);
 		}
 		else
 		{
 			try {
-				nuevo = new Aeropuerto(nombre, provincia, direccion, esNacional);
+				nuevo = new Aeropuerto(nombre, provincia, direccion, pais, esNacional);
 			}
 			catch(Exception Exception) {
 				Exception.printStackTrace();
 			}
-			aeropuertos.add(nuevo);
+			aeropuertos.put(direccion,nuevo);
 		}
 	}
 	
@@ -143,22 +171,58 @@ public class Aerolinea implements IAerolinea
 	{
 		
 		/*Tenemos que: 1) crear un codigo Nacional y un Nacional
-		 * 			   2) agregarlo a la lista de vuelos (polimorfismo), 
-		 			   3) generar codigo (el cual retornaremos) 
+		 * 			   2) agregarlo a la lista de vuelos (polimorfismo),
+		  			   3) Crear los asientos y asignarles un precio
 		 			   4) almacenar <codigo, asientosLibres>
-		 			   5) Agregar en el diccionario de vuelos*/
+		 			   5) retornar el codigo
+		*/
 		
 		//1)
-		
 		Integer parteNumerica = obtenerCodigo();
-		String codigo = "";
-		codigo = "NAC-" + parteNumerica;
+		StringBuilder cod = new StringBuilder();
+		cod.append(parteNumerica);
+		cod.append("-NAC");
+		
+		String codigo = cod.toString();
+		
+		Aeropuerto Origen = aeropuertos.get(origen);
+		Aeropuerto Destino = aeropuertos.get(destino);
 		
 		
-		//Como los aeropuertos son strings, todavia tengo que encontrar la manera de armar los aeropuertos, quizas manejarlos con strings seria mejor.
-		//Nacional nuevoNacional = new Nacional(codigo, origen);
+		int totalAsientos = cantAsientos[0] + cantAsientos[1]; //pendiente de para que lo necesitamos
 		
+		//lista vacia de pasajeros, total despues se iran agregando cuando se venda el pasaje
+		HashMap<Integer, Pasajero> pasajerosVuelo = new HashMap<>();
 		
+		Nacional nuevoNacional = new Nacional(codigo,Origen,Destino,totalAsientos,tripulantes,pasajerosVuelo, fecha, 
+											  20, clientes,cantAsientos[0],cantAsientos[1], valorRefrigerio, precios[0],precios[1]);
+		
+		//2)
+		vuelos.put(codigo, nuevoNacional);
+		
+		//3) y 4)
+		for(int i = 0; i < cantAsientos.length; i++)
+		{
+			int contador = 0;
+			for(int j = 0; j<cantAsientos[i]; j++)
+			{
+				if(i == 0)
+				{
+					contador += 1;
+					Asiento asiento = new Asiento(contador, 1, precios[i], "Economica", false);
+					asientosDisponiblesPorVuelo.get(destino).put(asiento.getCodigo(), asiento);
+				}
+				
+				else
+				{
+					contador += 1;
+					Asiento asiento = new Asiento(contador, 2, precios[i], "Primera Clase", false);
+					asientosDisponiblesPorVuelo.get(destino).put(asiento.getCodigo(), asiento);
+				}
+			}		
+		}
+		
+		//5)
 		return codigo;
 	}
 
@@ -206,8 +270,6 @@ public class Aerolinea implements IAerolinea
 
 	
 	
-	@Override
-	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	/**
 	* 8 y 9 devuelve el codigo del pasaje comprado.
 	* Los pasajeros que compran pasajes deben estar registrados como clientes, con todos sus datos, antes de realizar la compra. Devuelve el codigo del pasaje y lanza una excepción si no puede venderlo.
@@ -221,7 +283,12 @@ public class Aerolinea implements IAerolinea
 	* Por ultimo se genera un codigo de pasaje y se retorna.
 	*  
 	*/
+	@Override
+	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar)
 	{
+		//Realizamos validaciones, si no pasa un check tiramos runtime exception. 
+		intInvalidoCero(dni, "DNI"); intInvalidoCero(nroAsiento, "Numero de asiento"); stringInvalido(codVuelo, "Codigo de vuelo");
+		
 		Integer Dni = dni;
 		
 		Cliente pasajero = clientes.get(Dni);
@@ -242,6 +309,10 @@ public class Aerolinea implements IAerolinea
 		//Pongo el asiento en el estado que me solicitaron, ocupado o desocupado.
 		asiento.setOcupado(aOcupar); 
 		
+		int codigo = obtenerCodigo();
+		
+		asiento.setCodPasaje(codigo);
+		
 		//Dentro de VUELO hay que hacer el metodo de registrar asiento. 
 /*Mi idea es, yo le paso al vuelo el cliente y el asiento. Con eso, vuelo tiene todo lo que necesita. 
  * Vuelo adentro tiene un dicionario HashMap<Dni, Pasajero> pasajeros . Ahora, el encargado de construir sus pasajeros conforme se van sumado es el vuelo mismo, entonces vuelo tiene que hacer los sigueintes chequeos:
@@ -252,14 +323,10 @@ public class Aerolinea implements IAerolinea
 		//Registro el asiento vendido.
 		//vuelo.registrarAsiento(asiento, cliente);
 		
-		//Retorno el codigo de pasaje. 
-		return obtenerCodigo();
+		return codigo;
+		
 	}
-
 	
-	
-	@Override
-	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
 	
 	/* IREP: Recibe Fechas con el formato "dd/mm/aaaa".
 	 * - 11. 
@@ -269,8 +336,12 @@ public class Aerolinea implements IAerolinea
 	 * Convierto la fecha en un objeto para despues calcular la diferencia entre aca y una semana
 	 * En este array meto todos los vuelos cuyo origen y destino matcheen con los parametros 
 	*/
-	
+	@Override
+	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
 	{	
+		//Realizo validaciones, si no pasa tiro runtimeexception. 
+		stringInvalido(origen, "origen"); stringInvalido(destino, "destino"); stringInvalido(Fecha, "fecha"); 
+		
 		//Genero la lista de vuelos vacia. 
 		List <String> codVuelosSimilares = new ArrayList<String>();
 		
@@ -280,28 +351,30 @@ public class Aerolinea implements IAerolinea
 		return verificarVuelosSimilares(codVuelosSimilares, origen, destino, fecha);
 	}
 
-	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fecha)
+	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fechaAComparar)
 	/*
 	 * Añade a la lista los vuelos que cumplan con mismo destino, origen y estar a una semana de la fecha.
 	 * */
 	{
-		//Itero sobre todos los vuelos
+		//Genero un iterador de vuelos
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
 		
+		//Itero sobre todos los vuelos viendo si cumplen o no las condiciones. Si los cumplen, los añado a la lista a retornar.
 		while (it.hasNext()) {
 			
 			Vuelo vueloActual = (Vuelo) it.next();
 			
 			//Si el vuelo cumple con los parametros, sumo su codigo al array de vuelos similares. 
-			if(vueloEsSimilar(vueloActual, origen, destino, fecha)) codVuelosSimilares.add(vueloActual.getCodigo());
+			if(vueloEsSimilar(vueloActual, origen, destino, fechaAComparar)) codVuelosSimilares.add(vueloActual.getCodigo());
 		}
 		
 		return codVuelosSimilares;
 	}
 	
-	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fecha) 
+	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fechaAComparar) 
 	/*
-	 * Verifica 1 por 1 los vuelos que se le dan para ver si cumple con las condiciones. Si esto se da, retorna true. 
+	 * Verifica cada vuelo individual para ver si cumple con las condiciones (que tenga el mismo origen, mismo destino, 
+	 * y que su fecha de salida este a maximo 1 semana de la fecha a comparar). Si esto se da, retorna true. 
 	 * */
 	{
 		//Si el destino del vuelo es el mismo que el dado
@@ -311,7 +384,7 @@ public class Aerolinea implements IAerolinea
 				vuelo.getOrigen().getDireccion().equals(origen) &&
 					
 					//Y el vuelo esta a una semana (o menos) de partir
-					estaAUnaSemana(fecha, obtenerFecha(vuelo.getFechaSalida())))
+					estaAUnaSemana(fechaAComparar, obtenerFecha(vuelo.getFechaSalida())))
 		{
 			return true;
 		}
@@ -422,14 +495,63 @@ public class Aerolinea implements IAerolinea
 
 	
 	
+	/** 12-B
+	* Se cancela un pasaje dado el codigo de pasaje. 
+	* NO es necesario que se resuelva en O(1).
+	* 
+	* Para cancelar un pasaje (asiento), debo:
+	* Ubicar el vuelo del pasaje. 
+	* Ubicar el cliente, por su dni. 
+	* Finalmente, ubicar el pasaje en particular, por su codigo. Un cliente puede tener multiples pasajes (cada pasaje representa un asiento, como un ticket en el cine).
+	* Para esto ultimo, recorro todos los asientos posibles que puede tener el cliente. 
+	*/
 	@Override
 	public void cancelarPasaje(int dni, int codPasaje) {
-		// TODO Auto-generated method stub
+		
+		//Recorro todo el diccionario de vuelos
+		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
+		
+		//Genero una variable para no tener que recorrer absolutamente todos los vuelos una vez encontrado el cliente. 
+		boolean buscando = true;
+		
+		/* Como estoy cancelando un pasaje, ni bien encuentre al cliente que lo tiene, invoco a eliminarPasaje.
+		 * Si recorro todo y no encuentro al cliente, bueno, el pasaje ya estaba eliminado.*/
+		while (it.hasNext() && buscando) {
+			
+			Vuelo vueloActual = (Vuelo) it.next();
+
+			//Si encuentro al cliente, le elimino el pasaje y termino.  
+			if(vueloActual.getPasajero(dni) != null) 
+			{
+				vueloActual.eliminarPasaje(dni, codPasaje);
+				
+				buscando = false;
+			}
+		}
 		
 	}
 
 	
 	
+	/** - 13
+	* Cancela un vuelo completo conociendo su codigo.
+	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 
+	* si a igual seccion o a una mejor, y no importan las escalas.
+	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.
+	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 
+	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.
+	* Devuelve una lista de Strings con este formato : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]”
+	* --> Ejemplo: 
+	*   . 11111111 - Juan - 33333333 - CANCELADO
+	*   . 11234126 - Jonathan - 33333311 - 545-PUB
+	*   
+	* Busco el vuelo en cuestion. 
+	* Saco su destino. 
+	* Hago una lista con todos los clientes. Hago el vuelo null. 
+	* Busco todos los vuelos con el mismo destino. 
+	* 
+	*
+	*/
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
 		// TODO Auto-generated method stub
@@ -454,9 +576,11 @@ public class Aerolinea implements IAerolinea
 	
 	//Auxiliar
 	
-	public HashMap<Integer, Cliente> consultarClientes()
+	public HashMap<Integer, Cliente> getClientes()
 	{
 		return clientes;
 	}
+	
+	
 	 
 }

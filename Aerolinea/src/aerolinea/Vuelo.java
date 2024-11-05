@@ -1,28 +1,25 @@
 package aerolinea;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
+
 
 public class Vuelo {
 
 	private String codigo;
 	private Aeropuerto destino;
 	private Aeropuerto origen;
-	private int totalAsientos;
+	private int totalAsientos; //Remover?
 	private int totalTripulantes;
 	
 	private HashMap <Integer, Pasajero> pasajeros;
 	private String fechaSalida;
-	private String fechaLlegada;
-	private int cantidadSecciones;
 	private int porcentajeImpuesto;
 	
 	
 	
 	public Vuelo(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, HashMap <Integer, Pasajero> pasajeros, 
-				 String fechaSalida, String fechaLlegada, int cantidadSecciones, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados)
+				 String fechaSalida, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados)
 	
 	{
 		
@@ -39,8 +36,8 @@ public class Vuelo {
 			}
 			
 			
-			if (!(valido && cantidadSecciones > 0 && porcentajeImpuesto > 0 && totalAsientos > 0 && totalTripulantes > 0 && 
-				origen != null && destino != null &&  fechaSalida != null &&  fechaLlegada != null && pasajeros!=null))
+			if (!(valido && porcentajeImpuesto > 0 && totalAsientos > 0 && totalTripulantes > 0 && 
+				origen != null && destino != null &&  fechaSalida != null))
 				
 				throw new RuntimeException("Valor de parametros invalido!!");
 			
@@ -51,8 +48,6 @@ public class Vuelo {
 			this.totalTripulantes= totalTripulantes;
 			this.pasajeros= pasajeros;
 			this.fechaSalida= fechaSalida;
-			this.fechaLlegada = fechaLlegada;
-			this.cantidadSecciones = cantidadSecciones;
 			this.porcentajeImpuesto = porcentajeImpuesto;
 		}
 		
@@ -81,10 +76,11 @@ public class Vuelo {
 		return destino;
 	}
 	
-	public String getFechaSalida() 
-	{
+	public String getFechaSalida() {
+		
 		return fechaSalida;
 	}
+	
 	
 	//Aux
 	
@@ -98,12 +94,23 @@ public class Vuelo {
 	{
 		pasajeros.remove(id);
 	}
+
+		public Pasajero getPasajero(int dni) 
+	{
+		return pasajeros.get(dni);
+	}
 	
 	public void eliminarAsiento(int dni, int numAsiento)
 	{
 		Pasajero pasajero = pasajeros.get(dni);
 		pasajero.eliminarAsiento(numAsiento);
 	}
+
 	
-	
+	public void eliminarPasaje(int dni, int codPasaje) 
+	{
+		Pasajero pasajero= getPasajero(dni);
+		pasajero.eliminarPasaje(codPasaje);
+
+	}
 }

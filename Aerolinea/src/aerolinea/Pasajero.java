@@ -1,7 +1,9 @@
 package aerolinea;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class Pasajero 
 {
@@ -60,7 +62,20 @@ public class Pasajero
 		asientos.remove(id);
 	}
 	
-	//Auxiliar
+	public void eliminarPasaje(int codPasaje) 
+	{
+		Iterator<Map.Entry<Integer, Asiento>> it = asientos.entrySet().iterator();
+		
+		//Recorro todos los asientos del pasajero
+		while (it.hasNext()) {
+			
+			Asiento asientoActual = (Asiento) it.next();
+			 
+			//Cuando encuentro el asiento cuyo codigo coincide con el dado, lo elimino de memoria y que el garbage colector se encargue.
+			//Si nunca lo encuentro, entonces ya estaba eliminado.
+			if(asientoActual.getCodPasaje() == codPasaje) asientoActual = null;
+		}
+	}
 	
 	public Cliente consultarCliente()
 	{

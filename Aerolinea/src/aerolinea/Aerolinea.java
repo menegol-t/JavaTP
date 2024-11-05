@@ -19,7 +19,7 @@ public class Aerolinea implements IAerolinea
 		
 		private HashMap<String, Vuelo> vuelos;
 		
-		private LinkedList<Aeropuerto> aeropuertos;
+		private HashMap<String, Aeropuerto> aeropuertos;
 		
 		private HashMap<Integer, Cliente> clientes;
 		
@@ -39,7 +39,7 @@ public class Aerolinea implements IAerolinea
 			this.nombre = nombre;
 			this.cuit = cuit;
 			this.vuelos = new HashMap<>();
-			this.aeropuertos = new LinkedList<>();
+			this.aeropuertos = new HashMap<>();
 			this.clientes = new HashMap<>();
 			this.asientosDisponiblesPorVuelo = new HashMap<>();
 			this.codigoBase = 1;
@@ -49,10 +49,11 @@ public class Aerolinea implements IAerolinea
 	}
 	
 
+	
+	private Integer obtenerCodigo()
 	/*
 	 * Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int.
 	 * */
-	private Integer obtenerCodigo()
 	{
 		codigoBase = codigoBase + 1;
 		
@@ -60,12 +61,13 @@ public class Aerolinea implements IAerolinea
 	}
 
 
+	
+	private LocalDate obtenerFecha(String fecha) 
 	/*
 	 * Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
 	 * para saber cuanto es la fecha dada + 1 semana. Esto me permite lidiar con casos donde por ejemplo, si mi fecha 
 	 * dada es 29/12/2024, el resultado + 1 semana sera 5/1/2025, sin tener que meterme a contar cambios de mes o año un string. 
 	 * */
-	private LocalDate obtenerFecha(String fecha) 
 	{	
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
@@ -110,8 +112,6 @@ public class Aerolinea implements IAerolinea
 		}
 	}
 	
-	
-	
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
 	/*
@@ -143,23 +143,23 @@ public class Aerolinea implements IAerolinea
 			esNacional = true;
 			
 			try {
-				nuevo = new Aeropuerto(nombre, provincia, direccion, esNacional);	
+				nuevo = new Aeropuerto(nombre, provincia, direccion, pais, esNacional);	
 			}
 			catch(Exception Exception) {
 //IMPORTANTE: Acordarse que TODAS las excepciones ahora son RuntimeException
 				 Exception.printStackTrace();
 			}
-			aeropuertos.add(nuevo);
+			aeropuertos.put(direccion,nuevo);
 		}
 		else
 		{
 			try {
-				nuevo = new Aeropuerto(nombre, provincia, direccion, esNacional);
+				nuevo = new Aeropuerto(nombre, provincia, direccion, pais, esNacional);
 			}
 			catch(Exception Exception) {
 				Exception.printStackTrace();
 			}
-			aeropuertos.add(nuevo);
+			aeropuertos.put(direccion,nuevo);
 		}
 	}
 	
@@ -171,22 +171,58 @@ public class Aerolinea implements IAerolinea
 	{
 		
 		/*Tenemos que: 1) crear un codigo Nacional y un Nacional
-		 * 			   2) agregarlo a la lista de vuelos (polimorfismo), 
-		 			   3) generar codigo (el cual retornaremos) 
+		 * 			   2) agregarlo a la lista de vuelos (polimorfismo),
+		  			   3) Crear los asientos y asignarles un precio
 		 			   4) almacenar <codigo, asientosLibres>
-		 			   5) Agregar en el diccionario de vuelos*/
+		 			   5) retornar el codigo
+		*/
 		
 		//1)
-		
 		Integer parteNumerica = obtenerCodigo();
-		String codigo = "";
-		codigo = "NAC-" + parteNumerica;
+		StringBuilder cod = new StringBuilder();
+		cod.append(parteNumerica);
+		cod.append("-NAC");
+		
+		String codigo = cod.toString();
+		
+		Aeropuerto Origen = aeropuertos.get(origen);
+		Aeropuerto Destino = aeropuertos.get(destino);
 		
 		
-		//Como los aeropuertos son strings, todavia tengo que encontrar la manera de armar los aeropuertos, quizas manejarlos con strings seria mejor.
-		//Nacional nuevoNacional = new Nacional(codigo, origen);
+		int totalAsientos = cantAsientos[0] + cantAsientos[1]; //pendiente de para que lo necesitamos
 		
+		//lista vacia de pasajeros, total despues se iran agregando cuando se venda el pasaje
+		HashMap<Integer, Pasajero> pasajerosVuelo = new HashMap<>();
 		
+		Nacional nuevoNacional = new Nacional(codigo,Origen,Destino,totalAsientos,tripulantes,pasajerosVuelo, fecha, 
+											  20, clientes,cantAsientos[0],cantAsientos[1], valorRefrigerio, precios[0],precios[1]);
+		
+		//2)
+		vuelos.put(codigo, nuevoNacional);
+		
+		//3) y 4)
+		for(int i = 0; i < cantAsientos.length; i++)
+		{
+			int contador = 0;
+			for(int j = 0; j<cantAsientos[i]; j++)
+			{
+				if(i == 0)
+				{
+					contador += 1;
+					Asiento asiento = new Asiento(contador, 1, precios[i], "Economica", false);
+					asientosDisponiblesPorVuelo.get(destino).put(asiento.getCodigo(), asiento);
+				}
+				
+				else
+				{
+					contador += 1;
+					Asiento asiento = new Asiento(contador, 2, precios[i], "Primera Clase", false);
+					asientosDisponiblesPorVuelo.get(destino).put(asiento.getCodigo(), asiento);
+				}
+			}		
+		}
+		
+		//5)
 		return codigo;
 	}
 
@@ -217,6 +253,9 @@ public class Aerolinea implements IAerolinea
 		
 		Map<Integer, String> retorno = new HashMap<>();
 		
+		//OJO que codigoVuelo es un String.
+		//Integer codigoVuelo = Integer.parseInt(codVuelo);
+		
 		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codVuelo);
 		
 		Iterator<HashMap.Entry<Integer, Asiento>> iterador = AsientosPorVuelo.entrySet().iterator();
@@ -229,6 +268,7 @@ public class Aerolinea implements IAerolinea
 	    return retorno;
 	}
 
+	
 	
 	/**
 	* 8 y 9 devuelve el codigo del pasaje comprado.
@@ -286,7 +326,7 @@ public class Aerolinea implements IAerolinea
 		return codigo;
 		
 	}
-
+	
 	
 	/* IREP: Recibe Fechas con el formato "dd/mm/aaaa".
 	 * - 11. 
@@ -352,15 +392,15 @@ public class Aerolinea implements IAerolinea
 		return false;
 	}
 	
-	private boolean estaAUnaSemana(LocalDate fechaAComparar, LocalDate fechaSalida) 
+	private boolean estaAUnaSemana(LocalDate fecha, LocalDate fechaSalida) 
 	/*
 	 * Verifica si 2 fechas dadas se encuentran a una semana, en cuyo caso retorna true. Si no, false.
-	 * Importante, solo se retorna true si fechaSalida es posterior a "fecha". 
-	 * Es decir, si fechaSalida es el 1/1/2000 y fechaAComparar es 2/1/2000, retorna false, 
-	 * porque lo que nos interesa es que fechaSalida sea hasta una semana despues de fechaAComparar.  
+	 * Importante, solo se retorna true si fechaSalida es posterior a fecha. 
+	 * Es decir, si fechaSalida es el 1/1/2000 y fecha es 2/1/2000, retorna false, 
+	 * porque lo que nos interese es que fechaSalida sea hasta una semana despues de fecha.  
 	 * */
 	{
-		long diasEntreFechas = ChronoUnit.DAYS.between(fechaAComparar, fechaSalida);
+		long diasEntreFechas = ChronoUnit.DAYS.between(fecha, fechaSalida);
 
 		//Retorna true si la diferencia entre fecha y fechaSalida es menor a una semana CUANDO fechaSalida es posterior a fecha. 
         return Math.abs(diasEntreFechas) < 7 && diasEntreFechas > 0;
@@ -407,27 +447,22 @@ public class Aerolinea implements IAerolinea
 	
 	{
 		
-		//1) Obtengo el vuelo del diccionario de vuelos por su codigo. 
+		//1)
 		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
 		
-		//2) Dentro del vuelo, ingreso a sus pasajeros, y obtengo el pasajero particular por su dni.  
+		//2)
 		Pasajero pasajero = vuelo.getPasajeros().get(dni);
 		
-		//3) Busco el asiento particular dentro del pasajero, ya que este puede tener multiples. 
+		//3)
 		Asiento asiento = pasajero.getAsiento(nroAsiento);
 		
-		// Este asiento podria o no haber estado ocupado, asi que lo libero, porque lo voy a disponibilizar. 
 		asiento.liberarAsiento();
 		
-		asiento.setCodPasaje(0);
-		
-		//4) Quito el asiento conseguito del vuelo y del pasajero.
+		//4)
 		vuelo.eliminarAsiento(dni, nroAsiento);
 		
-		//5) Obtengo el destino al que iba el vuelo (o sea la locacion del aeropuerto de destino).
-		//Aeropuerto aeropuertoDestino = vuelo.getDestino();
-		//String destino = aeropuertoDestino.getLocacion();
-		String destino = vuelo.getDestino().getLocacion();
+		//5)
+		Aeropuerto aeropuertoDestino = vuelo.getDestino();
 		
 		/* Tom: Acordate que el "codigo" unico de cada aeropuerto es su nombre.
 		 * Podrias hacer solo un:
@@ -439,11 +474,10 @@ public class Aerolinea implements IAerolinea
 		 * Entiendo que no dira Aeroparque --> 1000, sera algo como, Buenos aires, --> 1000 
 		 * 
 		 */
-		
-		//Añado el asiento que acabo de retirar, al diccionario de asientosDisponiblesPorVuelo, para disponibilizarlo.
+		String destino = aeropuertoDestino.getLocacion();
 		asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, asiento);
 		
-		//6) 
+		//6)
 		double precioAsiento = asiento.getPrecio();
 		double facturado = facturacionPorDestino.get(destino);
 		
@@ -452,17 +486,14 @@ public class Aerolinea implements IAerolinea
 		 * 
 		 * LEO: Ahora se resta DESPUES de eliminar el asiento
 		 * */
-		
 		facturacionPorDestino.put(destino, facturado - precioAsiento);
 		
-		/* Un pasajero puede comprar varios asientos. Puede ser que solo cancele uno de multiples que tiene.
-		 * Pero si cancelo todos sus asientos, no va a volar. En el avio, asi que lo elimino.
-		 * Si sigue teniendo asientos, no toco nada. */
 		int cantAsientos = pasajero.getCantAsientos(); //O(1)
 		if(cantAsientos == 0) vuelo.eliminarPasajero(dni);
 		
 	}
 
+	
 	
 	/** 12-B
 	* Se cancela un pasaje dado el codigo de pasaje. 
@@ -500,6 +531,8 @@ public class Aerolinea implements IAerolinea
 		
 	}
 
+	
+	
 	/** - 13
 	* Cancela un vuelo completo conociendo su codigo.
 	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 
@@ -526,13 +559,11 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
-	/** - 14
-	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 
-	* IMPORTANTE: Se debe resolver en O(1).
-	*/
+	
 	@Override
 	public double totalRecaudado(String destino) {
-		return facturacionPorDestino.get(destino);
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	
@@ -545,9 +576,11 @@ public class Aerolinea implements IAerolinea
 	
 	//Auxiliar
 	
-	public HashMap<Integer, Cliente> consultarClientes()
+	public HashMap<Integer, Cliente> getClientes()
 	{
 		return clientes;
 	}
+	
+	
 	 
 }

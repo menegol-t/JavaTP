@@ -10,7 +10,7 @@ public class Asiento
 	private boolean ocupado;
 	private double precio;
 	
-	public Asiento(int codigo, int seccion, String clase, boolean ocupado)
+	public Asiento(int codigo, int seccion, double precio, String clase, boolean ocupado)
 	{
 		if (!(codigo > 0 && seccion > 0 && seccion <= 3 && clase != null)) 
 			
@@ -19,6 +19,7 @@ public class Asiento
 		this.codigo = codigo;
 		this.seccion = seccion;
 		this.clase = clase;
+		this.precio = precio;
 		this.ocupado = ocupado;
 	}
 	

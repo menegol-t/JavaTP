@@ -49,11 +49,10 @@ public class Aerolinea implements IAerolinea
 	}
 	
 
-	
-	private Integer obtenerCodigo()
 	/*
 	 * Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int.
 	 * */
+	private Integer obtenerCodigo()
 	{
 		codigoBase = codigoBase + 1;
 		
@@ -61,13 +60,12 @@ public class Aerolinea implements IAerolinea
 	}
 
 
-	
-	private LocalDate obtenerFecha(String fecha) 
 	/*
 	 * Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
 	 * para saber cuanto es la fecha dada + 1 semana. Esto me permite lidiar con casos donde por ejemplo, si mi fecha 
 	 * dada es 29/12/2024, el resultado + 1 semana sera 5/1/2025, sin tener que meterme a contar cambios de mes o año un string. 
 	 * */
+	private LocalDate obtenerFecha(String fecha) 
 	{	
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
@@ -189,9 +187,6 @@ public class Aerolinea implements IAerolinea
 		
 		Map<Integer, String> retorno = new HashMap<>();
 		
-		//OJO que codigoVuelo es un String.
-		//Integer codigoVuelo = Integer.parseInt(codVuelo);
-		
 		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codVuelo);
 		
 		Iterator<HashMap.Entry<Integer, Asiento>> iterador = AsientosPorVuelo.entrySet().iterator();
@@ -205,9 +200,6 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
-	
-	@Override
-	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	/**
 	* 8 y 9 devuelve el codigo del pasaje comprado.
 	* Los pasajeros que compran pasajes deben estar registrados como clientes, con todos sus datos, antes de realizar la compra. Devuelve el codigo del pasaje y lanza una excepción si no puede venderlo.
@@ -221,6 +213,8 @@ public class Aerolinea implements IAerolinea
 	* Por ultimo se genera un codigo de pasaje y se retorna.
 	*  
 	*/
+	@Override
+	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
 		Integer Dni = dni;
 		
@@ -261,10 +255,6 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
-	
-	@Override
-	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
-	
 	/* IREP: Recibe Fechas con el formato "dd/mm/aaaa".
 	 * - 11. 
 	 * devuelve una lista de códigos de vuelos. que estén entre fecha dada y hasta una semana despues. La lista estará vacía si no se encuentran vuelos similares. La Fecha es la fecha de salida.
@@ -273,7 +263,8 @@ public class Aerolinea implements IAerolinea
 	 * Convierto la fecha en un objeto para despues calcular la diferencia entre aca y una semana
 	 * En este array meto todos los vuelos cuyo origen y destino matcheen con los parametros 
 	*/
-	
+	@Override
+	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) 
 	{	
 		//Genero la lista de vuelos vacia. 
 		List <String> codVuelosSimilares = new ArrayList<String>();
@@ -392,6 +383,8 @@ public class Aerolinea implements IAerolinea
 		// Este asiento podria o no haber estado ocupado, asi que lo libero, porque lo voy a disponibilizar. 
 		asiento.liberarAsiento();
 		
+		asiento.setCodPasaje(0);
+		
 		//4) Quito el asiento conseguito del vuelo y del pasajero.
 		vuelo.eliminarAsiento(dni, nroAsiento);
 		
@@ -471,8 +464,24 @@ public class Aerolinea implements IAerolinea
 		
 	}
 
-	
-	
+	/** - 13
+	* Cancela un vuelo completo conociendo su codigo.
+	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 
+	* si a igual seccion o a una mejor, y no importan las escalas.
+	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.
+	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 
+	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.
+	* Devuelve una lista de Strings con este formato : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]”
+	* --> Ejemplo: 
+	*   . 11111111 - Juan - 33333333 - CANCELADO
+	*   . 11234126 - Jonathan - 33333311 - 545-PUB
+	*   
+	* Busco el vuelo en cuestion. 
+	* Saco su destino. 
+	* Busco todos los vuelos con el mismo destino. 
+	* 
+	*
+	*/
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
 		// TODO Auto-generated method stub

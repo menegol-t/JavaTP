@@ -77,7 +77,7 @@ public class Aerolinea implements IAerolinea
             return objetoFecha;
             
 		}catch(Exception e){
-			throw new RuntimeException("La fecha es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
+			throw new RuntimeException("obtenerFecha: La fecha es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
 		}
 		
 	}

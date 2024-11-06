@@ -45,11 +45,10 @@ public class Aerolinea implements IAerolinea
 	}
 	
 
-	
-	private Integer obtenerCodigo()
 	/*
 	 * Con esta funcion genero IDs unicos en todo el codigo, solo voy sumando un int.
 	 * */
+	private Integer obtenerCodigo()
 	{
 		codigoBase = codigoBase + 1;
 		
@@ -57,13 +56,12 @@ public class Aerolinea implements IAerolinea
 	}
 
 
-	
-	private LocalDate obtenerFecha(String fecha) 
 	/*
 	 * Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
 	 * para saber cuanto es la fecha dada + 1 semana. Esto me permite lidiar con casos donde por ejemplo, si mi fecha 
 	 * dada es 29/12/2024, el resultado + 1 semana sera 5/1/2025, sin tener que meterme a contar cambios de mes o año un string. 
 	 * */
+	private LocalDate obtenerFecha(String fecha) 
 	{	
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
@@ -78,6 +76,8 @@ public class Aerolinea implements IAerolinea
 		
 	}
 
+	
+	
 	/*
 	 * Con esta funcion detectamos si un numero int es invalido, es decir si vale 0 o vale negativo.
 	 * */
@@ -92,6 +92,8 @@ public class Aerolinea implements IAerolinea
 			throw new RuntimeException(st.toString());
 		}
 	}
+	
+	
 	
 	/*
 	 * Con esta funcion valido si me pasaron un String vacio
@@ -108,6 +110,8 @@ public class Aerolinea implements IAerolinea
 		}
 	}
 	
+	
+	
 	/*
 	 * Con esta funcion detectamos si un numero Double es invalido, es decir si vale 0 o vale negativo.
 	 * */
@@ -123,10 +127,11 @@ public class Aerolinea implements IAerolinea
 	    }
 	}
 	
+	
+	
 	/*
 	 * Con esta funcion valido si me pasaron un Array Int vacio
 	 * */
-	
 	private void arrayIntInvalido(int[] array, String valor) {
 	    if (array == null || array.length == 0) {
 	        StringBuilder st = new StringBuilder("Error, ingresaste un array de enteros inválido o vacío: ");
@@ -137,10 +142,11 @@ public class Aerolinea implements IAerolinea
 	    }
 	}
 	
+	
+	
 	/*
 	 * Con esta funcion valido si me pasaron un Array Double vacio
 	 * */
-	
 	private void arrayDoubleInvalido(double[] array, String valor) {
 	    if (array == null || array.length == 0) {
 	        StringBuilder st = new StringBuilder("Error, ingresaste un array de dobles inválido o vacío: ");
@@ -151,10 +157,11 @@ public class Aerolinea implements IAerolinea
 	    }
 	}
 	
+	
+	
 	/*
 	 * Con esta funcion valido si me pasaron un Array de cualquier objeto vacio 
 	 * */
-	
 	private <T> void arrayInvalido(T[] array, String valor) {
 	    
 		if (array == null || array.length == 0) {
@@ -186,7 +193,6 @@ public class Aerolinea implements IAerolinea
 	
 	@Override
 	public void registrarAeropuerto(String nombre, String pais, String provincia, String direccion) 
-	
 	{	
 		
 		stringInvalido(nombre, "Nombre"); stringInvalido(pais, "Pais"); stringInvalido(provincia, "Provincia");
@@ -204,7 +210,7 @@ public class Aerolinea implements IAerolinea
 				nuevo = new Aeropuerto(nombre, provincia, direccion, pais, esNacional);	
 			}
 			catch(Exception Exception) {
-//IMPORTANTE: Acordarse que TODAS las excepciones ahora son RuntimeException
+
 				 throw new RuntimeException("Error al crear el aeropuerto");
 			}
 			aeropuertos.put(direccion,nuevo);
@@ -221,8 +227,30 @@ public class Aerolinea implements IAerolinea
 		}
 	}
 	
+	
 
-
+	/*El origen y destino deben ser aeropuertos con país=”Argentina” y ya registrados en la aerolinea. 
+	 * La fecha es la fecha de salida del vuelo.
+	* Los asientos se considerarán numerados correlativamente empezando con clase Turista y terminando con la clase Ejecutivo.
+	* Se cumple que precios.length == cantAsientos.length == 2
+	* -  cantAsientos[0] = cantidad total de asientos en clase Turista.
+	* -  cantAsientos[1] = cantidad total de asientos en clase Ejecutivo
+	*   idem precios.
+	* Tripulantes es la cantidad de tripulantes del vuelo.
+	* valorRefrigerio es el valor del unico refrigerio que se sirve en el vuelo.
+	* 
+	* Devuelve el código del Vuelo con el formato: {Nro_vuelo_publico}-PUB. Por ejemplo--> 103-PUB
+	* Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
+	 * 
+	 * 
+	 * 
+	 * 
+	 1) crear un codigo Nacional y un Nacional
+	 2) agregarlo a la lista de vuelos (polimorfismo),
+	 3) Crear los asientos y asignarles un precio
+	 4) almacenar <codigo, asientosLibres>
+	 5) retornar el codigo
+	*/
 	@Override
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, double[] precios, int[] cantAsientos) 
@@ -231,29 +259,6 @@ public class Aerolinea implements IAerolinea
 		stringInvalido(origen, "Origen"); stringInvalido(destino, "Destino"); stringInvalido(origen, "Fecha");
 		intInvalidoCero(tripulantes, "Tripulantes"); doubleInvalidoCero(valorRefrigerio, "Valor refrigerio");  
 		arrayDoubleInvalido(precios, "Precios asientos"); arrayIntInvalido(cantAsientos, "Cantidad Asientos"); 
-		
-		/*El origen y destino deben ser aeropuertos con país=”Argentina” y ya registrados en la aerolinea. 
-		 * La fecha es la fecha de salida del vuelo.
-		* Los asientos se considerarán numerados correlativamente empezando con clase Turista y terminando con la clase Ejecutivo.
-		* Se cumple que precios.length == cantAsientos.length == 2
-		* -  cantAsientos[0] = cantidad total de asientos en clase Turista.
-		* -  cantAsientos[1] = cantidad total de asientos en clase Ejecutivo
-		*   idem precios.
-		* Tripulantes es la cantidad de tripulantes del vuelo.
-		* valorRefrigerio es el valor del unico refrigerio que se sirve en el vuelo.
-		* 
-		* Devuelve el código del Vuelo con el formato: {Nro_vuelo_publico}-PUB. Por ejemplo--> 103-PUB
-		* Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
-		 * 
-		 * 
-		 * 
-		 * 
-		 1) crear un codigo Nacional y un Nacional
-		 2) agregarlo a la lista de vuelos (polimorfismo),
-		 3) Crear los asientos y asignarles un precio
-		 4) almacenar <codigo, asientosLibres>
-		 5) retornar el codigo
-		*/
 		
 		//1)
 		
@@ -288,37 +293,37 @@ public class Aerolinea implements IAerolinea
 		//5)
 		return codigo;
 	}
-
 	
+	
+
+	/*  Pueden ser vuelos con escalas o sin escalas. 
+	 * La fecha es la de salida y debe ser posterior a la actual.  
+	 * Los asientos se considerarán numerados correlativamente empezando con clase Turista, siguiendo por Ejecutiva 
+	 * y terminando con Primera clase.
+	 * 
+	 * precios.length == cantAsientos.llength == 3
+	 *    - cantAsientos[0]  = cantidad total de asientos en clase Turista.
+	 *    - cantAsientos[1]  = cantidad total de asientos en clase Ejecutiva.
+	 *    - cantAsientos[2]  = cantidad total de asientos en Primera clase.
+	 *	 idem precios.
+	 *	 - escalas = nombre del aeropuerto donde hace escala. Si no tiene escalas, esto es un arreglo vacío.
+	 * Tripulantes es la cantidad de tripulantes del vuelo. 
+	 * valorRefrigerio es el valor del refrigerio que se sirve en el vuelo.
+	 * cantRefrigerios es la cantidad de refrigerio que se sirven en el vuelo.
+	 *
+	 * Devuelve el código del vuelo.  Con el formato: {Nro_vuelo_publico}-PUB, por ejemplo--> 103-PUB
+	 * Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
+
+	 *  1) crear un codigo Internacional y un Internacional 
+	 * 	2) agregarlo a la lista de vuelos (polimorfismo),
+	  	3) Crear los asientos y asignarles un precio
+	 	4) almacenar <codigo, asientosLibres>
+	 	5) retornar el codigo
+	*/
 	@Override
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) 
-	{
-		/*  Pueden ser vuelos con escalas o sin escalas. 
-		 * La fecha es la de salida y debe ser posterior a la actual.  
-		 * Los asientos se considerarán numerados correlativamente empezando con clase Turista, siguiendo por Ejecutiva 
-		 * y terminando con Primera clase.
-		 * 
-		 * precios.length == cantAsientos.llength == 3
-		 *    - cantAsientos[0]  = cantidad total de asientos en clase Turista.
-		 *    - cantAsientos[1]  = cantidad total de asientos en clase Ejecutiva.
-		 *    - cantAsientos[2]  = cantidad total de asientos en Primera clase.
-		 *	 idem precios.
-		 *	 - escalas = nombre del aeropuerto donde hace escala. Si no tiene escalas, esto es un arreglo vacío.
-		 * Tripulantes es la cantidad de tripulantes del vuelo. 
-		 * valorRefrigerio es el valor del refrigerio que se sirve en el vuelo.
-		 * cantRefrigerios es la cantidad de refrigerio que se sirven en el vuelo.
-		 *
-		 * Devuelve el código del vuelo.  Con el formato: {Nro_vuelo_publico}-PUB, por ejemplo--> 103-PUB
-		 * Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
-
-		 *  1) crear un codigo Internacional y un Internacional 
-		 * 	2) agregarlo a la lista de vuelos (polimorfismo),
-		  	3) Crear los asientos y asignarles un precio
-		 	4) almacenar <codigo, asientosLibres>
-		 	5) retornar el codigo
-		*/
-		
+	{		
 		//Validaciones / Excepciones
 		stringInvalido(origen, "Origen"); stringInvalido(destino, "Destino"); stringInvalido(origen, "Fecha");
 		intInvalidoCero(tripulantes, "Tripulantes"); doubleInvalidoCero(valorRefrigerio, "Valor refrigerio");  
@@ -387,7 +392,6 @@ public class Aerolinea implements IAerolinea
 	
 	@Override
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
-		
 		
 		//Creamos el diccionario de retorno
 		Map<Integer, String> retorno = new HashMap<>();
@@ -491,11 +495,13 @@ public class Aerolinea implements IAerolinea
 		
 		return verificarVuelosSimilares(codVuelosSimilares, origen, destino, fecha);
 	}
-
-	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fechaAComparar)
+	
+	
+	
 	/*
 	 * Añade a la lista los vuelos que cumplan con mismo destino, origen y estar a una semana de la fecha.
 	 * */
+	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fechaAComparar)
 	{
 		//Genero un iterador de vuelos
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
@@ -512,11 +518,13 @@ public class Aerolinea implements IAerolinea
 		return codVuelosSimilares;
 	}
 	
-	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fechaAComparar) 
+	
+	
 	/*
 	 * Verifica cada vuelo individual para ver si cumple con las condiciones (que tenga el mismo origen, mismo destino, 
 	 * y que su fecha de salida este a maximo 1 semana de la fecha a comparar). Si esto se da, retorna true. 
 	 * */
+	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fechaAComparar) 
 	{
 		//Si el destino del vuelo es el mismo que el dado
 		if(vuelo.getDestino().getDireccion().equals(destino) &&
@@ -533,13 +541,15 @@ public class Aerolinea implements IAerolinea
 		return false;
 	}
 	
-	private boolean estaAUnaSemana(LocalDate fecha, LocalDate fechaSalida) 
+	
+	
 	/*
 	 * Verifica si 2 fechas dadas se encuentran a una semana, en cuyo caso retorna true. Si no, false.
 	 * Importante, solo se retorna true si fechaSalida es posterior a fecha. 
 	 * Es decir, si fechaSalida es el 1/1/2000 y fecha es 2/1/2000, retorna false, 
 	 * porque lo que nos interese es que fechaSalida sea hasta una semana despues de fecha.  
 	 * */
+	private boolean estaAUnaSemana(LocalDate fecha, LocalDate fechaSalida) 
 	{
 		long diasEntreFechas = ChronoUnit.DAYS.between(fecha, fechaSalida);
 
@@ -547,8 +557,8 @@ public class Aerolinea implements IAerolinea
         return Math.abs(diasEntreFechas) < 7 && diasEntreFechas > 0;
 	}
 	
-	@Override
-	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) 
+	
+	
 	/*
 	 * Se borra el pasaje y se libera el lugar para que pueda comprarlo otro cliente.
 	 * IMPORTANTE: Se debe resolver en O(1).
@@ -560,7 +570,8 @@ public class Aerolinea implements IAerolinea
 	 * 5) Agregar el asiento en el diccionario "AsientosDisponiblesPorVuelo" con el codigo de vuelo
 	 * 6) Restar el precio del asiento al total por destino en el diccionario "facturacionPorDestino", utilizando el destino guardado
 	 * */
-	
+	@Override
+	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) 	
 	{
 		
 		intInvalidoCero(dni, "DNI"); stringInvalido(codVuelo, "Codigo de vuelo"); intInvalidoCero(nroAsiento, "Numero asiento");
@@ -614,22 +625,14 @@ public class Aerolinea implements IAerolinea
 		//Recorro todo el diccionario de vuelos
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
 		
-		//Genero una variable para no tener que recorrer absolutamente todos los vuelos una vez encontrado el cliente. 
-		boolean buscando = true;
-		
 		/* Como estoy cancelando un pasaje, ni bien encuentre al cliente que lo tiene, invoco a eliminarPasaje.
 		 * Si recorro todo y no encuentro al cliente, bueno, el pasaje ya estaba eliminado.*/
-		while (it.hasNext() && buscando) {
+		while (it.hasNext()) {
 			
 			Vuelo vueloActual = (Vuelo) it.next();
 
 			//Si encuentro al cliente, le elimino el pasaje y termino.  
-			if(vueloActual.getPasajero(dni) != null) 
-			{
-				vueloActual.eliminarPasaje(dni, codPasaje);
-				
-				buscando = false;
-			}
+			if(vueloActual.getPasajero(dni) != null) vueloActual.eliminarPasaje(dni, codPasaje);
 		}
 		
 	}

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 
-public class Vuelo {
+public abstract class Vuelo {
 
 	private String codigo;
 	private Aeropuerto destino;
@@ -113,4 +113,19 @@ public class Vuelo {
 		pasajero.eliminarPasaje(codPasaje);
 
 	}
+	
+	public void  registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Nacional nacional)
+	{
+		
+	}
+
+
+	public HashMap<String, HashMap<Integer, Asiento>>  registrarAsientosDeVuelos(int[] cantAsientos, double[] precios, Nacional nacional,
+			HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo) {
+				
+		return asientosDisponiblesPorVuelo;
+
+		
+	}
+	
 }

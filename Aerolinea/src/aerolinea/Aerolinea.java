@@ -32,20 +32,16 @@ public class Aerolinea implements IAerolinea
 	
 	public Aerolinea(String nombre, String cuit)
 	{
-		//Che hay que convertir todas estas validaciones en una funcion...
-		if(!(nombre != null && nombre.length() > 0 && cuit != null && cuit.length() > 0))
-			throw new RuntimeException("Valor de parametros invalido!!");
-			
-			this.nombre = nombre;
-			this.cuit = cuit;
-			this.vuelos = new HashMap<>();
-			this.aeropuertos = new HashMap<>();
-			this.clientes = new HashMap<>();
-			this.asientosDisponiblesPorVuelo = new HashMap<>();
-			this.codigoBase = 1;
-			this.facturacionPorDestino  = new HashMap<>();
-			
-		
+		stringInvalido(nombre, "Nombre aerolonia"); stringInvalido(cuit, "CUIT"); 
+
+		this.nombre = nombre;
+		this.cuit = cuit;
+		this.vuelos = new HashMap<>();
+		this.aeropuertos = new HashMap<>();
+		this.clientes = new HashMap<>();
+		this.asientosDisponiblesPorVuelo = new HashMap<>();
+		this.codigoBase = 1;
+		this.facturacionPorDestino  = new HashMap<>();	
 	}
 	
 
@@ -83,7 +79,7 @@ public class Aerolinea implements IAerolinea
 	}
 
 	/*
-	 * Con esta funcion detectamos si un numero es invalido, es decir si vale 0 o vale negativo.
+	 * Con esta funcion detectamos si un numero int es invalido, es decir si vale 0 o vale negativo.
 	 * */
 	private void intInvalidoCero(int i, String valor) 
 	{
@@ -112,6 +108,66 @@ public class Aerolinea implements IAerolinea
 		}
 	}
 	
+	/*
+	 * Con esta funcion detectamos si un numero Double es invalido, es decir si vale 0 o vale negativo.
+	 * */
+	private void doubleInvalidoCero(double d, String valor) {
+	    
+		if (d <= 0) {
+	        StringBuilder st = new StringBuilder("Error, ingresaste un valor inválido: ");
+	        
+	        st.append(valor);
+	        st.append("\n");
+	        
+	        throw new RuntimeException(st.toString());
+	    }
+	}
+	
+	/*
+	 * Con esta funcion valido si me pasaron un Array Int vacio
+	 * */
+	
+	private void arrayIntInvalido(int[] array, String valor) {
+	    if (array == null || array.length == 0) {
+	        StringBuilder st = new StringBuilder("Error, ingresaste un array de enteros inválido o vacío: ");
+	        st.append(valor);
+	        st.append("\n");
+
+	        throw new RuntimeException(st.toString());
+	    }
+	}
+	
+	/*
+	 * Con esta funcion valido si me pasaron un Array Double vacio
+	 * */
+	
+	private void arrayDoubleInvalido(double[] array, String valor) {
+	    if (array == null || array.length == 0) {
+	        StringBuilder st = new StringBuilder("Error, ingresaste un array de dobles inválido o vacío: ");
+	        st.append(valor);
+	        st.append("\n");
+
+	        throw new RuntimeException(st.toString());
+	    }
+	}
+	
+	/*
+	 * Con esta funcion valido si me pasaron un Array de cualquier objeto vacio 
+	 * */
+	
+	private <T> void arrayInvalido(T[] array, String valor) {
+	    
+		if (array == null || array.length == 0) {
+	        StringBuilder st = new StringBuilder("Error, ingresaste un array inválido o vacío: ");
+	        
+	        st.append(valor);
+	        st.append("\n");
+
+	        throw new RuntimeException(st.toString());
+	    }
+	}
+	
+	
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
 	/*
@@ -130,10 +186,12 @@ public class Aerolinea implements IAerolinea
 	
 	@Override
 	public void registrarAeropuerto(String nombre, String pais, String provincia, String direccion) 
-	/*
-	 * Hay que hacer validaciones de nombre != null, pais !=null, etc etc...
-	 * */
+	
 	{	
+		
+		stringInvalido(nombre, "Nombre"); stringInvalido(pais, "Pais"); stringInvalido(provincia, "Provincia");
+		stringInvalido(direccion, "Direccion");
+		
 		boolean esNacional = false;
 		
 		Aeropuerto nuevo = null;
@@ -147,7 +205,7 @@ public class Aerolinea implements IAerolinea
 			}
 			catch(Exception Exception) {
 //IMPORTANTE: Acordarse que TODAS las excepciones ahora son RuntimeException
-				 Exception.printStackTrace();
+				 throw new RuntimeException("Error al crear el aeropuerto");
 			}
 			aeropuertos.put(direccion,nuevo);
 		}
@@ -157,43 +215,66 @@ public class Aerolinea implements IAerolinea
 				nuevo = new Aeropuerto(nombre, provincia, direccion, pais, esNacional);
 			}
 			catch(Exception Exception) {
-				Exception.printStackTrace();
+				throw new RuntimeException("Error al crear el aeropuerto");
 			}
 			aeropuertos.put(direccion,nuevo);
 		}
 	}
 	
 
-	
+
 	@Override
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, double[] precios, int[] cantAsientos) 
 	{
 		
-		/*Tenemos que: 1) crear un codigo Nacional y un Nacional
-		 * 			   2) agregarlo a la lista de vuelos (polimorfismo),
-		  			   3) Crear los asientos y asignarles un precio
-		 			   4) almacenar <codigo, asientosLibres>
-		 			   5) retornar el codigo
+		stringInvalido(origen, "Origen"); stringInvalido(destino, "Destino"); stringInvalido(origen, "Fecha");
+		intInvalidoCero(tripulantes, "Tripulantes"); doubleInvalidoCero(valorRefrigerio, "Valor refrigerio");  
+		arrayDoubleInvalido(precios, "Precios asientos"); arrayIntInvalido(cantAsientos, "Cantidad Asientos"); 
+		
+		/*El origen y destino deben ser aeropuertos con país=”Argentina” y ya registrados en la aerolinea. 
+		 * La fecha es la fecha de salida del vuelo.
+		* Los asientos se considerarán numerados correlativamente empezando con clase Turista y terminando con la clase Ejecutivo.
+		* Se cumple que precios.length == cantAsientos.length == 2
+		* -  cantAsientos[0] = cantidad total de asientos en clase Turista.
+		* -  cantAsientos[1] = cantidad total de asientos en clase Ejecutivo
+		*   idem precios.
+		* Tripulantes es la cantidad de tripulantes del vuelo.
+		* valorRefrigerio es el valor del unico refrigerio que se sirve en el vuelo.
+		* 
+		* Devuelve el código del Vuelo con el formato: {Nro_vuelo_publico}-PUB. Por ejemplo--> 103-PUB
+		* Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
+		 * 
+		 * 
+		 * 
+		 * 
+		 1) crear un codigo Nacional y un Nacional
+		 2) agregarlo a la lista de vuelos (polimorfismo),
+		 3) Crear los asientos y asignarles un precio
+		 4) almacenar <codigo, asientosLibres>
+		 5) retornar el codigo
 		*/
 		
 		//1)
+		
+		//Creacion del codigo
 		Integer parteNumerica = obtenerCodigo();
 		StringBuilder cod = new StringBuilder();
 		cod.append(parteNumerica);
-		cod.append("-NAC");
-		
+		cod.append("-PUB");
 		String codigo = cod.toString();
 		
+		//Obtencion del origen y destino
 		Aeropuerto Origen = aeropuertos.get(origen);
 		Aeropuerto Destino = aeropuertos.get(destino);
 		
+		//Calculo del total de asientos
+		int totalAsientos = cantAsientos[0] + cantAsientos[1]; 
 		
-		int totalAsientos = cantAsientos[0] + cantAsientos[1]; //pendiente de para que lo necesitamos
-		
-		//lista vacia de pasajeros, total despues se iran agregando cuando se venda el pasaje
+		//Se genera un diccionario vacio de pasajeros, despues se iran agregando cuando se venda el pasaje
 		HashMap<Integer, Pasajero> pasajerosVuelo = new HashMap<>();
 		
+		//Se crea el vuelo nacional
 		Nacional nuevoNacional = new Nacional(codigo,Origen,Destino,totalAsientos,tripulantes,pasajerosVuelo, fecha, 
 											  20, clientes,cantAsientos[0],cantAsientos[1], valorRefrigerio, precios[0],precios[1]);
 		
@@ -201,39 +282,95 @@ public class Aerolinea implements IAerolinea
 		vuelos.put(codigo, nuevoNacional);
 		
 		//3) y 4)
-		for(int i = 0; i < cantAsientos.length; i++)
-		{
-			int contador = 0;
-			for(int j = 0; j<cantAsientos[i]; j++)
-			{
-				if(i == 0)
-				{
-					contador += 1;
-					Asiento asiento = new Asiento(contador, 1, precios[i], "Economica", false);
-					asientosDisponiblesPorVuelo.get(destino).put(asiento.getCodigo(), asiento);
-				}
-				
-				else
-				{
-					contador += 1;
-					Asiento asiento = new Asiento(contador, 2, precios[i], "Primera Clase", false);
-					asientosDisponiblesPorVuelo.get(destino).put(asiento.getCodigo(), asiento);
-				}
-			}		
-		}
+		
+		asientosDisponiblesPorVuelo = nuevoNacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoNacional, asientosDisponiblesPorVuelo);
 		
 		//5)
 		return codigo;
 	}
 
 	
-	
 	@Override
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		/*  Pueden ser vuelos con escalas o sin escalas. 
+		 * La fecha es la de salida y debe ser posterior a la actual.  
+		 * Los asientos se considerarán numerados correlativamente empezando con clase Turista, siguiendo por Ejecutiva 
+		 * y terminando con Primera clase.
+		 * 
+		 * precios.length == cantAsientos.llength == 3
+		 *    - cantAsientos[0]  = cantidad total de asientos en clase Turista.
+		 *    - cantAsientos[1]  = cantidad total de asientos en clase Ejecutiva.
+		 *    - cantAsientos[2]  = cantidad total de asientos en Primera clase.
+		 *	 idem precios.
+		 *	 - escalas = nombre del aeropuerto donde hace escala. Si no tiene escalas, esto es un arreglo vacío.
+		 * Tripulantes es la cantidad de tripulantes del vuelo. 
+		 * valorRefrigerio es el valor del refrigerio que se sirve en el vuelo.
+		 * cantRefrigerios es la cantidad de refrigerio que se sirven en el vuelo.
+		 *
+		 * Devuelve el código del vuelo.  Con el formato: {Nro_vuelo_publico}-PUB, por ejemplo--> 103-PUB
+		 * Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
+
+		 *  1) crear un codigo Internacional y un Internacional 
+		 * 	2) agregarlo a la lista de vuelos (polimorfismo),
+		  	3) Crear los asientos y asignarles un precio
+		 	4) almacenar <codigo, asientosLibres>
+		 	5) retornar el codigo
+		*/
+		
+		//Validaciones / Excepciones
+		stringInvalido(origen, "Origen"); stringInvalido(destino, "Destino"); stringInvalido(origen, "Fecha");
+		intInvalidoCero(tripulantes, "Tripulantes"); doubleInvalidoCero(valorRefrigerio, "Valor refrigerio");  
+		arrayDoubleInvalido(precios, "Precios asientos"); arrayIntInvalido(cantAsientos, "Cantidad Asientos"); 
+		arrayInvalido(escalas, "Escalas"); 
+		
+		
+		//1)
+		
+		//Creacion del codigo
+		Integer parteNumerica = obtenerCodigo();
+		StringBuilder cod = new StringBuilder();
+		cod.append(parteNumerica);
+		cod.append("-PUB");
+		String codigo = cod.toString();
+		
+		//Obtencion de origen y destino
+		Aeropuerto Origen = aeropuertos.get(origen);
+		Aeropuerto Destino = aeropuertos.get(destino);
+		
+		//Calculo total de asientos
+		int totalAsientos = cantAsientos[0] + cantAsientos[1] + cantAsientos[2]; 
+		
+		//Creamos la lista de las escalas
+		LinkedList<Aeropuerto> listaEscalas = new LinkedList<>();
+		
+		//Buscamos y agregamos todas las escalas
+		for(int i = 0; i<escalas.length; i++)
+		{
+			Aeropuerto escala = aeropuertos.get(escalas[i]);
+			listaEscalas.add(escala);
+		}
+		
+		//Ternario, si el largo del array de escalas es mayor que 0, entonces se valida
+		boolean hayEscalas = escalas.length > 0 ? true : false;
+		
+		//Se genera un diccionario vacio de pasajeros, despues se iran agregando cuando se venda el pasaje
+		HashMap<Integer, Pasajero> pasajerosVuelo = new HashMap<>();
+		
+		//Se genera nuevo internacional
+		Nacional nuevoInternacional = new Internacional(codigo,Origen,Destino,totalAsientos,tripulantes,pasajerosVuelo, fecha, 
+											  20, clientes,cantAsientos[0],cantAsientos[1],cantAsientos[2],valorRefrigerio, precios[0],precios[1],
+											  precios[2], listaEscalas, hayEscalas);
+		
+		//2)
+		vuelos.put(codigo, nuevoInternacional);
+		
+		//3) y 4)
+		asientosDisponiblesPorVuelo = nuevoInternacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoInternacional, asientosDisponiblesPorVuelo);
+		
+		//5)
+		return codigo;
 	}
 
 	
@@ -251,17 +388,21 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
 		
+		
+		//Creamos el diccionario de retorno
 		Map<Integer, String> retorno = new HashMap<>();
 		
-		//OJO que codigoVuelo es un String.
-		//Integer codigoVuelo = Integer.parseInt(codVuelo);
-		
+		//Obetenemos el diccionario de asientos disponibles para el vuelo en cuestion
 		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codVuelo);
 		
+		//Generamos el iterador en el diccionario de asientos disponibles
 		Iterator<HashMap.Entry<Integer, Asiento>> iterador = AsientosPorVuelo.entrySet().iterator();
 	    
+		//Recorremos
 	    while (iterador.hasNext()) {
 			HashMap.Entry<Integer, Asiento> entrada = iterador.next();
+			
+			//Agregamos al retorno el codigo de asiento y el asiento impreso
 			retorno.put(entrada.getKey(), entrada.getValue().toString());
 		}
 	    
@@ -411,31 +552,6 @@ public class Aerolinea implements IAerolinea
 	/*
 	 * Se borra el pasaje y se libera el lugar para que pueda comprarlo otro cliente.
 	 * IMPORTANTE: Se debe resolver en O(1).
-	 * 
-	 * COMENTARIOS TOMAS ------
-	 * Se busca el pasajero en el vuelo, se obtiene su asiento buscandolo por el nro de asiento en el diccionario de asientos del pasajero. Aca pueden pasar 2 cosas:
-	 *  - Si el pasajero tiene multiples asientos, genial, se devuelve una copia del asiento en cuestion, y se elimina del diccionario de asientos del pasajero.
-	 *  - Si el pasajero solo tenia ESTE asiento, se devuelve una copia del asiento en cuestion pero se borra el pasajero del array de pasajeros. Porque si un pasajero no tiene asiento, ya no es pasajero.
-	 * 
-	 * Una vez hecho esto, el asiento que habiamos retornado se vuelve a guardar en asientosDisponiblesPorVuelo, 
-	 * HAY QUE ACORDARNOS antes de guardarlo en setear asiento.ocupado en false
-	 * 
-	 * 
-	 * Respecto a los comentarios de abajo, en el punto 3, para que necesitamos guardar todos esos valores?
-	 * Creo que solo guardando el asiento estamos, total es solo para guardarlo en asientosDisponiblesPorVuelo de vuelta.
-	 * No necesitamos guardar lo que consume el cliente, solo restarle el valor del asiento a su costo. 
-	 * Este valor es el mismo que vamos a restar en facturacionPorDestino
-	 * 
-	 * Si guardamos el asiento, el punto 5 de crear un nuevo asiento nos lo salteamos y solo lo guardamos en asientosDisponiblesPorVuelo
-	 * 
-	 * ------------------------
-	 * 
-	 * Actualizacion (Leo):
-	 * 
-	 * Ahora los asientos conocen sus precios, cuando se registra un vuelo Nacional o Internacional se le asigna
-	 * a cada asiento de cada seccion se le agrega el precio correspondiente, con ello se podra restar la diferencia a la recaudacion
-	 * 
-	 *  - Hay una funcion en la clase vuelo que realiza la logica de eliminar el asiento, de este modo el coedigo es mas limpio
 	 *  
 	 * 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
 	 * 2) Acceder al pasajero con el dni en el diccionario pasajeros
@@ -446,6 +562,8 @@ public class Aerolinea implements IAerolinea
 	 * */
 	
 	{
+		
+		intInvalidoCero(dni, "DNI"); stringInvalido(codVuelo, "Codigo de vuelo"); intInvalidoCero(nroAsiento, "Numero asiento");
 		
 		//1)
 		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
@@ -464,16 +582,6 @@ public class Aerolinea implements IAerolinea
 		//5)
 		Aeropuerto aeropuertoDestino = vuelo.getDestino();
 		
-		/* Tom: Acordate que el "codigo" unico de cada aeropuerto es su nombre.
-		 * Podrias hacer solo un:
-		 * String destino = vuelo.getDestino().getNombre(); 
-		 * 
-		 * Leo: No se, el destino es necesario para la resta del precio del pasaje,
-		 * el diccionario facturacionPorDestino tiene como key el destino, no el nombre del aeropuerto
-		 * 
-		 * Entiendo que no dira Aeroparque --> 1000, sera algo como, Buenos aires, --> 1000 
-		 * 
-		 */
 		String destino = aeropuertoDestino.getLocacion();
 		asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, asiento);
 		
@@ -481,11 +589,6 @@ public class Aerolinea implements IAerolinea
 		double precioAsiento = asiento.getPrecio();
 		double facturado = facturacionPorDestino.get(destino);
 		
-		/*
-		 * TOM: Aca le estas restando a facturacionPorDestino el precio del pasaje ANTES de sacarle el asiento 
-		 * 
-		 * LEO: Ahora se resta DESPUES de eliminar el asiento
-		 * */
 		facturacionPorDestino.put(destino, facturado - precioAsiento);
 		
 		int cantAsientos = pasajero.getCantAsientos(); //O(1)
@@ -608,6 +711,4 @@ public class Aerolinea implements IAerolinea
 		return clientes;
 	}
 	
-	
-	 
 }

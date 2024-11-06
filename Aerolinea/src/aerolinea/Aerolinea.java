@@ -55,6 +55,23 @@ public class Aerolinea implements IAerolinea
 		return codigoBase;
 	}
 
+	
+	public String crearCodigoPublico()
+	{
+		Integer parteNumerica = obtenerCodigo();
+		StringBuilder cod = new StringBuilder();
+		cod.append(parteNumerica);
+		cod.append("-PUB");
+		String codigo = cod.toString();
+		
+		return codigo;
+	}
+	
+	public Aeropuerto obtenerAeropuerto(String nombre)
+	{
+		Aeropuerto retorno = aeropuertos.get(nombre);
+		return retorno;
+	}
 
 	/*
 	 * Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
@@ -263,15 +280,11 @@ public class Aerolinea implements IAerolinea
 		//1)
 		
 		//Creacion del codigo
-		Integer parteNumerica = obtenerCodigo();
-		StringBuilder cod = new StringBuilder();
-		cod.append(parteNumerica);
-		cod.append("-PUB");
-		String codigo = cod.toString();
+		String codigo = crearCodigoPublico();
 		
 		//Obtencion del origen y destino
-		Aeropuerto Origen = aeropuertos.get(origen);
-		Aeropuerto Destino = aeropuertos.get(destino);
+		Aeropuerto Origen = obtenerAeropuerto(origen);
+		Aeropuerto Destino = obtenerAeropuerto(destino);
 		
 		//Calculo del total de asientos
 		int totalAsientos = cantAsientos[0] + cantAsientos[1]; 
@@ -288,6 +301,7 @@ public class Aerolinea implements IAerolinea
 		
 		//3) y 4)
 		
+		//Se crean los asientos y se redefine el diccionario de asientos disponibles
 		asientosDisponiblesPorVuelo = nuevoNacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoNacional, asientosDisponiblesPorVuelo);
 		
 		//5)
@@ -334,15 +348,11 @@ public class Aerolinea implements IAerolinea
 		//1)
 		
 		//Creacion del codigo
-		Integer parteNumerica = obtenerCodigo();
-		StringBuilder cod = new StringBuilder();
-		cod.append(parteNumerica);
-		cod.append("-PUB");
-		String codigo = cod.toString();
+		String codigo = crearCodigoPublico();
 		
 		//Obtencion de origen y destino
-		Aeropuerto Origen = aeropuertos.get(origen);
-		Aeropuerto Destino = aeropuertos.get(destino);
+		Aeropuerto Origen = obtenerAeropuerto(origen);
+		Aeropuerto Destino = obtenerAeropuerto(destino);
 		
 		//Calculo total de asientos
 		int totalAsientos = cantAsientos[0] + cantAsientos[1] + cantAsientos[2]; 
@@ -372,6 +382,8 @@ public class Aerolinea implements IAerolinea
 		vuelos.put(codigo, nuevoInternacional);
 		
 		//3) y 4)
+		
+		//Se crean los asientos y se redefine el diccionario de asientos disponibles
 		asientosDisponiblesPorVuelo = nuevoInternacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoInternacional, asientosDisponiblesPorVuelo);
 		
 		//5)
@@ -706,13 +718,6 @@ public class Aerolinea implements IAerolinea
 	public String detalleDeVuelo(String codVuelo) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	//Auxiliar
-	
-	public HashMap<Integer, Cliente> getClientes()
-	{
-		return clientes;
 	}
 	
 }

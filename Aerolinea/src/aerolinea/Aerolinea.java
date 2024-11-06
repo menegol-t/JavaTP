@@ -663,6 +663,9 @@ public class Aerolinea implements IAerolinea
 	*/
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
+		
+		//FUNCION INCOMPLETA
+		
 		stringInvalido(codVuelo, "Codigo de vuelo"); 
 		
 		Vuelo vueloACancelar = vuelos.get(codVuelo);
@@ -683,8 +686,6 @@ public class Aerolinea implements IAerolinea
 
 			
 		}
-		
-		
 		return null;
 	}
 

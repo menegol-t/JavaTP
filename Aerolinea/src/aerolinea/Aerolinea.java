@@ -643,7 +643,20 @@ public class Aerolinea implements IAerolinea
 		Aeropuerto aeropuertoDestino = vuelo.getDestino();
 		
 		String destino = aeropuertoDestino.getLocacion();
-		asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, asiento);
+		
+		/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 * 
+		 * 
+		 * 
+		 * 
+		 *          NO EXISTE MAS ASIENTOS DISPONIBLES POR VUELO A NIVEL BONDIJET
+		 * 
+		 * 
+		 * 
+		 * 
+		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 * */
+		//asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, asiento);
 		
 		//6)
 		double precioAsiento = asiento.getPrecio();

@@ -92,8 +92,6 @@ public class Aerolinea implements IAerolinea
 		
 	}
 
-	
-	
 	/*
 	 * Con esta funcion detectamos si un numero int es invalido, es decir si vale 0 o vale negativo.
 	 * */
@@ -108,8 +106,6 @@ public class Aerolinea implements IAerolinea
 			throw new RuntimeException(st.toString());
 		}
 	}
-	
-	
 	
 	/*
 	 * Con esta funcion valido si me pasaron un String vacio
@@ -126,8 +122,6 @@ public class Aerolinea implements IAerolinea
 		}
 	}
 	
-	
-	
 	/*
 	 * Con esta funcion detectamos si un numero Double es invalido, es decir si vale 0 o vale negativo.
 	 * */
@@ -143,8 +137,6 @@ public class Aerolinea implements IAerolinea
 	    }
 	}
 	
-	
-	
 	/*
 	 * Con esta funcion valido si me pasaron un Array Int vacio
 	 * */
@@ -158,8 +150,6 @@ public class Aerolinea implements IAerolinea
 	    }
 	}
 	
-	
-	
 	/*
 	 * Con esta funcion valido si me pasaron un Array Double vacio
 	 * */
@@ -172,8 +162,6 @@ public class Aerolinea implements IAerolinea
 	        throw new RuntimeException(st.toString());
 	    }
 	}
-	
-	
 	
 	/*
 	 * Con esta funcion valido si me pasaron un Array de cualquier objeto vacio 
@@ -189,6 +177,7 @@ public class Aerolinea implements IAerolinea
 	        throw new RuntimeException(st.toString());
 	    }
 	}
+	
 	
 	
 	@Override
@@ -427,6 +416,7 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
+	
 	/** - 7 
 	*  Dado el código del vuelo, devuelve un diccionario con los asientos aún disponibles para la venta 
 	*  --> clave:  el número de asiento
@@ -465,6 +455,8 @@ public class Aerolinea implements IAerolinea
 		
 		return diccionarioNroAsientoSeccion;
 	}
+	
+	
 	
 	/**
 	* 8 y 9 devuelve el codigo del pasaje comprado.
@@ -540,6 +532,9 @@ public class Aerolinea implements IAerolinea
 		
 	}
 	
+	
+	
+	
 	/* IREP: Recibe Fechas con el formato "dd/mm/aaaa".
 	 * - 11. 
 	 * devuelve una lista de códigos de vuelos. que estén entre fecha dada y hasta una semana despues. La lista estará vacía si no se encuentran vuelos similares. La Fecha es la fecha de salida.
@@ -563,8 +558,6 @@ public class Aerolinea implements IAerolinea
 		return verificarVuelosSimilares(codVuelosSimilares, origen, destino, fecha);
 	}
 	
-	
-	
 	/*
 	 * Añade a la lista los vuelos que cumplan con mismo destino, origen y estar a una semana de la fecha.
 	 * */
@@ -584,8 +577,6 @@ public class Aerolinea implements IAerolinea
 		
 		return codVuelosSimilares;
 	}
-	
-	
 	
 	/*
 	 * Verifica cada vuelo individual para ver si cumple con las condiciones (que tenga el mismo origen, mismo destino, 
@@ -607,8 +598,6 @@ public class Aerolinea implements IAerolinea
 		
 		return false;
 	}
-	
-	
 	
 	/*
 	 * Verifica si 2 fechas dadas se encuentran a una semana, en cuyo caso retorna true. Si no, false.
@@ -771,6 +760,7 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
+	
 	/** - 14
 	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 
 	* IMPORTANTE: Se debe resolver en O(1).
@@ -781,7 +771,6 @@ public class Aerolinea implements IAerolinea
 	}
 
 
-	
 	
 	@Override
 	public String detalleDeVuelo(String codVuelo) {

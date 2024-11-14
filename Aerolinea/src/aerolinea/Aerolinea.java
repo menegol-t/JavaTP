@@ -25,7 +25,7 @@ public class Aerolinea implements IAerolinea
 		
 		private HashMap<String, Double> facturacionPorDestino;
 		
-		private HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo;
+		//private HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo;
 		
 		private Integer codigoBase;		//Los codigos numericos se obtienen en base a esta variable.
 		
@@ -39,7 +39,7 @@ public class Aerolinea implements IAerolinea
 		this.vuelos = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
 		this.clientes = new HashMap<>();
-		this.asientosDisponiblesPorVuelo = new HashMap<>();
+		//this.asientosDisponiblesPorVuelo = new HashMap<>();
 		this.codigoBase = 1;
 		this.facturacionPorDestino  = new HashMap<>();	
 	}
@@ -301,7 +301,20 @@ public class Aerolinea implements IAerolinea
 		//3) y 4)
 		
 		//Se crean los asientos y se redefine el diccionario de asientos disponibles
-		asientosDisponiblesPorVuelo = nuevoNacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoNacional, asientosDisponiblesPorVuelo);
+		
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * 
+ * 
+ * 
+ * 
+ *          NO EXISTE MAS ASIENTOS DISPONIBLES POR VUELO A NIVEL BONDIJET
+ * 
+ * 
+ * 
+ * 
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * */
+		//asientosDisponiblesPorVuelo = nuevoNacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoNacional, asientosDisponiblesPorVuelo);
 		
 		//5)
 		return codigo;
@@ -383,7 +396,21 @@ public class Aerolinea implements IAerolinea
 		//3) y 4)
 		
 		//Se crean los asientos y se redefine el diccionario de asientos disponibles
-		asientosDisponiblesPorVuelo = nuevoInternacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoInternacional, asientosDisponiblesPorVuelo);
+		
+		/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 * 
+		 * 
+		 * 
+		 * 
+		 *          NO EXISTE MAS ASIENTOS DISPONIBLES POR VUELO A NIVEL BONDIJET
+		 * 
+		 * 
+		 * 
+		 * 
+		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 * */
+		
+		//asientosDisponiblesPorVuelo = nuevoInternacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoInternacional, asientosDisponiblesPorVuelo);
 		
 		//5)
 		return codigo;
@@ -426,12 +453,13 @@ public class Aerolinea implements IAerolinea
 
 	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, HashMap<Integer, Asiento> asientosDisponibles)
 	{
-		
+		//Generamos un iterador sobre todos los asientosDisponibles
 		Iterator<Map.Entry<Integer, Asiento>> iterador = asientosDisponibles.entrySet().iterator();
 		
 		while (iterador.hasNext()) {
 			Asiento asientoActual = (Asiento) iterador.next();
 			
+			//En el diccionario que vamos a devolver, guardamos el codigo del asiento y su clase
 			diccionarioNroAsientoSeccion.put(asientoActual.getCodigo(), asientoActual.getClase());
 		}
 		
@@ -455,46 +483,44 @@ public class Aerolinea implements IAerolinea
 	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar)
 	{
 		//Realizamos validaciones, si no pasa un check tiramos runtime exception. 
-		intInvalidoCero(dni, "DNI"); intInvalidoCero(nroAsiento, "Numero de asiento"); stringInvalido(codVuelo, "Codigo de vuelo");
+		intInvalidoCero(dni, "DNI"); 
+		
+		intInvalidoCero(nroAsiento, "Numero de asiento"); 
+		
+		stringInvalido(codVuelo, "Codigo de vuelo");
 		
 		Integer Dni = dni;
 		
-		Cliente pasajero = clientes.get(Dni);
+		return validarCliente(Dni, codVuelo, nroAsiento, aOcupar);
+	}
+	
+	private int validarCliente(Integer dni, String codVuelo, int nroAsiento, boolean aOcupar) 
+	{
+		Cliente pasajero = clientes.get(dni);
 		
 		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
 		
+		return verificarVuelo(pasajero, codVuelo, nroAsiento, aOcupar);
+	}
+	
+	private int verificarVuelo(Cliente pasajero, String codVuelo, int nroAsiento, boolean aOcupar) 
+	{
 		Vuelo vuelo = vuelos.get(codVuelo);
 		
 		if(vuelo == null) throw new RuntimeException("venderPasaje: El codigo de vuelo provisto no pertenece a un vuelo registrado.");
 		
-		Asiento asiento = asientosDisponiblesPorVuelo.get(codVuelo).get(nroAsiento);
-		
-		if(asiento == null) throw new RuntimeException("venderPasaje: El asiento solicitado no esta disponible.");
-		
-		//Si encontre el asiento en el listado de asientos libres, perfecto, lo remuevo. Si no lo encontre ya estaba vendido y tiro excepcion. 
-		asientosDisponiblesPorVuelo.get(codVuelo).remove(nroAsiento); 
-		
-		//Pongo el asiento en el estado que me solicitaron, ocupado o desocupado.
-		asiento.setOcupado(aOcupar); 
-		
-		int codigo = obtenerCodigo();
-		
-		asiento.setCodPasaje(codigo);
-		
-		//Dentro de VUELO hay que hacer el metodo de registrar asiento. 
-/*Mi idea es, yo le paso al vuelo el cliente y el asiento. Con eso, vuelo tiene todo lo que necesita. 
- * Vuelo adentro tiene un dicionario HashMap<Dni, Pasajero> pasajeros . Ahora, el encargado de construir sus pasajeros conforme se van sumado es el vuelo mismo, entonces vuelo tiene que hacer los sigueintes chequeos:
- * Como un mismo clinete puede tener varios asientos, pero siempre es el mismo pasajero, con estos datos que le paso debe fijarse si el Cliente ya existe adentro del diccionario de pasajeros
- * Si el cliente que le estoy pasando no figura como pasajero, great, genera un pasajero (recordemos que pasajero adentro tiene una propiedad que es el objeto Cliente que yo le paso aca) y un diccionario de asientos, que para empezar solo tiene ste asiento que le paso.
- * Si el pasajero ya estaba en el vuelo, y solo esta sumando un asiento (cosa que nos damos cuenta buscando al pasajero por su dni, y viendo si ya existia), sencillamente nos metemos al pasajero y añadimos otro asiento.*/
-
-		//Registro el asiento vendido.
-		//vuelo.registrarAsiento(asiento, cliente);
-		
-		return codigo;
-		
+		return  venderAsiento(pasajero, vuelo, nroAsiento, aOcupar);
 	}
 	
+	private int venderAsiento(Cliente pasajero, Vuelo vuelo, int nroAsiento, boolean aOcupar) 
+	{
+		Asiento asiento = vuelo.getAsientoDisponible(nroAsiento);
+		
+		int codigoPasaje = obtenerCodigo();
+		
+		return vuelo.venderAsiento(pasajero, asiento, aOcupar, codigoPasaje);
+		
+	}
 	
 	/* IREP: Recibe Fechas con el formato "dd/mm/aaaa".
 	 * - 11. 
@@ -648,6 +674,7 @@ public class Aerolinea implements IAerolinea
 		//Recorro todo el diccionario de vuelos
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
 		
+		Integer pasaje = codPasaje;
 		/* Como estoy cancelando un pasaje, ni bien encuentre al cliente que lo tiene, invoco a eliminarPasaje.
 		 * Si recorro todo y no encuentro al cliente, bueno, el pasaje ya estaba eliminado.*/
 		while (it.hasNext()) {
@@ -655,7 +682,7 @@ public class Aerolinea implements IAerolinea
 			Vuelo vueloActual = (Vuelo) it.next();
 
 			//Si encuentro al cliente, le elimino el pasaje y termino.  
-			if(vueloActual.getPasajero(dni) != null) vueloActual.eliminarPasaje(dni, codPasaje);
+			if(vueloActual.getPasajero(dni) != null) vueloActual.eliminarPasaje(dni, pasaje);
 		}
 		
 	}

@@ -3,7 +3,7 @@ package aerolinea;
 public class Asiento 
 {
 
-	private int codigo;
+	private Integer codigo;
 	private int codPasaje;
 	private int seccion;
 	private String clase;
@@ -12,26 +12,25 @@ public class Asiento
 	
 	public Asiento(int codigo, int seccion, double precio, String clase, boolean ocupado)
 	{
-		if (!(codigo > 0 && seccion > 0 && seccion <= 3 && clase != null)) 
-			
-			throw new RuntimeException("Valor de parametros invalido!!");
+		if (!(codigo > 0 && seccion > 0 && seccion <= 3 && clase != null)) throw new RuntimeException("Valor de parametros invalido!!");
 		
-		this.codigo = codigo;
+		Integer cod = codigo;
+		
+		this.codigo = cod;
 		this.seccion = seccion;
 		this.clase = clase;
 		this.precio = precio;
 		this.ocupado = ocupado;
 	}
 	
+	public Integer getCodigo()
+	{
+		return codigo;
+	}
 	
 	public int getSeccion()
 	{
 		return seccion;
-	}
-	
-	public int getCodigo()
-	{
-		return codigo;
 	}
 	
 	public int getCodPasaje() 

@@ -489,6 +489,7 @@ public class Aerolinea implements IAerolinea
 		
 		stringInvalido(codVuelo, "Codigo de vuelo");
 		
+		//Nos pasaron el dni como int asi que lo convertimos en Integer, porque el DNI es una clave en los diccionarios que usamos, y como tal necesita ser Integer.
 		Integer Dni = dni;
 		
 		return validarCliente(Dni, codVuelo, nroAsiento, aOcupar);
@@ -496,8 +497,10 @@ public class Aerolinea implements IAerolinea
 	
 	private int validarCliente(Integer dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
+		//Busco el cliente y verifico si existe
 		Cliente pasajero = clientes.get(dni);
 		
+		//Si el cliente no existe, lanzo excepcion
 		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
 		
 		return verificarVuelo(pasajero, codVuelo, nroAsiento, aOcupar);
@@ -505,8 +508,10 @@ public class Aerolinea implements IAerolinea
 	
 	private int verificarVuelo(Cliente pasajero, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
+		//Busco el vuelo y verifico si esta registrado en la aerolinea. 
 		Vuelo vuelo = vuelos.get(codVuelo);
 		
+		//Si no esta registrado en la aeolina lanzo una excepcion.
 		if(vuelo == null) throw new RuntimeException("venderPasaje: El codigo de vuelo provisto no pertenece a un vuelo registrado.");
 		
 		return  venderAsiento(pasajero, vuelo, nroAsiento, aOcupar);
@@ -514,11 +519,24 @@ public class Aerolinea implements IAerolinea
 	
 	private int venderAsiento(Cliente pasajero, Vuelo vuelo, int nroAsiento, boolean aOcupar) 
 	{
+		//Busco el asiento disponible dentro del vuelo. El vuelo sabe que si el asiento que busco no es disponible, tira una excepcion.
 		Asiento asiento = vuelo.getAsientoDisponible(nroAsiento);
+ 
+		/*
+		 * Importante: En nuestro diseño que fue aprobado, no habia un "codigo de pasaje". Cada pasajero es ubicado por su DNI en su vuelo, y cada 
+		 * asiento es ubicado por su numero, que debe ser unico por vuelo. Entonces decidimos que el numero de pasaje sera solo un numero, unico
+		 * en toda la aerolinea, asociado al asiento. De esta manera, el asiento tiene un numero unico por vuelo (su codigo de asiento) y un numero
+		 * unico en toda la aerolinea en general (su codigo de pasaje). 
+		 * */
 		
+		//Genero un codigo unico en toda la aerolinea para el pasaje.
 		int codigoPasaje = obtenerCodigo();
 		
-		return vuelo.venderAsiento(pasajero, asiento, aOcupar, codigoPasaje);
+		//Le asigno al asiento si esta ocupado o no
+		asiento.setOcupado(aOcupar);
+		
+		//Le digo al vuelo que venda el asiento. Si todo salio bien, se le asigna el numero de pasaje al asiento y este es retornado 
+		return vuelo.registrarAsiento(pasajero, asiento, codigoPasaje);
 		
 	}
 	

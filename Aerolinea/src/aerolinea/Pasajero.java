@@ -7,19 +7,17 @@ import java.util.Map;
 
 public class Pasajero 
 {
-	HashMap<Integer,Asiento> asientos;
-	int refrigeriosConsumidos;
-	double costo;
-	Cliente cliente;
+	private Cliente cliente;
+	private HashMap<Integer,Asiento> asientos;
+	private int refrigeriosConsumidos;
+	private double costo;
 	
-	public Pasajero(LinkedList<Asiento> asientos, int refrigeriosConsumidos, double costo, Cliente cliente) 
+	public Pasajero(Cliente cliente) 
 	{
-		if(!(costo>0 && refrigeriosConsumidos >= 0)) throw new RuntimeException("Valor de parametros invalido!!");
-		
-		this.asientos = new HashMap<Integer,Asiento>();
-		this.refrigeriosConsumidos = refrigeriosConsumidos;
-		this.costo = costo;
 		this.cliente = cliente;
+		this.asientos = new HashMap<Integer, Asiento>();
+		this.refrigeriosConsumidos = 0;
+		this.costo = 0.0;
 	}
 	
 	public Asiento getAsiento(Integer codigoAsiento)
@@ -52,9 +50,20 @@ public class Pasajero
 		this.costo = costo;
 	}
 	
-	public void asignarAsiento(Asiento asiento) 
+	public int asignarAsiento(Asiento asiento, int codPasaje) 
 	{	
+		//Le asigno al asiento su codigo de pasaje
+		asiento.setCodPasaje(codPasaje);
+		
+		//Pongo el asiento en el diccionario de asientos del pasajero.
 		asientos.put(asiento.getCodigo(), asiento);
+		
+		/*
+		 * Esto debe retornar el codigo de pasaje para asegurarse que todo salio bien. 
+		 * Para asegurarnos que todo salio bien, el codigo de pasaje lo vamos a buscar desde el asiento que acabmos de crear.
+		 * Entonces, busco el asiento que acabo de añadir al diccionario, busco su codigo de pasaje, y retorno eso.
+		 */ 
+		return asientos.get(asiento.getCodigo()).getCodPasaje();
 	}
 	
 	public void eliminarAsiento(Integer id)
@@ -77,9 +86,14 @@ public class Pasajero
 		}
 	}
 	
-	public Cliente consultarCliente()
+	public Cliente getCliente()
 	{
 		return cliente;
+	}
+	
+	public int getDniCliente() 
+	{
+		return cliente.getDni();
 	}
 	
 	

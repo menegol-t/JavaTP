@@ -11,9 +11,10 @@ public abstract class Vuelo {
 	private Aeropuerto origen;
 	private int totalAsientos; //Remover?
 	private int totalTripulantes;
-	
+	private HashMap <Integer, Asiento> asientosDisponibles;
 	private HashMap <Integer, Pasajero> pasajeros;
 	private String fechaSalida;
+	private String fechaLlegada;
 	private int porcentajeImpuesto;
 	
 	
@@ -76,26 +77,43 @@ public abstract class Vuelo {
 		return destino;
 	}
 	
-	public String getFechaSalida() {
-		
-		return fechaSalida;
+	public int getTotalAsientos() 
+	{
+		return totalAsientos;
 	}
 	
+	public int getTotalTripulantes() 
+	{
+		return totalTripulantes;
+	}
 	
-	//Aux
+	public HashMap<Integer, Asiento> getAsientosDisponibles()
+	{
+		return asientosDisponibles;
+	}
 	
 	public HashMap<Integer, Pasajero> getPasajeros()
 	{
 		return pasajeros;
 	}
 	
+	public String getFechaSalida() 
+	{
+		
+		return fechaSalida;
+	}
+	
+	public String getFechaLlegada() 
+	{
+		return fechaLlegada;
+	}
 	
 	public void eliminarPasajero(int id)
 	{
 		pasajeros.remove(id);
 	}
 
-		public Pasajero getPasajero(int dni) 
+	public Pasajero getPasajero(int dni) 
 	{
 		return pasajeros.get(dni);
 	}
@@ -106,7 +124,6 @@ public abstract class Vuelo {
 		pasajero.eliminarAsiento(numAsiento);
 	}
 
-	
 	public void eliminarPasaje(int dni, int codPasaje) 
 	{
 		Pasajero pasajero= getPasajero(dni);
@@ -119,13 +136,10 @@ public abstract class Vuelo {
 		
 	}
 
-
 	public HashMap<String, HashMap<Integer, Asiento>>  registrarAsientosDeVuelos(int[] cantAsientos, double[] precios, Nacional nacional,
-			HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo) {
-				
-		return asientosDisponiblesPorVuelo;
-
-		
+			HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo) 
+	{
+		return asientosDisponiblesPorVuelo;	
 	}
 	
 }

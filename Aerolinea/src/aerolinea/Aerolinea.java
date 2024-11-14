@@ -55,7 +55,6 @@ public class Aerolinea implements IAerolinea
 		return codigoBase;
 	}
 
-	
 	public String crearCodigoPublico()
 	{
 		Integer parteNumerica = obtenerCodigo();
@@ -401,31 +400,43 @@ public class Aerolinea implements IAerolinea
 	}
 
 	
-	
+	/** - 7 
+	*  Dado el código del vuelo, devuelve un diccionario con los asientos aún disponibles para la venta 
+	*  --> clave:  el número de asiento
+	*  --> valor:  la sección a la que pertenecen los asientos.
+	*  
+	*  Buscamos el vuelo por su codigo en el diccionario de vuelos.
+	*  Obtenemos todos los asientos libres de dicho vuelo. Dado que el vuelo nos devuelve un hashMap <Integer, Asiento>, 
+	*  y lo que nos piden es un Map<Integer, Asiento.clase>, necesitamos armar otro diccionario que reemplace Asiento por Asiento.getClase().
+	*/
 	@Override
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
 		
-		//Creamos el diccionario de retorno
-		Map<Integer, String> retorno = new HashMap<>();
+		//Obtenemos el vuelo por su codigo
+		Vuelo vuelo = vuelos.get(codVuelo);
 		
-		//Obetenemos el diccionario de asientos disponibles para el vuelo en cuestion
-		HashMap<Integer, Asiento> AsientosPorVuelo = asientosDisponiblesPorVuelo.get(codVuelo);
+		//Obtenemos un hashMap de los asientos disponibles en el vuelo
+		HashMap<Integer, Asiento> asientosDisponibles = vuelo.getAsientosDisponibles();
 		
-		//Generamos el iterador en el diccionario de asientos disponibles
-		Iterator<HashMap.Entry<Integer, Asiento>> iterador = AsientosPorVuelo.entrySet().iterator();
-	    
-		//Recorremos
-	    while (iterador.hasNext()) {
-			HashMap.Entry<Integer, Asiento> entrada = iterador.next();
-			
-			//Agregamos al retorno el codigo de asiento y el asiento impreso
-			retorno.put(entrada.getKey(), entrada.getValue().toString());
-		}
-	    
-	    return retorno;
+		//Generamos un nuevo diccionario vacio, el que retornaremos como resultado, que sera <Integer, Asiento.getClase()>
+		Map<Integer, String> diccionarioNroAsientoSeccion = new HashMap<>();
+		
+		return numeroDeAsintoYSeccion(diccionarioNroAsientoSeccion, asientosDisponibles);
 	}
 
-	
+	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, HashMap<Integer, Asiento> asientosDisponibles)
+	{
+		
+		Iterator<Map.Entry<Integer, Asiento>> iterador = asientosDisponibles.entrySet().iterator();
+		
+		while (iterador.hasNext()) {
+			Asiento asientoActual = (Asiento) iterador.next();
+			
+			diccionarioNroAsientoSeccion.put(asientoActual.getCodigo(), asientoActual.getClase());
+		}
+		
+		return diccionarioNroAsientoSeccion;
+	}
 	
 	/**
 	* 8 y 9 devuelve el codigo del pasaje comprado.

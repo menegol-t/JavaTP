@@ -39,42 +39,49 @@ public class Internacional extends Nacional{
 	@Override
 	public void registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Vuelo internacional)
 	{
+		//Accedemos al diccionario de asientos del vuelo
+		HashMap<Integer, Asiento> asientosDisponibles = internacional.getAsientosDisponibles();
+		
 		//Se recorre la cantidad de elementos en el array cantAsientos, que evidencia la cantidad de secciones
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
-			HashMap<Integer, Asiento> nuevosAsientos = internacional.getAsientosDisponibles();
-			
+		
 			//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
 			int contador = 0;
 			for(int j = 0; j<cantAsientos[i]; j++)
 			{
+				//incrementamos el numero de asiento
+				contador += 1;
+				
+				Asiento asientoNuevo;
+				
 				if(i == 0) //Si estamos en la primera seccion
 				{
-					contador += 1;
+					
 					//Se crea un asiento de clase economica
-					Asiento asiento = new Asiento(contador, 1, precios[i], "Economica", false);
-					//agregamos al retorno
-					nuevosAsientos.put(asiento.getCodigo(), asiento);
+					asientoNuevo = new Asiento(contador, 1, precios[i], "Economica", false);
+
 				}
 				
 				if(i == 1) //Si estamos en la segunda seccion
 				{
-					contador += 1;
+					
 					//Se crea un asiento de clase turista
-					Asiento asiento = new Asiento(contador, 2, precios[i], "Turista", false);
-					//agregamos al retorno
-					nuevosAsientos.put(asiento.getCodigo(), asiento);
+				    asientoNuevo = new Asiento(contador, 2, precios[i], "Turista", false);
+
 				}
 				
 				
-				if(i == 2) //Si estamos en la tercera seccion
+				else //Si estamos en la tercera seccion
 				{
-					contador += 1;
+					
 					//Se crea un asiento de primera clase 
-					Asiento asiento = new Asiento(contador, 3, precios[i], "Primera Clase", false);
-					//agregamos al retorno
-					nuevosAsientos.put(asiento.getCodigo(), asiento);
+					asientoNuevo = new Asiento(contador, 3, precios[i], "Primera Clase", false);
+					
 				}
+				
+				//agregamos al retorno
+				asientosDisponibles.put(asientoNuevo.getCodigo(), asientoNuevo);
 			}
 
 		}

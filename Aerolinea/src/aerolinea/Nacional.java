@@ -40,32 +40,38 @@ public class Nacional extends Vuelo {
 	@Override
 	public void registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Vuelo nacional)
 	{
+		
+		//Accedemos al diccionario de asientos del vuelo
+		HashMap<Integer, Asiento> asientosDisponibles = nacional.getAsientosDisponibles();
+		
 		//Se recorre la cantidad de elementos en el array cantAsientos, que evidencia la cantidad de secciones
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
-			HashMap<Integer, Asiento> nuevosAsientos = nacional.getAsientosDisponibles();
 			
 			//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
 			int contador = 0;
 			for(int j = 0; j<cantAsientos[i]; j++)
 			{
+				//incrementamos el numero de asiento
+				contador += 1;
+				
+				Asiento asientoNuevo;
+				
 				if(i == 0) //Si estamos en la primera seccion
 				{
-					contador += 1;
 					//Se crea un asiento de clase economica
-					Asiento asiento = new Asiento(contador, 1, precios[i], "Economica", false);
-					//agregamos al retorno
-					nuevosAsientos.put(asiento.getCodigo(), asiento);
+					asientoNuevo = new Asiento(contador, 1, precios[i], "Economica", false);
+					
 				}
 				
 				else //Si estamos en la segunda seccion
 				{
-					contador += 1;
 					//Se crea un asiento de primera clase
-					Asiento asiento = new Asiento(contador, 2, precios[i], "Primera Clase", false);
-					//agregamos al retorno
-					nuevosAsientos.put(asiento.getCodigo(), asiento);
+					asientoNuevo = new Asiento(contador, 2, precios[i], "Primera Clase", false);
+	
 				}
+				
+				asientosDisponibles.put(asientoNuevo.getCodigo(), asientoNuevo);
 			}
 
 		}

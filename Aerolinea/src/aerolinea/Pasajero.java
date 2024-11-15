@@ -55,7 +55,7 @@ public class Pasajero
 		//Le asigno al asiento su codigo de pasaje
 		asiento.setCodPasaje(codPasaje);
 		
-		//Pongo el asiento en el diccionario de asientos del pasajero.
+		//Guardo el asiento en el diccionario de asientos.
 		asientos.put(asiento.getCodigo(), asiento);
 		
 		/*
@@ -63,7 +63,12 @@ public class Pasajero
 		 * Para asegurarnos que todo salio bien, el codigo de pasaje lo vamos a buscar desde el asiento que acabmos de crear.
 		 * Entonces, busco el asiento que acabo de añadir al diccionario, busco su codigo de pasaje, y retorno eso.
 		 */ 
-		return asientos.get(asiento.getCodigo()).getCodPasaje();
+		
+		Integer codigoPasaje = asientos.get(asiento.getCodigo()).getCodPasaje();
+		
+		if(codigoPasaje == null) throw new RuntimeException("Pasajero.asignarAsiento: Hello darkness my old friend...");
+		
+		return codigoPasaje;
 	}
 	
 	public void eliminarAsiento(Integer id)

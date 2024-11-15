@@ -220,15 +220,10 @@ public class Aerolinea implements IAerolinea
 	* 
 	* Devuelve el código del Vuelo con el formato: {Nro_vuelo_publico}-PUB. Por ejemplo--> 103-PUB
 	* Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
-	 * 
-	 * 
-	 * 
-	 * 
-	 1) crear un codigo Nacional y un Nacional
-	 2) agregarlo a la lista de vuelos (polimorfismo),
-	 3) Crear los asientos y asignarles un precio
-	 4) almacenar <codigo, asientosLibres>
-	 5) retornar el codigo
+	* 
+	* Primero verificamos que los aeropuertos esten registrados en la compañia.
+	* Posterior, generamos el nuevo vuelo. El constructor de este debe tirar runtimeException si algun dato es invalido (lso tripulantes no pueden ser 0, etc)
+	* Si todo esta bien, retornamos el codigo guardado. 
 	*/
 	
 	//El constructor de esto deberia validar que los datos no sean malos

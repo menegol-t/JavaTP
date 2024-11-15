@@ -213,7 +213,9 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public void registrarAeropuerto(String nombre, String pais, String estado, String direccion) 
 	{	
-		if(pais == null || nombre == null) throw new RuntimeException("registrarAeropuerto: ni el nombre ni el pais del aeropuerto pueden ser vacios.");
+		//Verifico si pais es null antes de utilizarla para determinar esNacional. El resto de variables se verifican en el constructor de aeropuerto.
+		if(pais == null) throw new RuntimeException("registrarAeropuerto: ni el nombre ni el pais del aeropuerto pueden ser vacios.");
+		
 		//Verifico si el pais es o no es argentina (es igual de valido que me pasen Argentina, argentina, aRgEnTiNa, etc)
 		boolean esNacional = pais.equalsIgnoreCase("Argentina");
 		

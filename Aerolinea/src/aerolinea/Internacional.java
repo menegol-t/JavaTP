@@ -12,14 +12,12 @@ public class Internacional extends Nacional{
 	private LinkedList<Aeropuerto> escalas;
 	
 	
-	public Internacional(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, 
-			HashMap <Integer, Pasajero> pasajeros,String fechaSalida, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados, 
-			int limitePasPrimera, int limitePasSegunda, int limitePasTercera, double precioRefrigerio, double precioAsientosPrimera, 
-			double precioAsientosSegunda, double precioAsientosTercera, LinkedList<Aeropuerto> escalas, boolean vueloDirecto)
+	public Internacional(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, 
+			int limitePasPrimera, int limitePasSegunda, int limitePasTercera, double precioRefrigerio, double precioAsientosPrimera, double precioAsientosSegunda, 
+			double precioAsientosTercera, LinkedList<Aeropuerto> escalas, boolean vueloDirecto)
 	{
 		
-		super(codigo, destino, origen, totalAsientos, totalTripulantes, pasajeros, fechaSalida, porcentajeImpuesto, ClientesRegistrados, 
-			  limitePasPrimera, limitePasSegunda, precioRefrigerio, precioAsientosPrimera, precioAsientosSegunda);
+		super(codigo, destino, origen, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, limitePasPrimera, limitePasSegunda, precioRefrigerio, precioAsientosPrimera, precioAsientosSegunda);
 		
 		
 		if(!(limitePasTercera > 0 && limitePasTercera < totalAsientos && precioAsientosTercera > 0)
@@ -37,17 +35,15 @@ public class Internacional extends Nacional{
 	}
 	
 	@Override
-	public void registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Vuelo internacional)
-	{
-		//Accedemos al diccionario de asientos del vuelo
-		HashMap<Integer, Asiento> asientosDisponibles = internacional.getAsientosDisponibles();
-		
-		//Se recorre la cantidad de elementos en el array cantAsientos, que evidencia la cantidad de secciones
+	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
+	{	
+		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Turista, Pimera]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
-		
 			//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
 			int contador = 0;
+			
+			//En cada posicion del array de secciones, hay un array con los asientos de esa seccion. Aca se recorre ese sub array: cantiAsientos: [ [asiento0, asiento1, asiento2], [asiento3, asiento4, asiento6], [asiento7, asiento8] ]
 			for(int j = 0; j<cantAsientos[i]; j++)
 			{
 				//incrementamos el numero de asiento
@@ -55,33 +51,26 @@ public class Internacional extends Nacional{
 				
 				Asiento asientoNuevo;
 				
-				if(i == 0) //Si estamos en la primera seccion
+				if(i == 0) 
 				{
-					
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, 1, precios[i], "Economica", false);
-
+					asientoNuevo = new Asiento(contador, 1, precios[i], "Economica");
 				}
 				
 				if(i == 1) //Si estamos en la segunda seccion
 				{
-					
 					//Se crea un asiento de clase turista
-				    asientoNuevo = new Asiento(contador, 2, precios[i], "Turista", false);
-
+				    asientoNuevo = new Asiento(contador, 2, precios[i], "Turista");
 				}
-				
 				
 				else //Si estamos en la tercera seccion
-				{
-					
+				{	
 					//Se crea un asiento de primera clase 
-					asientoNuevo = new Asiento(contador, 3, precios[i], "Primera Clase", false);
-					
+					asientoNuevo = new Asiento(contador, 3, precios[i], "Primera Clase");	
 				}
 				
-				//agregamos al retorno
-				asientosDisponibles.put(asientoNuevo.getCodigo(), asientoNuevo);
+				//Agregamos el asiento al diccionario de asientos disponibles. 
+				super.registrarAsientoDisponible(asientoNuevo);
 			}
 
 		}

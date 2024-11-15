@@ -15,14 +15,12 @@ public class Nacional extends Vuelo {
 	double precioAsientosPrimera; 
 	double precioAsientosSegunda;
 
-	public Nacional(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, HashMap <Integer, Pasajero> pasajeros,
-					String fechaSalida, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados, 
-					int limitePasPrimera, int limitePasSegunda, double precioRefrigerio, double precioAsientosPrimera, double precioAsientosSegunda) 
+	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int limitePasPrimera, int limitePasSegunda, double precioRefrigerio, double precioAsientosPrimera, double precioAsientosSegunda) 
 	{	
-		//Se crea la clase padre vuelo, por lo que su irep se mantiene
-		super(codigo, destino, origen, totalAsientos, totalTripulantes, pasajeros, fechaSalida, porcentajeImpuesto, ClientesRegistrados);
+		//Se crea la clase padre vuelo, por lo que su irep se mantiene. Se le pasa "porcentajeImpuesto" como 20
+		super(codigo, destino, origen, totalAsientos, totalTripulantes, fechaSalida, 20);
 		
-		if(!(limitePasPrimera > 0 && limitePasSegunda > 0 && limitePasSegunda > 0 && pasajeros.size() <= totalAsientos))
+		if(!(limitePasPrimera > 0 && limitePasSegunda > 0 && limitePasSegunda > 0))
 			throw new RuntimeException("Valor de parametros invalido!!");
 		
 		refrigeriosPorPasajero = 1;
@@ -36,20 +34,19 @@ public class Nacional extends Vuelo {
 		
 	}
 	
-	
+	/*
+	 * Registrar asientos no deberia registrar COMO MAXIMO el limitePasajerosPrimera y limitePasajerosEconomica?????
+	 * */
 	@Override
-	public void registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Vuelo nacional)
+	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{
-		
-		//Accedemos al diccionario de asientos del vuelo
-		HashMap<Integer, Asiento> asientosDisponibles = nacional.getAsientosDisponibles();
-		
-		//Se recorre la cantidad de elementos en el array cantAsientos, que evidencia la cantidad de secciones
+		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Pimera]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
-			
 			//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
 			int contador = 0;
+			
+			//En cada posicion del array de secciones, hay un array con los asientos de esa seccion. Aca se recorre ese sub array: cantiAsientos: [ [asiento0, asiento1, asiento2], [asiento3, asiento4, asiento6] ]
 			for(int j = 0; j<cantAsientos[i]; j++)
 			{
 				//incrementamos el numero de asiento
@@ -60,18 +57,16 @@ public class Nacional extends Vuelo {
 				if(i == 0) //Si estamos en la primera seccion
 				{
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, 1, precios[i], "Economica", false);
-					
+					asientoNuevo = new Asiento(contador, 1, precios[i], "Economica");
 				}
 				
 				else //Si estamos en la segunda seccion
 				{
 					//Se crea un asiento de primera clase
-					asientoNuevo = new Asiento(contador, 2, precios[i], "Primera Clase", false);
-	
+					asientoNuevo = new Asiento(contador, 2, precios[i], "Primera Clase");
 				}
 				
-				asientosDisponibles.put(asientoNuevo.getCodigo(), asientoNuevo);
+				super.registrarAsientoDisponible(asientoNuevo);
 			}
 
 		}

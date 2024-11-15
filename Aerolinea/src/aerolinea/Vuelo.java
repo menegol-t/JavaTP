@@ -17,46 +17,19 @@ public abstract class Vuelo {
 	private String fechaLlegada;
 	private int porcentajeImpuesto;
 	
-	
-	
-	public Vuelo(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, HashMap <Integer, Pasajero> pasajeros, 
-				 String fechaSalida, int porcentajeImpuesto, HashMap<Integer, Cliente> ClientesRegistrados)
-	
+	public Vuelo(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto)
 	{
-//		
-//		if(ClientesRegistrados != null) {
-//			
-//			boolean valido = true;
-//			
-//			
-//			Iterator<HashMap.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
-//		    
-//		    while (iterador.hasNext()) {
-//				HashMap.Entry<Integer, Pasajero> entrada = iterador.next();
-//				valido &= (ClientesRegistrados.containsValue(entrada.getValue().consultarCliente()));
-//			}
-//			
-//			
-//			if (!(valido && porcentajeImpuesto > 0 && totalAsientos > 0 && totalTripulantes > 0 && 
-//				origen != null && destino != null &&  fechaSalida != null))
-//				
-//				throw new RuntimeException("Valor de parametros invalido!!");
-			
 			this.codigo = codigo;
 			this.destino = destino;
 			this.origen = origen;
 			this.totalAsientos =  totalAsientos;
 			this.totalTripulantes= totalTripulantes;
-			this.pasajeros= pasajeros;
+			this.asientosDisponibles = new HashMap<Integer, Asiento>();
+			this.pasajeros = new HashMap<Integer, Pasajero>();
 			this.fechaSalida= fechaSalida;
 			this.porcentajeImpuesto = porcentajeImpuesto;
-//		}
-//		
-//		else throw new RuntimeException("Valor de parametros invalido!!");
-		
 	}
-	
-	
+		
 	public String getCodigo() 
 	{
 		return codigo;
@@ -187,9 +160,17 @@ public abstract class Vuelo {
 		
 	}
 	
-	public void  registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Vuelo vuelo)
+	/*
+	 * Registra asientos, uno por uno. Se utiliza dentro de registrarAsientoSdisponibles aca abajo.
+	 * */
+	public void registrarAsientoDisponible(Asiento asiento) 
 	{
-		
+		asientosDisponibles.put(asiento.getCodigo(), asiento);
+	}
+	
+	public void  registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
+	{
+		//Cada vuelo modificara los asientos antes de registrarlos. Cada vuelo debe implementar su propia manera de registrar los asientos.
 	}
 	
 }

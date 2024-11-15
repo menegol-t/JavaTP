@@ -10,7 +10,7 @@ public class Asiento
 	private boolean ocupado;
 	private double precio;
 	
-	public Asiento(int codigo, int seccion, double precio, String clase, boolean ocupado)
+	public Asiento(int codigo, int seccion, double precio, String clase)
 	{
 		if (!(codigo > 0 && seccion > 0 && seccion <= 3 && clase != null)) throw new RuntimeException("Valor de parametros invalido!!");
 		
@@ -20,7 +20,7 @@ public class Asiento
 		this.seccion = seccion;
 		this.clase = clase;
 		this.precio = precio;
-		this.ocupado = ocupado;
+		this.ocupado = false;
 	}
 	
 	public Integer getCodigo()

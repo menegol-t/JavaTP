@@ -136,7 +136,7 @@ public abstract class Vuelo {
 	 *  
 	 * Si todo sale bien en cualquier caso, retorno el codigo de pasaje.
 	 */
-	public int registrarAsiento(Cliente cliente, Asiento asiento, int codPasaje) 
+	public int registrarAsiento(Cliente cliente, Asiento asiento) 
 	{	
 		//Removemos el asiento de asientosDisponibles
 		asientosDisponibles.remove(asiento.getCodigo());
@@ -144,19 +144,19 @@ public abstract class Vuelo {
 		Pasajero pasajero = pasajeros.get(cliente.getDni());
 
 		//Si el pasajero no estaba previamente registrado en el vuelo, lo registro y asigno su asiento.
-		if(pasajero == null) return registrarPasajero(cliente, asiento, codPasaje);
+		if(pasajero == null) return registrarPasajero(cliente, asiento);
 		
 		//Si el pasajero ya estaba registrado en el vuelo, solo asigno su asiento.
-		return pasajero.asignarAsiento(asiento, codPasaje);
+		return pasajero.asignarAsiento(asiento);
 	}
 	
-	private int registrarPasajero(Cliente cliente, Asiento asiento, int codPasaje) 
+	private int registrarPasajero(Cliente cliente, Asiento asiento) 
 	{
 		//Creo un nuevo pasajero en el diccionario de pasajeros.
 		pasajeros.put(cliente.getDni(), new Pasajero(cliente));
 		
 		//Busco al pasajero nuevo por su DNI, le asigno su asiento
-		return pasajeros.get(cliente.getDni()).asignarAsiento(asiento, codPasaje);
+		return pasajeros.get(cliente.getDni()).asignarAsiento(asiento);
 		
 	}
 	

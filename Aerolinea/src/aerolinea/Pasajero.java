@@ -50,11 +50,8 @@ public class Pasajero
 		this.costo = costo;
 	}
 	
-	public int asignarAsiento(Asiento asiento, int codPasaje) 
+	public int asignarAsiento(Asiento asiento) 
 	{	
-		//Le asigno al asiento su codigo de pasaje
-		asiento.setCodPasaje(codPasaje);
-		
 		//Guardo el asiento en el diccionario de asientos.
 		asientos.put(asiento.getCodigo(), asiento);
 		

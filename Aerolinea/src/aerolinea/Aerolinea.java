@@ -394,7 +394,7 @@ public class Aerolinea implements IAerolinea
 	}
 
 	/*
-	 * Dado un hashmap de asientos, retorna un Map con sus clases (economica, turista, primera).
+	 * Dado un hashmap <Integer, Asiento>, retorna un Map <Integer, asiento.getClase()>
 	 * */
 	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, HashMap<Integer, Asiento> asientosDisponibles)
 	{
@@ -439,10 +439,10 @@ public class Aerolinea implements IAerolinea
 		//Nos pasaron el dni como int asi que lo convertimos en Integer, porque el DNI es una clave en los diccionarios que usamos, y como tal necesita ser Integer.
 		Integer Dni = dni;
 		
-		return validarCliente(Dni, codVuelo, nroAsiento, aOcupar);
+		return validarClienteYVuelo(Dni, codVuelo, nroAsiento, aOcupar);
 	}
 	
-	private int validarCliente(Integer dni, String codVuelo, int nroAsiento, boolean aOcupar) 
+	private int validarClienteYVuelo(Integer dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
 		//Busco el cliente y verifico si existe
 		Cliente pasajero = clientes.get(dni);
@@ -450,20 +450,18 @@ public class Aerolinea implements IAerolinea
 		//Si el cliente no existe, lanzo excepcion
 		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
 		
-		return verificarVuelo(pasajero, codVuelo, nroAsiento, aOcupar);
-	}
-	
-	private int verificarVuelo(Cliente pasajero, String codVuelo, int nroAsiento, boolean aOcupar) 
-	{
 		//Busco el vuelo y verifico si esta registrado en la aerolinea. 
 		Vuelo vuelo = vuelos.get(codVuelo);
 		
 		//Si no esta registrado en la aeolina lanzo una excepcion.
 		if(vuelo == null) throw new RuntimeException("venderPasaje: El codigo de vuelo provisto no pertenece a un vuelo registrado.");
 		
-		return  venderAsiento(pasajero, vuelo, nroAsiento, aOcupar);
+		return venderAsiento(pasajero, vuelo, nroAsiento, aOcupar);
 	}
 	
+	/*
+	 * 
+	 * */
 	private int venderAsiento(Cliente pasajero, Vuelo vuelo, int nroAsiento, boolean aOcupar) 
 	{
 		//Busco el asiento disponible dentro del vuelo. El vuelo sabe que si el asiento que busco no es disponible, tira una excepcion.
@@ -476,14 +474,17 @@ public class Aerolinea implements IAerolinea
 		 * unico en toda la aerolinea en general (su codigo de pasaje). 
 		 * */
 		
-		//Genero un codigo unico en toda la aerolinea para el pasaje.
-		int codigoPasaje = obtenerCodigo();
-		
 		//Le asigno al asiento si esta ocupado o no
 		asiento.setOcupado(aOcupar);
 		
-		//Le digo al vuelo que venda el asiento. Si todo salio bien, se le asigna el numero de pasaje al asiento y este es retornado 
-		return vuelo.registrarAsiento(pasajero, asiento, codigoPasaje);
+		//Genero un codigo unico en toda la aerolinea para el pasaje.
+		int codigoPasaje = obtenerCodigo();
+		
+		//Le asigno el codigo de pasaje al asiento
+		asiento.setCodPasaje(codigoPasaje);
+		
+		//Le digo al vuelo que venda el asiento. Si todo salio bien, me va a retornar el codigo de pasaje del asiento. 
+		return vuelo.registrarAsiento(pasajero, asiento);
 		
 	}
 	

@@ -64,11 +64,11 @@ public class Aerolinea implements IAerolinea
 		return codigo;
 	}
 	
-	public Aeropuerto getAeropuerto(String nombre)
+	private Aeropuerto getAeropuerto(String nombre)
 	{
 		Aeropuerto aeropuerto = aeropuertos.get(nombre);
 		
-		if(aeropuerto == null) throw new RuntimeException("getAeropuerto: ");
+		if(aeropuerto == null) throw new RuntimeException("getAeropuerto: El nombre dado no corresponde a ningun aeropuerto registrado.");
 		
 		return aeropuerto;
 	}
@@ -83,7 +83,6 @@ public class Aerolinea implements IAerolinea
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
 		try {
-			
             LocalDate objetoFecha= LocalDate.parse(fecha, formato);
             return objetoFecha;
             
@@ -197,7 +196,6 @@ public class Aerolinea implements IAerolinea
 		
 		//Añado el nuevo cliente a la lista de clientes. Si los datos que me pasaron son invalidos, el constructor de cliente rebota
 		clientes.put(Dni, new Cliente(dni, nombre, telefono));
-		
 	}
 
 	
@@ -381,6 +379,8 @@ public class Aerolinea implements IAerolinea
 		//Obtenemos el vuelo por su codigo
 		Vuelo vuelo = vuelos.get(codVuelo);
 		
+		if(vuelo == null) throw new RuntimeException("asientosDisponibles: El codigo de vuelo no corresponde a ningun vuelo registrado.");
+		
 		//Obtenemos un hashMap de los asientos disponibles en el vuelo
 		HashMap<Integer, Asiento> asientosDisponibles = vuelo.getAsientosDisponibles();
 		
@@ -390,6 +390,9 @@ public class Aerolinea implements IAerolinea
 		return numeroDeAsintoYSeccion(diccionarioNroAsientoSeccion, asientosDisponibles);
 	}
 
+	/*
+	 * Dado un hashmap de asientos, retorna un Map con sus clases (economica, turista, primera).
+	 * */
 	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, HashMap<Integer, Asiento> asientosDisponibles)
 	{
 		//Generamos un iterador sobre todos los asientosDisponibles
@@ -480,7 +483,6 @@ public class Aerolinea implements IAerolinea
 		return vuelo.registrarAsiento(pasajero, asiento, codigoPasaje);
 		
 	}
-	
 	
 	
 	

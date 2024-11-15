@@ -187,15 +187,9 @@ public abstract class Vuelo {
 		
 	}
 	
-	public void  registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Nacional nacional)
+	public void  registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Vuelo vuelo)
 	{
 		
-	}
-
-	public HashMap<String, HashMap<Integer, Asiento>>  registrarAsientosDeVuelos(int[] cantAsientos, double[] precios, Nacional nacional,
-			HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo) 
-	{
-		return asientosDisponiblesPorVuelo;	
 	}
 	
 }

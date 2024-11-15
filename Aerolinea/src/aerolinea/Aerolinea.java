@@ -289,21 +289,8 @@ public class Aerolinea implements IAerolinea
 		
 		//3) y 4)
 		
-		//Se crean los asientos y se redefine el diccionario de asientos disponibles
-		
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * 
- * 
- * 
- * 
- *          NO EXISTE MAS ASIENTOS DISPONIBLES POR VUELO A NIVEL BONDIJET
- * 
- * 
- * 
- * 
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * */
-		//asientosDisponiblesPorVuelo = nuevoNacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoNacional, asientosDisponiblesPorVuelo);
+		//Se crean los asientos y se agregan al vuelo
+		nuevoNacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoNacional);
 		
 		//5)
 		return codigo;
@@ -384,22 +371,8 @@ public class Aerolinea implements IAerolinea
 		
 		//3) y 4)
 		
-		//Se crean los asientos y se redefine el diccionario de asientos disponibles
-		
-		/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 * 
-		 * 
-		 * 
-		 * 
-		 *          NO EXISTE MAS ASIENTOS DISPONIBLES POR VUELO A NIVEL BONDIJET
-		 * 
-		 * 
-		 * 
-		 * 
-		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 * */
-		
-		//asientosDisponiblesPorVuelo = nuevoInternacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoInternacional, asientosDisponiblesPorVuelo);
+		//Se crean los asientos y se agregan al vuelo
+		nuevoInternacional.registrarAsientosDeVuelos(cantAsientos, precios, nuevoInternacional);
 		
 		//5)
 		return codigo;

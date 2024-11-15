@@ -38,12 +38,12 @@ public class Nacional extends Vuelo {
 	
 	
 	@Override
-	public HashMap<String, HashMap<Integer, Asiento>> registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Nacional nacional, HashMap<String, HashMap<Integer, Asiento>> asientosDisponiblesPorVuelo)
+	public void registrarAsientosDeVuelos(int[]cantAsientos, double[]precios, Vuelo nacional)
 	{
 		//Se recorre la cantidad de elementos en el array cantAsientos, que evidencia la cantidad de secciones
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
-			HashMap<Integer, Asiento> nuevosAsientos = new HashMap<>();
+			HashMap<Integer, Asiento> nuevosAsientos = nacional.getAsientosDisponibles();
 			
 			//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
 			int contador = 0;
@@ -67,14 +67,9 @@ public class Nacional extends Vuelo {
 					nuevosAsientos.put(asiento.getCodigo(), asiento);
 				}
 			}
-			
-			//Agregamos los asientos al diccionario de asientos disponibles
-			asientosDisponiblesPorVuelo.put(nacional.getCodigo(), nuevosAsientos);
 
 		}
 		
-		//Retornamos
-		return asientosDisponiblesPorVuelo;
 	}
 
 	

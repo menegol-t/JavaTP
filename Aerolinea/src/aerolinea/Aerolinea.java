@@ -442,6 +442,9 @@ public class Aerolinea implements IAerolinea
 		return validarClienteYVuelo(Dni, codVuelo, nroAsiento, aOcupar);
 	}
 	
+	/*
+	 * Valida si el cliente y el vuelo dados existen en la aerolinea antes de vender el asiento. 
+	 * */
 	private int validarClienteYVuelo(Integer dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
 		//Busco el cliente y verifico si existe
@@ -460,7 +463,8 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	/*
-	 * 
+	 * Busca el asiento disponible en el vuelo, le asigna sus caracteristicas (si esta ocupado o no, su codigo de pasaje) y le indica al vuelo
+	 * que lo venda. 
 	 * */
 	private int venderAsiento(Cliente pasajero, Vuelo vuelo, int nroAsiento, boolean aOcupar) 
 	{

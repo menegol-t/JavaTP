@@ -155,8 +155,8 @@ public abstract class Vuelo {
 		//Creo un nuevo pasajero en el diccionario de pasajeros.
 		pasajeros.put(cliente.getDni(), new Pasajero(cliente));
 		
-		//Busco al pasajero nuevo por su DNI, le asigno su asiento
-		return pasajeros.get(cliente.getDni()).asignarAsiento(asiento);
+		//Busco al pasajero que acabo de registrar por su DNI para asegurarme que exista, le asigno su asiento
+		return pasajeros.get( cliente.getDni() ).asignarAsiento(asiento);
 		
 	}
 	

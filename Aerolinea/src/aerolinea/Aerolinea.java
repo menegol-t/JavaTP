@@ -181,11 +181,17 @@ public class Aerolinea implements IAerolinea
 	
 	
 	
+	/**
+	* - 2
+	* Se registran los clientes de la Aerolínea, compren o no pasaje. 
+	* Cuando un cliente compre un pasaje es un Cliente (pasajero) y queda registrado en el vuelo correspondiente.
+	* 
+	* Para esto, convertimos el dni que nos pasaron en Integer, dado que el diccionario de clientes usa como clave su dni.
+	* Despues mandamos a crear el cliente y lo guardamos en el array de clientes. Si nos pasaron algun valor invalido (dni == 0)
+	* el constructor de cliente debe tirar exception.
+    */
 	@Override
 	public void registrarCliente(int dni, String nombre, String telefono) 
-	/*
-	 * Hay que hacer validaciones de nombre string telefono etc etc...
-	 * */
 	{	
 		Integer Dni = dni;
 		
@@ -196,9 +202,20 @@ public class Aerolinea implements IAerolinea
 
 	
 	
+	/**
+	* - 3 
+	* Se ingresa un aeropuerto con los datos que lo identifican. Estos aeropuertos son los que deberán corresponder
+	* al origen y destino de los vuelos.
+	* El nombre es único por aeropuerto en todo el mundo.
+	* 
+	* Para esto, primero verificamos si el pais del aeropuerto es o no es argentina.
+	* Posterior, guardamos el aeropuerto en el diccionario de aeropuertos. 
+	* Si alguno de sus datos es invalido (por ej direccion == null) el constructor de aeropuerto tira runtimeException. 
+	*/
 	@Override
 	public void registrarAeropuerto(String nombre, String pais, String estado, String direccion) 
 	{	
+		if(pais == null || nombre == null) throw new RuntimeException("registrarAeropuerto: ni el nombre ni el pais del aeropuerto pueden ser vacios.");
 		//Verifico si el pais es o no es argentina (es igual de valido que me pasen Argentina, argentina, aRgEnTiNa, etc)
 		boolean esNacional = pais.equalsIgnoreCase("Argentina");
 		

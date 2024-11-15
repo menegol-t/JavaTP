@@ -243,7 +243,7 @@ public class Aerolinea implements IAerolinea
 	* Si todo esta bien, retornamos el codigo guardado. 
 	*/
 	
-	//El constructor de esto deberia validar que los datos no sean malos
+	//El constructor de esto deberia validar que los datos no sean invalidos
 	@Override
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, double[] precios, int[] cantAsientos) 
@@ -258,6 +258,7 @@ public class Aerolinea implements IAerolinea
 		//Calculo del total de asientos entre la primera y la segunda clase
 		int totalAsientos = cantAsientos[0] + cantAsientos[1];
 		
+		//Mando a generar el vuelo nacional, y a registrar todos sus asientos.
 		return registrarNacional(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, cantAsientos[0], cantAsientos[1], valorRefrigerio, precios[0], precios[1], cantAsientos, precios);
 	}
 	
@@ -266,11 +267,11 @@ public class Aerolinea implements IAerolinea
 		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException
 		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, limitePasajerosEconomica, limitePasajerosPrimera, valorRefrigerio, precioEconomica, precioPrimera);
 		
-		//Ponemos el nuevo vuelo en el diccionario de vuelos
-		vuelos.put(codigo, nuevoNacional);
-		
 		//Asignamos sus asienos al nuevo vuelo
 		nuevoNacional.registrarAsientosDisponibles(asientos, precios);
+		
+		//Ponemos el nuevo vuelo en el diccionario de vuelos
+		vuelos.put(codigo, nuevoNacional);
 		
 		//Para retornar el codigo, buscamos al nuevoNacional en el diccionario de vuelos donde lo acabamos de registrar, y devolvemos su codigo. Con esto validamos que se guardo bien. 
 		return vuelos.get(codigo).getCodigo();

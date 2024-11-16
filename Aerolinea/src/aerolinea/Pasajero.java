@@ -75,6 +75,7 @@ public class Pasajero
 	
 	public void eliminarPasaje(int codPasaje) 
 	{
+		//Voy a recorrer todos los asientos del pasajero hasta obtener el que tiene el numero de psasje correcto.
 		Iterator<Map.Entry<Integer, Asiento>> it = asientos.entrySet().iterator();
 		
 		//Recorro todos los asientos del pasajero
@@ -82,8 +83,9 @@ public class Pasajero
 			
 			Asiento asientoActual = (Asiento) it.next();
 			 
-			//Cuando encuentro el asiento cuyo codigo coincide con el dado, lo elimino de memoria y que el garbage colector se encargue.
-			//Si nunca lo encuentro, entonces ya estaba eliminado.
+			/* Cuando encuentro el asiento cuyo codigo coincide con el dado, lo elimino de memoria y que el garbage colector se encargue. 
+			 * Si nunca lo encuentro, entonces ya estaba eliminado.
+			 * */
 			if(asientoActual.getCodPasaje() == codPasaje) asientoActual = null;
 		}
 	}

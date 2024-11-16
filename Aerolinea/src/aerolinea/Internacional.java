@@ -10,12 +10,9 @@ public class Internacional extends Nacional{
 	private HashMap<String, Aeropuerto> escalas;
 	
 	
-	public Internacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, double precioRefrigerio, HashMap <String, Aeropuerto> escalas)
+	public Internacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, int cantidadRefrigerios, double precioRefrigerio, HashMap <String, Aeropuerto> escalas)
 	{
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, precioRefrigerio);
-		
-		this.escalas = new HashMap<String, Aeropuerto>();
-		this.vueloDirecto = escalas.size() == 0;
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, cantidadRefrigerios, precioRefrigerio);
 		
 		//El numero de pasajeros empieza vacio, se van sumando conforme se suman pasajes.
 		this.pasajerosTurista = 0;
@@ -23,11 +20,14 @@ public class Internacional extends Nacional{
 		//El limite de pasajeros aparentemente no me lo pasan, solo lo sacamos nosotros??????
 		this.limitePasajerosTurista = 0;
 		
+		this.vueloDirecto = escalas.size() == 0;
+		this.escalas = new HashMap<String, Aeropuerto>();
 	}
 	
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{	
+		//Al registrar los asientos, registramos cual es el limite de asientos por clase, algo que solicitaba la etapa de diseño pero en la segunda etapa no se especifica. 
 		super.setLimitePasajerosEconomica(cantAsientos[0]);
 		
 		limitePasajerosTurista = cantAsientos[1];
@@ -63,15 +63,26 @@ public class Internacional extends Nacional{
 				else //Si estamos en la tercera seccion
 				{	
 					//Se crea un asiento de primera clase 
-					asientoNuevo = new Asiento(contador, 3, precios[i], "Primera Clase");	
+					asientoNuevo = new Asiento(contador, 3, precios[i], "Ejecutivo");	
 				}
 				
 				//Agregamos el asiento al diccionario de asientos disponibles. 
 				super.registrarAsientoDisponible(asientoNuevo);
 			}
-
 		}
-
 	}
+
+	public int getLimitePasajerosTurista() {
+		return limitePasajerosTurista;
+	}
+
+	public HashMap<String, Aeropuerto> getEscalas() {
+		return escalas;
+	}
+
+	public boolean isVueloDirecto() {
+		return vueloDirecto;
+	}
+	
 	
 }

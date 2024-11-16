@@ -238,7 +238,7 @@ public class Aerolinea implements IAerolinea
 	* Devuelve el código del Vuelo con el formato: {Nro_vuelo_publico}-PUB. Por ejemplo--> 103-PUB
 	* Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
 	* 
-	* IREP: NO PUEDE HABER MAS ASIENTOS QUE TRIPULANTES?????? 
+	* IREP: NO PUEDE HABER MAS ASIENTOS QUE TRIPULANTES?????? En el diseño original no habia valor de refrigerio. 
 	* 
 	* Primero verificamos que los aeropuertos esten registrados en la compañia.
 	* Posterior, generamos el nuevo vuelo. El constructor de este debe tirar runtimeException si algun dato es invalido (lso tripulantes no pueden ser 0, etc)
@@ -247,8 +247,7 @@ public class Aerolinea implements IAerolinea
 	
 	//El constructor de esto deberia validar que los datos no sean invalidos
 	@Override
-	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
-			double valorRefrigerio, double[] precios, int[] cantAsientos) 
+	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio, double[] precios, int[] cantAsientos) 
 	{
 		//Creamos un codigo
 		String codigo = crearCodigoPublico();
@@ -269,8 +268,8 @@ public class Aerolinea implements IAerolinea
 	 * */
 	private String registrarNacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int[] asientos, double[] precios) 
 	{
-		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException. 						(20 = porcentajeImpuesto)
-		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, valorRefrigerio);
+		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException. (20 = porcentajeImpuesto, 1 = cantidad de refrigerios por pasajero)
+		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, 1, valorRefrigerio);
 		
 		//Asignamos sus asienos al nuevo vuelo
 		nuevoNacional.registrarAsientosDisponibles(asientos, precios);
@@ -303,16 +302,15 @@ public class Aerolinea implements IAerolinea
 	 *
 	 * Devuelve el código del vuelo.  Con el formato: {Nro_vuelo_publico}-PUB, por ejemplo--> 103-PUB
 	 * Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
-
-	 *  1) crear un codigo Internacional y un Internacional 
-	 * 	2) agregarlo a la lista de vuelos (polimorfismo),
-	  	3) Crear los asientos y asignarles un precio
-	 	4) almacenar <codigo, asientosLibres>
-	 	5) retornar el codigo
-	*/
+	 * 
+	 * Para esto, primero verificamos que los aeropuertos que nos pasaron existan en la compañia. 
+	 * Posterior, verificamos que todas las escalas que nos pasaron son aeropuertos validos. Para esto, convertimos
+	 * el array de nombres de aeropuertos en un diccionario de aeropuertos. Si algun aeropuerto no se encuentra, 
+	 * toda la funcion tira runtimeException. Una vez realizado el diccionario, se llama al constructor del vuelo,
+	 * y registramos todos sus asientos. Por ultimo, retornamos el codigo del vuelo. 
+	 */
 	@Override
-	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
-			double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) 
+	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) 
 	{		
 		 //Creacion del codigo
 		String codigo = crearCodigoPublico();
@@ -325,36 +323,6 @@ public class Aerolinea implements IAerolinea
 		int totalAsientos = cantAsientos[0] + cantAsientos[1] + cantAsientos[2]; 
 		
 		return verificarEscalas(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, valorRefrigerio, cantRefrigerios, precios, cantAsientos, escalas);
-		
-//		//Creamos la lista de las escalas
-//		LinkedList<Aeropuerto> listaEscalas = new LinkedList<>();
-//		
-//		//Buscamos y agregamos todas las escalas
-//		for(int i = 0; i<escalas.length; i++)
-//		{
-//			Aeropuerto escala = aeropuertos.get(escalas[i]);
-//			listaEscalas.add(escala);
-//		}
-//		
-//		//Ternario, si el largo del array de escalas es mayor que 0, entonces se valida
-//		boolean hayEscalas = escalas.length > 0 ? true : false;
-//		
-//		//Se genera un diccionario vacio de pasajeros, despues se iran agregando cuando se venda el pasaje
-//		HashMap<Integer, Pasajero> pasajerosVuelo = new HashMap<>();
-//		
-//		//Se genera nuevo internacional
-//		Nacional nuevoInternacional = new Internacional(codigo,Origen,Destino,totalAsientos,tripulantes, fecha, 20,cantAsientos[0],cantAsientos[1],cantAsientos[2],valorRefrigerio, precios[0],precios[1], precios[2], listaEscalas, hayEscalas);
-//		
-//		//2)
-//		vuelos.put(codigo, nuevoInternacional);
-//		
-//		//3) y 4)
-//		
-//		//Se crean los asientos y se agregan al vuelo
-//		nuevoInternacional.registrarAsientosDisponibles(cantAsientos, precios);
-//		
-//		//5)
-//		return codigo;
 	}
 	
 	/*
@@ -376,8 +344,25 @@ public class Aerolinea implements IAerolinea
 			}
 		}//Es posible que nos pidan hacer un vuelo internacional SIN escalas, en cuyo caso mandamos el diccionario "escalas" vacio al vuelo. 
 		
-		return registrarInternacional();
+		return registrarInternacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, valorRefrigerio, cantRefrigerios, precios, asientos, escalas);
+	}
+	
+	/*
+	 * Dados los datos de un vuelo, lo registra, registra sus asientos y desponibles y lo añade al diccionario de vuelos de la aerolinea
+	 * */
+	private String registrarInternacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] asientos, HashMap<String, Aeropuerto> escala) 
+	{
+		//Generamos un nuevo vuelo internacional. Si algun dato es incorrecto, el constructor tira runtimeException					(20 = porcentajeImpuesto)
+		Internacional nuevoInternacional = new Internacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, cantRefrigerios, valorRefrigerio, escala);
 		
+		//Registramos todos los asientos del vuelo internacional
+		nuevoInternacional.registrarAsientosDisponibles(asientos, precios);
+		
+		//Guardamos el vuelo en el diccionario de vuelos
+		vuelos.put(codigo, nuevoInternacional);
+		
+		//Para retornar el codigo, buscamos al nuevoInternacional en el diccionario de vuelos donde lo acabamos de registrar, y devolvemos su codigo. Con esto validamos que se guardo bien. 
+		return vuelos.get(codigo).getCodigo();
 	}
 	
 	

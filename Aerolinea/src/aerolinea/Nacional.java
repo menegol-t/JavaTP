@@ -1,25 +1,21 @@
 package aerolinea;
 
-import java.util.HashMap;
-
 public class Nacional extends Vuelo {
 	
 	int refrigeriosPorPasajero;
+	double precioPorRefrigerio;
 	int limitePasajerosEconomica;
 	int pasajerosEconomica;
 	int limitePasajerosEjecutivo;
 	int pasajerosEjecutivo;
-	
-	//Dado a que nos lo pasan por parametro, se almacena para facturacion
-	double precioPorRefrigerio;
 
-	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, double precioRefrigerio) 
+	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, int refrigeriosPorPasajero, double precioPorRefrigerio) 
 	{	
 		//Se crea la clase padre vuelo, por lo que su irep se mantiene. Se le pasa "porcentajeImpuesto" como 20
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto);
 		
-		refrigeriosPorPasajero = 1;
-		precioPorRefrigerio = precioRefrigerio;
+		this.refrigeriosPorPasajero = refrigeriosPorPasajero;
+		this.precioPorRefrigerio = precioPorRefrigerio;
 		
 		//De momento no tiene pasajeros, la logica de aumentar este numero es de venderPasaje, al igual que incrementar agregar el pasajero a la lista
 		pasajerosEconomica = 0;
@@ -37,7 +33,7 @@ public class Nacional extends Vuelo {
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{
-		
+		//Al registrar los asientos, registramos cual es el limite de asientos por clase, algo que solicitaba la etapa de diseño pero en la segunda etapa no se especifica. 
 		setLimitePasajerosEconomica(cantAsientos[0]);
 		
 		setLimitePasajerosEjecutivo(cantAsientos[1]);
@@ -70,9 +66,7 @@ public class Nacional extends Vuelo {
 				
 				super.registrarAsientoDisponible(asientoNuevo);
 			}
-
 		}
-		
 	}
 	
 	//Hacemos este setter por la subclase internacional
@@ -86,5 +80,6 @@ public class Nacional extends Vuelo {
 	{
 		limitePasajerosEjecutivo = cant;
 	}
+	
 	
 }

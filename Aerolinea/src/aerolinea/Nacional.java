@@ -5,32 +5,29 @@ import java.util.HashMap;
 public class Nacional extends Vuelo {
 	
 	int refrigeriosPorPasajero;
-	int limitePasajerosPrimera;
-	int pasajerosPrimera;
-	int limitePasajerosSegunda;
-	int pasajerosSegunda;
+	int limitePasajerosEconomica;
+	int pasajerosEconomica;
+	int limitePasajerosEjecutivo;
+	int pasajerosEjecutivo;
 	
 	//Dado a que nos lo pasan por parametro, se almacena para facturacion
 	double precioPorRefrigerio;
-	double precioAsientosPrimera; 
-	double precioAsientosSegunda;
 
-	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int limitePasPrimera, int limitePasSegunda, double precioRefrigerio, double precioAsientosPrimera, double precioAsientosSegunda) 
+	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, double precioRefrigerio) 
 	{	
 		//Se crea la clase padre vuelo, por lo que su irep se mantiene. Se le pasa "porcentajeImpuesto" como 20
-		super(codigo, destino, origen, totalAsientos, totalTripulantes, fechaSalida, 20);
-		
-		if(!(limitePasPrimera > 0 && limitePasSegunda > 0 && limitePasSegunda > 0))
-			throw new RuntimeException("Valor de parametros invalido!!");
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto);
 		
 		refrigeriosPorPasajero = 1;
-		limitePasajerosPrimera = limitePasPrimera;
-		limitePasajerosSegunda = pasajerosSegunda;
 		precioPorRefrigerio = precioRefrigerio;
 		
 		//De momento no tiene pasajeros, la logica de aumentar este numero es de venderPasaje, al igual que incrementar agregar el pasajero a la lista
-		pasajerosPrimera = 0;
-		pasajerosSegunda = 0;
+		pasajerosEconomica = 0;
+		pasajerosEjecutivo = 0;
+		
+		//El limite de pasajeros aparentemente no me lo pasan, solo lo sacamos nosotros??????
+		limitePasajerosEconomica = 0;
+		limitePasajerosEjecutivo = 0;
 		
 	}
 	
@@ -40,6 +37,11 @@ public class Nacional extends Vuelo {
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{
+		
+		setLimitePasajerosEconomica(cantAsientos[0]);
+		
+		setLimitePasajerosEjecutivo(cantAsientos[1]);
+		
 		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Pimera]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
@@ -63,7 +65,7 @@ public class Nacional extends Vuelo {
 				else //Si estamos en la segunda seccion
 				{
 					//Se crea un asiento de primera clase
-					asientoNuevo = new Asiento(contador, 2, precios[i], "Primera Clase");
+					asientoNuevo = new Asiento(contador, 2, precios[i], "Ejecutivo");
 				}
 				
 				super.registrarAsientoDisponible(asientoNuevo);
@@ -72,6 +74,17 @@ public class Nacional extends Vuelo {
 		}
 		
 	}
-
+	
+	//Hacemos este setter por la subclase internacional
+	public void setLimitePasajerosEconomica(int cant) 
+	{
+		limitePasajerosEconomica = cant;
+	}
+	
+	//Hacemos este setter por la subclase internacional
+	public void setLimitePasajerosEjecutivo(int cant) 
+	{
+		limitePasajerosEjecutivo = cant;
+	}
 	
 }

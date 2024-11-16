@@ -219,14 +219,14 @@ public class Aerolinea implements IAerolinea
 		//Verifico si el pais es o no es argentina (es igual de valido que me pasen Argentina, argentina, aRgEnTiNa, etc)
 		boolean esNacional = pais.equalsIgnoreCase("Argentina");
 		
-		//Añado el nuevo aeropuerto en el diccionario. Si los datos que me pasaron son invalidos, el constructor del aeropuerto tira excepcion. 
+		//Creo el nuevo aeropuerto y lo guardo en el diccionario aeropuertos. Si los datos del aeropurto son invalidos, el constructor del mismo tira excepcion. 
 		aeropuertos.put(nombre, new Aeropuerto(nombre, pais, estado, direccion, esNacional));
 	}
 	
 	
 
 	/*El origen y destino deben ser aeropuertos con país=”Argentina” y ya registrados en la aerolinea. 
-	 * La fecha es la fecha de salida del vuelo.
+	* La fecha es la fecha de salida del vuelo.
 	* Los asientos se considerarán numerados correlativamente empezando con clase Turista y terminando con la clase Ejecutivo.
 	* Se cumple que precios.length == cantAsientos.length == 2
 	* -  cantAsientos[0] = cantidad total de asientos en clase Turista.
@@ -237,6 +237,8 @@ public class Aerolinea implements IAerolinea
 	* 
 	* Devuelve el código del Vuelo con el formato: {Nro_vuelo_publico}-PUB. Por ejemplo--> 103-PUB
 	* Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
+	* 
+	* IREP: NO PUEDE HABER MAS ASIENTOS QUE TRIPULANTES?????? 
 	* 
 	* Primero verificamos que los aeropuertos esten registrados en la compañia.
 	* Posterior, generamos el nuevo vuelo. El constructor de este debe tirar runtimeException si algun dato es invalido (lso tripulantes no pueden ser 0, etc)
@@ -259,13 +261,16 @@ public class Aerolinea implements IAerolinea
 		int totalAsientos = cantAsientos[0] + cantAsientos[1];
 		
 		//Mando a generar el vuelo nacional, y a registrar todos sus asientos.
-		return registrarNacional(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, cantAsientos[0], cantAsientos[1], valorRefrigerio, precios[0], precios[1], cantAsientos, precios);
+		return registrarNacional(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, valorRefrigerio, cantAsientos, precios);
 	}
 	
-	private String registrarNacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int limitePasajerosEconomica, int limitePasajerosPrimera, double valorRefrigerio, double precioEconomica, double precioPrimera, int[] asientos, double[] precios) 
+	/*
+	 * Dados los datos necesarios, genera un vuelo publico nacional, registra sus asientos disponibles y guarda dicho vuelo en el diccionario vuelos de Aerolinea.
+	 * */
+	private String registrarNacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int[] asientos, double[] precios) 
 	{
-		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException
-		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, limitePasajerosEconomica, limitePasajerosPrimera, valorRefrigerio, precioEconomica, precioPrimera);
+		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException. 						(20 = porcentajeImpuesto)
+		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, valorRefrigerio);
 		
 		//Asignamos sus asienos al nuevo vuelo
 		nuevoNacional.registrarAsientosDisponibles(asientos, precios);
@@ -279,7 +284,7 @@ public class Aerolinea implements IAerolinea
 
 	
 	
-	/*  Pueden ser vuelos con escalas o sin escalas. 
+	/* Pueden ser vuelos con escalas o sin escalas. 
 	 * La fecha es la de salida y debe ser posterior a la actual.  
 	 * Los asientos se considerarán numerados correlativamente empezando con clase Turista, siguiendo por Ejecutiva 
 	 * y terminando con Primera clase.
@@ -294,6 +299,8 @@ public class Aerolinea implements IAerolinea
 	 * valorRefrigerio es el valor del refrigerio que se sirve en el vuelo.
 	 * cantRefrigerios es la cantidad de refrigerio que se sirven en el vuelo.
 	 *
+	 *IREP: HAY QUE VALIDAR QUE LA FECHA DE SALIDA SEA POSTERIOR A LA ACTUAL???? GUATAFAK
+	 *
 	 * Devuelve el código del vuelo.  Con el formato: {Nro_vuelo_publico}-PUB, por ejemplo--> 103-PUB
 	 * Si al validar los datos no se puede registrar, se deberá lanzar una excepción.
 
@@ -307,54 +314,72 @@ public class Aerolinea implements IAerolinea
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) 
 	{		
-		//Validaciones. Si alguna falla se tira excepcion. 
-		stringInvalido(origen, "Origen"); stringInvalido(destino, "Destino"); stringInvalido(origen, "Fecha");
-		intInvalidoCero(tripulantes, "Tripulantes"); doubleInvalidoCero(valorRefrigerio, "Valor refrigerio");  
-		arrayDoubleInvalido(precios, "Precios asientos"); arrayIntInvalido(cantAsientos, "Cantidad Asientos"); arrayInvalido(escalas, "Escalas"); 
-		
-		
-		
-		//Creacion del codigo
+		 //Creacion del codigo
 		String codigo = crearCodigoPublico();
 		
-		//Obtencion de origen y destino
+		//Obtengo los aeropuertos de origen y destino por su nombre. Si no estaban registrados, tira una excepcion.
 		Aeropuerto Origen = getAeropuerto(origen);
 		Aeropuerto Destino = getAeropuerto(destino);
 		
-		//Calculo total de asientos
+		//Calculo total de asientos entre la primera y la segunda clase.
 		int totalAsientos = cantAsientos[0] + cantAsientos[1] + cantAsientos[2]; 
 		
-		//Creamos la lista de las escalas
-		LinkedList<Aeropuerto> listaEscalas = new LinkedList<>();
+		return verificarEscalas(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, valorRefrigerio, cantRefrigerios, precios, cantAsientos, escalas);
 		
-		//Buscamos y agregamos todas las escalas
-		for(int i = 0; i<escalas.length; i++)
-		{
-			Aeropuerto escala = aeropuertos.get(escalas[i]);
-			listaEscalas.add(escala);
-		}
-		
-		//Ternario, si el largo del array de escalas es mayor que 0, entonces se valida
-		boolean hayEscalas = escalas.length > 0 ? true : false;
-		
-		//Se genera un diccionario vacio de pasajeros, despues se iran agregando cuando se venda el pasaje
-		HashMap<Integer, Pasajero> pasajerosVuelo = new HashMap<>();
-		
-		//Se genera nuevo internacional
-		Nacional nuevoInternacional = new Internacional(codigo,Origen,Destino,totalAsientos,tripulantes, fecha, 20,cantAsientos[0],cantAsientos[1],cantAsientos[2],valorRefrigerio, precios[0],precios[1], precios[2], listaEscalas, hayEscalas);
-		
-		//2)
-		vuelos.put(codigo, nuevoInternacional);
-		
-		//3) y 4)
-		
-		//Se crean los asientos y se agregan al vuelo
-		nuevoInternacional.registrarAsientosDisponibles(cantAsientos, precios);
-		
-		//5)
-		return codigo;
+//		//Creamos la lista de las escalas
+//		LinkedList<Aeropuerto> listaEscalas = new LinkedList<>();
+//		
+//		//Buscamos y agregamos todas las escalas
+//		for(int i = 0; i<escalas.length; i++)
+//		{
+//			Aeropuerto escala = aeropuertos.get(escalas[i]);
+//			listaEscalas.add(escala);
+//		}
+//		
+//		//Ternario, si el largo del array de escalas es mayor que 0, entonces se valida
+//		boolean hayEscalas = escalas.length > 0 ? true : false;
+//		
+//		//Se genera un diccionario vacio de pasajeros, despues se iran agregando cuando se venda el pasaje
+//		HashMap<Integer, Pasajero> pasajerosVuelo = new HashMap<>();
+//		
+//		//Se genera nuevo internacional
+//		Nacional nuevoInternacional = new Internacional(codigo,Origen,Destino,totalAsientos,tripulantes, fecha, 20,cantAsientos[0],cantAsientos[1],cantAsientos[2],valorRefrigerio, precios[0],precios[1], precios[2], listaEscalas, hayEscalas);
+//		
+//		//2)
+//		vuelos.put(codigo, nuevoInternacional);
+//		
+//		//3) y 4)
+//		
+//		//Se crean los asientos y se agregan al vuelo
+//		nuevoInternacional.registrarAsientosDisponibles(cantAsientos, precios);
+//		
+//		//5)
+//		return codigo;
 	}
-
+	
+	/*
+	 * Verifica que las escalas sean validas antes de pasarlas al vuelo.
+	 * */
+	private String verificarEscalas(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] asientos, String[] aeropuertos) 
+	{
+		//Realizamos un nuevo hashMap para guardar las escalas
+		HashMap<String, Aeropuerto> escalas = new HashMap<>(); 
+		
+		//Si el vuelo que nos mandaron a crear siquiera TIENE escalas, buscamos el nombre de los aeropuertos uno por uno, y metemos los aeropuertos en el diccionario de escalas del vuelo
+		if(aeropuertos.length > 0) 
+		{
+			for(String nombre: aeropuertos) 
+			{
+				Aeropuerto aeropuerto = getAeropuerto(nombre);
+				
+				escalas.put(nombre, aeropuerto);
+			}
+		}//Es posible que nos pidan hacer un vuelo internacional SIN escalas, en cuyo caso mandamos el diccionario "escalas" vacio al vuelo. 
+		
+		return registrarInternacional();
+		
+	}
+	
 	
 	
 	@Override
@@ -472,9 +497,10 @@ public class Aerolinea implements IAerolinea
 		Asiento asiento = vuelo.getAsientoDisponible(nroAsiento);
  
 		/*
-		 * Importante: En nuestro diseño que fue aprobado, no habia un "codigo de pasaje". Cada pasajero es ubicado por su DNI en su vuelo, y cada 
-		 * asiento es ubicado por su numero, que debe ser unico por vuelo. Entonces decidimos que el numero de pasaje sera solo un numero, unico
-		 * en toda la aerolinea, asociado al asiento. De esta manera, el asiento tiene un numero unico por vuelo (su codigo de asiento) y un numero
+		 * Importante: En nuestro diseño que fue aprobado, no habia un "codigo de pasaje". Cada pasajero es ubicado por su DNI en su vuelo (cada vuelo
+		 * tiene un diccionario pasajeros <DNI, Pasajero>), y cada asiento es ubicado por su numero (cada Pasajero dentro tiene un diccionario de tipo
+		 * <NroAsiento, Asiento>), con un Nro de asiento que es unico dentro de cada vuelo.. Entonces decidimos que el numero de pasaje sera solo un numero,
+		 * unico en toda la aerolinea, asociado al asiento. De esta manera, el asiento tiene un numero unico por vuelo (su codigo de asiento) y un numero
 		 * unico en toda la aerolinea en general (su codigo de pasaje). 
 		 * */
 		

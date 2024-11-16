@@ -14,10 +14,9 @@ public abstract class Vuelo {
 	private HashMap <Integer, Asiento> asientosDisponibles;
 	private HashMap <Integer, Pasajero> pasajeros;
 	private String fechaSalida;
-	private String fechaLlegada;
 	private int porcentajeImpuesto;
 	
-	public Vuelo(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto)
+	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto)
 	{
 			this.codigo = codigo;
 			this.destino = destino;
@@ -35,11 +34,6 @@ public abstract class Vuelo {
 		return codigo;
 	}
 	
-	public int getCantidadPasajeros()
-	{
-		return pasajeros.size(); 
-	}
-	
 	public Aeropuerto getOrigen()
 	{
 		return origen;
@@ -48,6 +42,11 @@ public abstract class Vuelo {
 	public Aeropuerto getDestino()
 	{
 		return destino;
+	}
+	
+	public int getCantidadPasajeros()
+	{
+		return pasajeros.size(); 
 	}
 	
 	public int getTotalAsientos() 
@@ -72,15 +71,14 @@ public abstract class Vuelo {
 	
 	public String getFechaSalida() 
 	{
-		
 		return fechaSalida;
 	}
 	
-	public String getFechaLlegada() 
+	public int getPorcentajeImpuesto() 
 	{
-		return fechaLlegada;
+		return porcentajeImpuesto;
 	}
-
+	
 	public Pasajero getPasajero(int dni) 
 	{
 		Integer Dni = dni;
@@ -150,6 +148,9 @@ public abstract class Vuelo {
 		return pasajero.asignarAsiento(asiento);
 	}
 	
+	/*
+	 * Dado un cliente y un asiento, registra un NUEVO pasajero vacio, y despues le asigna su asiento. Retorna el codigo de pasaje. 
+	 * */
 	private int registrarPasajero(Cliente cliente, Asiento asiento) 
 	{
 		//Creo un nuevo pasajero en el diccionario de pasajeros.
@@ -157,7 +158,6 @@ public abstract class Vuelo {
 		
 		//Busco al pasajero que acabo de registrar por su DNI para asegurarme que exista, le asigno su asiento
 		return pasajeros.get( cliente.getDni() ).asignarAsiento(asiento);
-		
 	}
 	
 	/*

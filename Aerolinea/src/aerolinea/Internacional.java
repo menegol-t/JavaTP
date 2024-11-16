@@ -1,42 +1,39 @@
 package aerolinea;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class Internacional extends Nacional{
 
-	private int limitePasajerosTercera;
-	private double precioAsientosTercera;
-	private int pasajerosTercera;
+	private int limitePasajerosTurista;
+	private int pasajerosTurista;
 	private boolean vueloDirecto;
-	private LinkedList<Aeropuerto> escalas;
+	private HashMap<String, Aeropuerto> escalas;
 	
 	
-	public Internacional(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, 
-			int limitePasPrimera, int limitePasSegunda, int limitePasTercera, double precioRefrigerio, double precioAsientosPrimera, double precioAsientosSegunda, 
-			double precioAsientosTercera, LinkedList<Aeropuerto> escalas, boolean vueloDirecto)
+	public Internacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, double precioRefrigerio, HashMap <String, Aeropuerto> escalas)
 	{
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, precioRefrigerio);
 		
-		super(codigo, destino, origen, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, limitePasPrimera, limitePasSegunda, precioRefrigerio, precioAsientosPrimera, precioAsientosSegunda);
+		this.escalas = new HashMap<String, Aeropuerto>();
+		this.vueloDirecto = escalas.size() == 0;
 		
+		//El numero de pasajeros empieza vacio, se van sumando conforme se suman pasajes.
+		this.pasajerosTurista = 0;
 		
-		if(!(limitePasTercera > 0 && limitePasTercera < totalAsientos && precioAsientosTercera > 0)
-		  && limitePasTercera + limitePasPrimera + limitePasSegunda == totalAsientos ) throw new RuntimeException("Valor de parametros invalido!!");
-		
-		
-		this.limitePasajerosTercera = limitePasTercera;
-		this.precioAsientosTercera = precioAsientosTercera;
-		this.escalas = escalas;
-		this.vueloDirecto = vueloDirecto;
-		
-		//Misma logica que en Nacional
-		this.pasajerosTercera = 0;
+		//El limite de pasajeros aparentemente no me lo pasan, solo lo sacamos nosotros??????
+		this.limitePasajerosTurista = 0;
 		
 	}
 	
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{	
+		super.setLimitePasajerosEconomica(cantAsientos[0]);
+		
+		limitePasajerosTurista = cantAsientos[1];
+		
+		super.setLimitePasajerosEjecutivo(cantAsientos[2]);
+		
 		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Turista, Pimera]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{

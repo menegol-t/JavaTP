@@ -30,7 +30,7 @@ public class Aerolinea implements IAerolinea
 	
 	public Aerolinea(String nombre, String cuit)
 	{
-		stringInvalido(nombre, "Nombre aerolonia");
+		stringInvalido(nombre, "Nombre aerolonea");
 		stringInvalido(cuit, "CUIT"); 
 
 		this.nombre = nombre;
@@ -39,7 +39,7 @@ public class Aerolinea implements IAerolinea
 		this.aeropuertos = new HashMap<>();
 		this.clientes = new HashMap<>();
 		this.facturacionPorDestino  = new HashMap<>();	
-		this.codigoBase = 1;
+		this.codigoBase = 100;
 	}
 	
 
@@ -53,15 +53,12 @@ public class Aerolinea implements IAerolinea
 		return codigoBase;
 	}
 
-	public String crearCodigoPublico()
+	public String obtenerCodigoPublico()
 	{
 		Integer parteNumerica = obtenerCodigo();
-		StringBuilder cod = new StringBuilder();
-		cod.append(parteNumerica);
-		cod.append("-PUB");
-		String codigo = cod.toString();
-		
-		return codigo;
+		StringBuilder codigoVueloPublico= new StringBuilder(parteNumerica);
+		codigoVueloPublico.append("-PUB");
+		return codigoVueloPublico.toString();
 	}
 	
 	private Aeropuerto getAeropuerto(String nombre)
@@ -250,7 +247,7 @@ public class Aerolinea implements IAerolinea
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio, double[] precios, int[] cantAsientos) 
 	{
 		//Creamos un codigo
-		String codigo = crearCodigoPublico();
+		String codigo = obtenerCodigoPublico();
 		
 		//Obtengo los aeropuertos de origen y destino por su nombre. Si no estaban registrados, tira una excepcion.
 		Aeropuerto Origen = getAeropuerto(origen);
@@ -312,8 +309,8 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) 
 	{		
-		 //Creacion del codigo
-		String codigo = crearCodigoPublico();
+		 //Creamos el codigo del vuelo, unico en toda la aerolinea. 
+		String codigo = obtenerCodigoPublico();
 		
 		//Obtengo los aeropuertos de origen y destino por su nombre. Si no estaban registrados, tira una excepcion.
 		Aeropuerto Origen = getAeropuerto(origen);
@@ -475,6 +472,7 @@ public class Aerolinea implements IAerolinea
 	/*
 	 * Busca el asiento disponible en el vuelo, le asigna sus caracteristicas (si esta ocupado o no, su codigo de pasaje) y le indica al vuelo
 	 * que lo venda. 
+	 * Creo que lo que tenemos que retornar en lugar del numero de pasaje es el numero de asiento no?
 	 * */
 	private int venderAsiento(Cliente pasajero, Vuelo vuelo, int nroAsiento, boolean aOcupar) 
 	{
@@ -589,65 +587,31 @@ public class Aerolinea implements IAerolinea
 	 * Se borra el pasaje y se libera el lugar para que pueda comprarlo otro cliente.
 	 * IMPORTANTE: Se debe resolver en O(1).
 	 *  
-	 * 1) Conseguir el vuelo con el codigo desde la variable local "vuelos"
-	 * 2) Acceder al pasajero con el dni en el diccionario pasajeros
-	 * 3) Guardar el asiento y setearlo para reutilizarlo
-	 * 4) Borrar el asiento 
-	 * 5) Agregar el asiento en el diccionario "AsientosDisponiblesPorVuelo" con el codigo de vuelo
-	 * 6) Restar el precio del asiento al total por destino en el diccionario "facturacionPorDestino", utilizando el destino guardado
+	 * Busco el vuelo indicado.
+	 * En el vuelo, busco al pasajero por su dni.
+	 * Al pasajero le digo que elimine su asiento: Busca el asiento por el numero, lo saca de su array de asientos, setOcupado(false), setPasaje(false) y lo retorna
+	 * El vuelo recibe este retorno, y añade el asiento ahora liberado a su diccionario de asientos liberados.
 	 * */
 	@Override
 	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) 	
 	{
+		//Valido que no me hayan pasado datos vacios
+		intInvalidoCero(dni, "DNI"); 
+		stringInvalido(codVuelo, "Codigo de vuelo"); 
+		intInvalidoCero(nroAsiento, "Numero asiento");
 		
-		intInvalidoCero(dni, "DNI"); stringInvalido(codVuelo, "Codigo de vuelo"); intInvalidoCero(nroAsiento, "Numero asiento");
-		
-		//1)
+		//Obtengo el vuelo
 		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
 		
-		//2)
-		Pasajero pasajero = vuelo.getPasajeros().get(dni);
+		//Si el vuelo no se encontro, tiro excepcion.
+		if(vuelo == null) throw new RuntimeException("El codigo de vuelo no corresponde a ningun vuelo registrado.");
 		
-		//3)
-		Asiento asiento = pasajero.getAsiento(nroAsiento);
-		
-		asiento.liberarAsiento();
-		
-		//4)
-		vuelo.eliminarAsiento(dni, nroAsiento);
-		
-		//5)
-		Aeropuerto aeropuertoDestino = vuelo.getDestino();
-		
-		String destino = aeropuertoDestino.getLocacion();
-		
-		/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 * 
-		 * 
-		 * 
-		 * 
-		 *          NO EXISTE MAS ASIENTOS DISPONIBLES POR VUELO A NIVEL BONDIJET
-		 * 
-		 * 
-		 * 
-		 * 
-		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 * */
-		//asientosDisponiblesPorVuelo.get(codVuelo).put(nroAsiento, asiento);
-		
-		//6)
-		double precioAsiento = asiento.getPrecio();
-		double facturado = facturacionPorDestino.get(destino);
-		
-		facturacionPorDestino.put(destino, facturado - precioAsiento);
-		
-		int cantAsientos = pasajero.getCantAsientos(); //O(1)
-		if(cantAsientos == 0) vuelo.eliminarPasajero(dni);
-		
+		//mando a que el vuelo cancele el pasaje
+		vuelo.cancelarPasaje(dni, nroAsiento);
 	}
 
 	
-	
+
 	/** 12-B
 	* Se cancela un pasaje dado el codigo de pasaje. 
 	* NO es necesario que se resuelva en O(1).

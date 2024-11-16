@@ -22,7 +22,11 @@ public class Pasajero
 	
 	public Asiento getAsiento(Integer codigoAsiento)
 	{
-		return asientos.get(codigoAsiento);
+		Asiento asiento = asientos.get(codigoAsiento);
+		
+		if(asiento == null) throw new RuntimeException("El numero de asiento provisto no corresponde a este pasajero :" + cliente.getDni());
+		
+		return asiento;
 	}
 	
 	public int getCantAsientos()
@@ -62,15 +66,25 @@ public class Pasajero
 		 */ 
 		
 		Integer codigoPasaje = asientos.get(asiento.getCodigo()).getCodPasaje();
-		
+
 		if(codigoPasaje == null) throw new RuntimeException("Pasajero.asignarAsiento: Hello darkness my old friend...");
 		
 		return codigoPasaje;
+		
+//		return asiento.getCodigo();
 	}
 	
-	public void eliminarAsiento(Integer id)
+	public Asiento removerAsiento(Integer nroAsiento)
 	{
-		asientos.remove(id);
+		Asiento asiento = getAsiento(nroAsiento);
+		
+		asiento.setOcupado(false);
+		
+		asiento.setCodPasaje(0);
+		
+		asientos.remove(asiento.getCodigo());
+		
+		return asiento;
 	}
 	
 	public void eliminarPasaje(int codPasaje) 

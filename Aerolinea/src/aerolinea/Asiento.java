@@ -17,6 +17,7 @@ public class Asiento
 		this.seccion = seccion;
 		this.precio = precio;
 		this.ocupado = false;
+		this.codPasaje = 0;
 	}
 	
 	public Integer getCodigo()
@@ -39,6 +40,11 @@ public class Asiento
 		return ocupado;
 	}
 	
+	public double getPrecio()
+	{
+		return precio;
+	}
+	
 	public void setOcupado(boolean aOcupar) 
 	{
 		ocupado = aOcupar;
@@ -49,9 +55,9 @@ public class Asiento
 		precio = val;
 	}
 	
-	public double getPrecio()
+	public void setCodPasaje(int codigo) 
 	{
-		return precio;
+		codPasaje = codigo;
 	}
 	
 	@Override //La reescribimos en cada clase vuelo para agregar la logica
@@ -66,15 +72,5 @@ public class Asiento
 		
 		return retorno.toString();
 
-	}
-	
-	public void setCodPasaje(int codigo) 
-	{
-		codPasaje = codigo;
-	}
-	
-	public void liberarAsiento()
-	{
-		ocupado = false;
 	}
 }

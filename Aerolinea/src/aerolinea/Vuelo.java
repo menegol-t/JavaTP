@@ -1,8 +1,6 @@
 package aerolinea;
 
 import java.util.HashMap;
-import java.util.Iterator;
-
 
 public abstract class Vuelo {
 
@@ -94,16 +92,20 @@ public abstract class Vuelo {
 	{
 		pasajeros.remove(dni);
 	}
-	
-	public void eliminarAsiento(int dni, int numAsiento)
-	{
-		//Si el dni que me pasaron es invalido, getPasajero() se encarga de tirar una runtimeexception
-		Pasajero pasajero = getPasajero(dni);
-		
-		pasajero.eliminarAsiento(numAsiento);
-	}
 
-	public void eliminarPasaje(int dni, int codPasaje) 
+	public void cancelarPasaje(int dni, int nroAsiento)//Esta es en O(1) 
+	{
+		//Busco al pasajero dentro del vuelo por su DNI. Si no existe, el vuelo tira una excepcion. 
+		Pasajero pasajero = getPasajero(dni);
+				
+		//Le digo al pasajero que libere su asiento, esto me lo pasa con ocupado(false) y codPasje(0) 
+		Asiento asiento = pasajero.removerAsiento(nroAsiento);
+		
+		//Disponibilizo nuevamente el asiento en el listado de asientos disponibles del vuelo
+		registrarAsientoDisponible(asiento);
+	}
+	
+	public void eliminarPasaje(int dni, int codPasaje) //Lo mismo que la de arriba pero no en O(1)
 	{
 		//Si el dni que me pasaron es invalido, getPasajero() se encarga de tirar una runtimeexception
 		Pasajero pasajero = getPasajero(dni);

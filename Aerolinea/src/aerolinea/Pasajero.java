@@ -56,7 +56,7 @@ public class Pasajero
 	
 	public int asignarAsiento(Asiento asiento) 
 	{	
-		//Guardo el asiento en el diccionario de asientos.
+		//Guardo el asiento en el diccionario de asientos del pasajero.
 		asientos.put(asiento.getCodigo(), asiento);
 		
 		/*

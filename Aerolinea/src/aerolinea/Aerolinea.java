@@ -598,10 +598,10 @@ public class Aerolinea implements IAerolinea
 	* NO es necesario que se resuelva en O(1).
 	* 
 	* Para cancelar un pasaje (asiento), debo:
-	* Ubicar el vuelo del pasaje. 
-	* Ubicar el cliente, por su dni. 
-	* Finalmente, ubicar el pasaje en particular, por su codigo. Un cliente puede tener multiples pasajes (cada pasaje representa un asiento, como un ticket en el cine).
-	* Para esto ultimo, recorro todos los asientos posibles que puede tener el cliente. 
+	* Ubicar el vuelo del cliente, para eto recorro todos los vuelos a mano y les pregunto si lo contienen. 
+	* Una vez encontrado, busco al cliente por su DNI dentro del vuelo.
+	* Dentro del cliente, debo encontrar el pasaje, de vuelta recorriendo todos sus asientos a mano hasta encontrar el asiento que tiene el codigo que busco
+	* Por ulimo, elimino ese asiento, ya que no nos pide que lo liberemos creo.  
 	*/
 	@Override
 	public void cancelarPasaje(int dni, int codPasaje) {
@@ -617,7 +617,7 @@ public class Aerolinea implements IAerolinea
 			Vuelo vueloActual = (Vuelo) it.next();
 
 			//Si encuentro al cliente, le elimino el pasaje y termino.  
-			if(vueloActual.getPasajero(dni) != null) vueloActual.eliminarPasaje(dni, pasaje);
+			if(vueloActual.contienePasajero(dni)) vueloActual.eliminarPasaje(dni, pasaje);
 		}
 		
 	}

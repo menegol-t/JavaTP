@@ -88,6 +88,20 @@ public abstract class Vuelo {
 		return pasajero;
 	}
 	
+	/*
+	 * Determina si este vuelo en particular contiene al pasajero. Para aerolinea.cancelarPasajer no en O(1)
+	 * */
+	public boolean contienePasajero(int dni) 
+	{
+		Integer Dni = dni;
+		
+		Pasajero pasajero = pasajeros.get(Dni);
+		
+		if(pasajero == null) return false;
+		
+		return true;
+	}
+	
 	public void eliminarPasajero(Integer dni)
 	{
 		pasajeros.remove(dni);
@@ -160,7 +174,8 @@ public abstract class Vuelo {
 		//Removemos el asiento de asientosDisponibles
 		asientosDisponibles.remove(asiento.getCodigo());
 		
-		Pasajero pasajero = pasajeros.get(cliente.getDni());
+		//Busco al pasajero por su DNI
+		Pasajero pasajero = getPasajero(cliente.getDni());
 
 		//Si el pasajero no estaba previamente registrado en el vuelo, lo registro y asigno su asiento.
 		if(pasajero == null) return registrarPasajero(cliente, asiento);

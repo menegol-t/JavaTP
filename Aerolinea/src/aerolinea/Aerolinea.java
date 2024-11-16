@@ -443,62 +443,43 @@ public class Aerolinea implements IAerolinea
 		
 		stringInvalido(codVuelo, "Codigo de vuelo");
 		
-		//Nos pasaron el dni como int asi que lo convertimos en Integer, porque el DNI es una clave en los diccionarios que usamos, y como tal necesita ser Integer.
-		Integer Dni = dni;
-		
-		return validarClienteYVuelo(Dni, codVuelo, nroAsiento, aOcupar);
+		return validarCliente(dni, codVuelo, nroAsiento, aOcupar);
 	}
 	
 	/*
 	 * Valida si el cliente y el vuelo dados existen en la aerolinea antes de vender el asiento. 
 	 * */
-	private int validarClienteYVuelo(Integer dni, String codVuelo, int nroAsiento, boolean aOcupar) 
+	private int validarCliente(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
-		//Busco el cliente y verifico si existe
+		//Nos pasaron el dni como int asi que lo convertimos en Integer, porque el DNI es una clave en los diccionarios que usamos, y como tal necesita ser Integer.
+		Integer Dni = dni;
+		
+		//Busco el cliente y verifico si existe en la aerolinea
 		Cliente pasajero = clientes.get(dni);
 		
 		//Si el cliente no existe, lanzo excepcion
 		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
 		
+		return validarVuelo(pasajero, codVuelo, nroAsiento, aOcupar);
+		
+	}
+	
+	/*
+	 * Validamos si el vuelo existe. Si existe, genero un codigo de pasaje, y mando al vuelo a vender el asiento.
+	 * */
+	private int validarVuelo(Cliente cliente, String codVuelo, int nroAsiento, boolean aOcupar) 
+	{
 		//Busco el vuelo y verifico si esta registrado en la aerolinea. 
 		Vuelo vuelo = vuelos.get(codVuelo);
 		
 		//Si no esta registrado en la aeolina lanzo una excepcion.
 		if(vuelo == null) throw new RuntimeException("venderPasaje: El codigo de vuelo provisto no pertenece a un vuelo registrado.");
 		
-		return venderAsiento(pasajero, vuelo, nroAsiento, aOcupar);
-	}
-	
-	/*
-	 * Busca el asiento disponible en el vuelo, le asigna sus caracteristicas (si esta ocupado o no, su codigo de pasaje) y le indica al vuelo
-	 * que lo venda. 
-	 * Creo que lo que tenemos que retornar en lugar del numero de pasaje es el numero de asiento no?
-	 * */
-	private int venderAsiento(Cliente pasajero, Vuelo vuelo, int nroAsiento, boolean aOcupar) 
-	{
-		//Busco el asiento disponible dentro del vuelo. El vuelo sabe que si el asiento que busco no es disponible, tira una excepcion.
-		Asiento asiento = vuelo.getAsientoDisponible(nroAsiento);
- 
-		/*
-		 * Importante: En nuestro diseño que fue aprobado, no habia un "codigo de pasaje". Cada pasajero es ubicado por su DNI en su vuelo (cada vuelo
-		 * tiene un diccionario pasajeros <DNI, Pasajero>), y cada asiento es ubicado por su numero (cada Pasajero dentro tiene un diccionario de tipo
-		 * <NroAsiento, Asiento>), con un Nro de asiento que es unico dentro de cada vuelo.. Entonces decidimos que el numero de pasaje sera solo un numero,
-		 * unico en toda la aerolinea, asociado al asiento. De esta manera, el asiento tiene un numero unico por vuelo (su codigo de asiento) y un numero
-		 * unico en toda la aerolinea en general (su codigo de pasaje). 
-		 * */
-		
-		//Le asigno al asiento si esta ocupado o no
-		asiento.setOcupado(aOcupar);
-		
 		//Genero un codigo unico en toda la aerolinea para el pasaje.
 		int codigoPasaje = obtenerCodigo();
 		
-		//Le asigno el codigo de pasaje al asiento
-		asiento.setCodPasaje(codigoPasaje);
-		
-		//Le digo al vuelo que venda el asiento. Si todo salio bien, me va a retornar el codigo de pasaje del asiento. 
-		return vuelo.registrarAsiento(pasajero, asiento);
-		
+		//Mando al vuelo a que venda el pasaje
+		return vuelo.venderPasaje(cliente, nroAsiento, aOcupar, codigoPasaje);
 	}
 	
 	

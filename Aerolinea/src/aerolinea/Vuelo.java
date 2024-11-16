@@ -114,6 +114,9 @@ public abstract class Vuelo {
 
 	}
 	
+	/*
+	 * Busca un asiento disponible por su codigo. Si no lo encuentra, dinamita todo.
+	 * */
 	public Asiento getAsientoDisponible(Integer codAsiento) 
 	{
 		//Busco el asiento disponible dentro del vuelo
@@ -127,7 +130,23 @@ public abstract class Vuelo {
 	}
 	
 	/*
-	 * La idea es, yo le paso al vuelo el cliente y el asiento. Con eso, vuelo tiene todo lo que necesita. 
+	 * El vuelo busca el asiento disponible por su numero. Cuando lo obtiene, le asigna sus caracteristicas (aOcupar, codPasaje) y llama a registrar asiento
+	 * */
+	public int venderPasaje(Cliente cliente, int nroAsiento, boolean aOcupar, int codPasaje) 
+	{
+		Integer codAsiento = nroAsiento;
+		
+		Asiento asiento = getAsientoDisponible(codAsiento);
+		
+		asiento.setOcupado(aOcupar);
+		
+		asiento.setCodPasaje(codPasaje);
+		
+		return registrarAsiento(cliente, asiento);
+	}
+	
+	/*
+	 * La idea es, yo le paso el cliente y el asiento. Con eso, vuelo tiene todo lo que necesita. 
 	 * Vuelo adentro tiene un dicionario HashMap<Dni, Pasajero> pasajeros. Ahora, el encargado de construir sus pasajeros conforme se van sumado clientes al vuelo es el mismo Vuelo.
 	 * Entonces, vuelo tiene las siguientes responsabilidades:
 	 * El Vuelo convierte a los clientes en pasajeros. Adentro suyo, puede tener un pasajero con varios asientos. Con estos datos que le paso el vuelo debe fijarse si el Cliente ya existe como pasajero:

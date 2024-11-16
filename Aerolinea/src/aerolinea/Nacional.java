@@ -55,13 +55,13 @@ public class Nacional extends Vuelo {
 				if(i == 0) //Si estamos en la primera seccion
 				{
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, 1, precios[i], "Economica");
+					asientoNuevo = new Asiento(contador, precios[i], "Economica");
 				}
 				
 				else //Si estamos en la segunda seccion
 				{
 					//Se crea un asiento de primera clase
-					asientoNuevo = new Asiento(contador, 2, precios[i], "Ejecutivo");
+					asientoNuevo = new Asiento(contador, precios[i], "Ejecutivo");
 				}
 				
 				super.registrarAsientoDisponible(asientoNuevo);

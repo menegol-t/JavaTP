@@ -384,7 +384,7 @@ public class Aerolinea implements IAerolinea
 	*  
 	*  Buscamos el vuelo por su codigo en el diccionario de vuelos.
 	*  Obtenemos todos los asientos libres de dicho vuelo. Dado que el vuelo nos devuelve un hashMap <Integer, Asiento>, 
-	*  y lo que nos piden es un Map<Integer, Asiento.clase>, necesitamos armar otro diccionario que reemplace Asiento por Asiento.getClase().
+	*  y lo que nos piden es un Map<Integer, Asiento.clase>, necesitamos armar otro diccionario que reemplace Asiento por Asiento.getSeccion().
 	*/
 	@Override
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
@@ -404,7 +404,7 @@ public class Aerolinea implements IAerolinea
 	}
 
 	/*
-	 * Dado un hashmap <Integer, Asiento>, retorna un Map <Integer, asiento.getClase()>
+	 * Dado un hashmap <Integer, Asiento>, retorna un Map <Integer, asiento.getSeccion()>
 	 * */
 	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, HashMap<Integer, Asiento> asientosDisponibles)
 	{
@@ -415,7 +415,7 @@ public class Aerolinea implements IAerolinea
 			Asiento asientoActual = (Asiento) iterador.next();
 			
 			//En el diccionario que vamos a devolver, guardamos el codigo del asiento y su clase
-			diccionarioNroAsientoSeccion.put(asientoActual.getCodigo(), asientoActual.getClase());
+			diccionarioNroAsientoSeccion.put(asientoActual.getCodigo(), asientoActual.getSeccion());
 		}
 		
 		return diccionarioNroAsientoSeccion;

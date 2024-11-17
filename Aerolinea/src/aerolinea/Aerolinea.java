@@ -600,10 +600,10 @@ public class Aerolinea implements IAerolinea
 	private boolean vueloEsSimilar(Vuelo vuelo, String origen, String destino, LocalDate fechaAComparar) 
 	{
 		//Si el destino del vuelo es el mismo que el dado
-		if(vuelo.getDestino().getDireccion().equals(destino) &&
+		if(vuelo.getDestino().getNombre().equals(destino) &&
 			
 				//Y el origen del vuelo es el mismo que el dado
-				vuelo.getOrigen().getDireccion().equals(origen) &&
+				vuelo.getOrigen().getNombre().equals(origen) &&
 					
 					//Y el vuelo esta a una semana (o menos) de partir
 					estaAUnaSemana(fechaAComparar, obtenerFecha(vuelo.getFechaSalida())))
@@ -692,55 +692,73 @@ public class Aerolinea implements IAerolinea
 	
 	/** - 13
 	* Cancela un vuelo completo conociendo su codigo.
-	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 
-	* si a igual seccion o a una mejor, y no importan las escalas.
-	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.
-	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 
-	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.
+	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 					
+	* si a igual seccion o a una mejor, y no importan las escalas.											
+	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.										
+	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 			
+	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.			
 	* Devuelve una lista de Strings con este formato : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]”
+	* 																												
 	* --> Ejemplo: 
 	*   . 11111111 - Juan - 33333333 - CANCELADO
 	*   . 11234126 - Jonathan - 33333311 - 545-PUB
-	*   
-	* Busco el vuelo en cuestion. 
-	* Guardo su destino.
-	* Hago una lista con todos los clientes del vuelo y la seccion de su asiento. 
-	* Itero sobre todos los vuelos con el mismo destino. 
-	* Uso asientosDisponiblesPorVuelo para buscar asientos en dichos vuelos que sean iguales o mejores que los de los clientes.
-	* De ahi invoco a venderPasaje para asignar ese asiento. 
-	* Conforme voy vendiendo pasajes voy sacando de la lista de clientes y voy añadiendolos a una lista nueva, con su toString y vuelo
-	* Los clientes que quedan en la lista anterior los paso a la lista nueva con su toString y CANCELADO
 	* 
+	* Obtenemos una lista de vuelos con destino similar. 	consultarVuelosSimilaresPorDestino();
+	* Obtenemos una lista de todos los pasajeros			vuelo.getPasajeros();
+	* Adentro de los vuelos con destino similar, vamos   	vendiendo pasajes vuelo.venderPasaje() SOLO a asientos con misma o mejor clase
+	* Añado estos pasajeros a una lista de vendidos.     	pasajesVendidos
+	* Si llegue al final de la lista de vuelos similares,	
+	* elimino los pasajes del vuelo							vuelo.cancelarPasaje()
+	* Por ultimo, print de los pasajeros revendidos Y print de los pasajeros cancelados
 	*/
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
 		
-		//FUNCION INCOMPLETA
+		Vuelo vuelo = vuelos.get(codVuelo);
 		
-		stringInvalido(codVuelo, "Codigo de vuelo"); 
+		if(vuelo == null) throw new RuntimeException("El codigo no corresponde a ningun vuelo registrado.");
 		
-		Vuelo vueloACancelar = vuelos.get(codVuelo);
+		ArrayList<String> vuelosDestinoSimilar = vuelosSimilaresPorDestino(vuelo); 
 		
-		String destino = vueloACancelar.getDestino().getLocacion();
+		HashMap<Integer, Pasajero> pasajeros = vuelo.getPasajeros();
 		
+		
+		
+		return null;
+	}
+
+	private ArrayList<String> vuelosSimilaresPorDestino(Vuelo vuelo) 
+	{
+		//Genero una lista donde voy a poner los codigos de todos los vuelos con el mismo destino
+		ArrayList <String> codVuelosSimilares = new ArrayList<String>();
+		
+		//Genero un iterador de todos los vuelos de la aerolinea
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
 		
+		//Itero sobre todos los vuelos viendo si cumplen o no las condiciones. Si los cumplen, los añado a la lista a retornar.
 		while (it.hasNext()) {
 			
 			Vuelo vueloActual = (Vuelo) it.next();
 			
-			if(vueloActual.getDestino().getLocacion() == destino) {
-				
-				String codigo = vueloActual.getCodigo();
-				
-			}
-
-			
+			//Si el vuelo actual y el vuelo que me dieron tienen el mismo aerpuerto de destino, sumo el vuelo actual a la lista 
+			if(mismoDestino(vuelo, vueloActual)) codVuelosSimilares.add(vueloActual.getCodigo());
 		}
-		return null;
+		return codVuelosSimilares;
 	}
-
 	
+	private boolean mismoDestino(Vuelo vueloReferencia, Vuelo vueloAComparar) 
+	{
+		//Obtengo el nombre del aeropuerto de destino
+		String destino = vueloReferencia.getDestino().getNombre();
+		
+		//Obtengo el nombre del vueloActual
+		String comparador = vueloAComparar.getDestino().getNombre();
+		
+		//Si son iguales, retorno true.
+		if(destino.equals(comparador)) return true;
+		
+		return false;
+	}
 	
 	/** - 14
 	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 

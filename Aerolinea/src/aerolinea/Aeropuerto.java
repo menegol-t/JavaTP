@@ -21,6 +21,11 @@ public class Aeropuerto
 		this.esNacional = esNacional;
 	}
 	
+	public String getNombre() 
+	{
+		return nombre;
+	}
+	
 	public boolean getNacional()
 	{
 		return esNacional;

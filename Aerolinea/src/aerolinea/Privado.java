@@ -36,7 +36,7 @@ public class Privado extends Vuelo{
 		{
 			contador += 1;
 			
-			Asiento nuevoAsiento = new Asiento(contador, 1, 0, "Privado");
+			Asiento nuevoAsiento = new Asiento(contador, 0, "Privado");
 			
 			super.registrarAsientoDisponible(nuevoAsiento);
 		}

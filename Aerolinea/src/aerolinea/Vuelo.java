@@ -77,11 +77,6 @@ public abstract class Vuelo {
 		return fechaSalida;
 	}
 	
-	public int getPorcentajeImpuesto() 
-	{
-		return porcentajeImpuesto;
-	}
-	
 	public Pasajero getPasajero(int dni) 
 	{
 		Integer Dni = dni;

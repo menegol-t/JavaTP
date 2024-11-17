@@ -61,6 +61,14 @@ public class Aerolinea implements IAerolinea
 		return codigoVueloPublico.toString();
 	}
 	
+	public String obtenerCodigoPrivado()
+	{
+		Integer parteNumerica = obtenerCodigo();
+		StringBuilder codigoVueloPrivado= new StringBuilder(parteNumerica);
+		codigoVueloPrivado.append("-PRI");
+		return codigoVueloPrivado.toString();
+	}
+	
 	private Aeropuerto getAeropuerto(String nombre)
 	{
 		Aeropuerto aeropuerto = aeropuertos.get(nombre);
@@ -393,7 +401,7 @@ public class Aerolinea implements IAerolinea
 		//1)
 		
 		//Creamos un codigo
-		String codigo = crearCodigoPrivado();
+		String codigo = obtenerCodigoPrivado();
 		
 		//Obtencion de origen y destino
 		Aeropuerto Origen = getAeropuerto(origen);

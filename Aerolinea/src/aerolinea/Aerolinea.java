@@ -176,6 +176,22 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	
+	//AUXILIAR
+	
+	public Cliente[] conseguirClientes(int[] acompaniantes, HashMap<Integer, Cliente> clientes)
+	{
+		
+		Cliente[] retorno = new Cliente[acompaniantes.length];
+		
+		for(int i = 0; i<acompaniantes.length; i++)
+		{
+			retorno[i] = clientes.get(acompaniantes[i]);
+		}
+		
+		return retorno;
+	}
+	
+
 	
 	/**
 	* - 2
@@ -368,8 +384,50 @@ public class Aerolinea implements IAerolinea
 	public String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
 			int dniComprador, int[] acompaniantes) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		//Validaciones. Si alguna falla se tira excepcion. 
+		stringInvalido(origen, "Origen"); stringInvalido(destino, "Destino"); stringInvalido(origen, "Fecha");
+		intInvalidoCero(tripulantes, "Tripulantes"); doubleInvalidoCero(precio, "Valor refrigerio");  
+		arrayIntInvalido(acompaniantes, "Acompañantes");
+		
+		
+		//1)
+		
+		//Creamos un codigo
+		String codigo = crearCodigoPrivado();
+		
+		//Obtencion de origen y destino
+		Aeropuerto Origen = getAeropuerto(origen);
+		Aeropuerto Destino = getAeropuerto(destino);
+		
+		//Calculamos la cantidad de jets, siempre redondeamos hacia arriba
+		int cantidadJets = (int) Math.ceil(acompaniantes.length / 15);
+		
+		//total = cantidad acompa;antes + comprador
+		int totalAsientos = acompaniantes.length + 1;
+		
+		//Obtenemos el comprador
+		Cliente pasajeroComprador = clientes.get(dniComprador);
+		
+		//Creamos nuevo privado con 30% de impuesto
+		Privado nuevoPrivado = new Privado(codigo, Destino, Origen, totalAsientos, tripulantes, fecha, 30, pasajeroComprador, precio, cantidadJets);
+		
+		//2)
+		vuelos.put(codigo, nuevoPrivado); 
+		
+		//3)
+		
+		//Conseguimos los acompañantes clientes
+		Cliente[] Acompaniantes = conseguirClientes(acompaniantes, clientes);
+		
+		//Creamos los asientos 
+		nuevoPrivado.registrarAsientosDisponibles(acompaniantes);
+		
+		//Registramos los pasajeros
+		nuevoPrivado.registrarPasajeros(Acompaniantes, pasajeroComprador, nuevoPrivado.getAsientosDisponibles());
+		
+		
+		//4)
+		return codigo;
 	}
 
 	

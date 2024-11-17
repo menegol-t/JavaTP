@@ -689,7 +689,7 @@ public class Aerolinea implements IAerolinea
 	* Cancela un vuelo completo conociendo su codigo.
 	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 					
 	* si a igual seccion o a una mejor, y no importan las escalas.			|En los vuelos similares, tengo que ver sus asientosDisponibles, y llamar a venderPasaje por numero de asiento a aquellos que tengan mejor asiento									
-	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.										
+	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.	|Devuelve los codigos de los pasajes?????									
 	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 			
 	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.			
 	* Devuelve una lista de Strings con este formato : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]”
@@ -698,13 +698,15 @@ public class Aerolinea implements IAerolinea
 	*   . 11111111 - Juan - 33333333 - CANCELADO
 	*   . 11234126 - Jonathan - 33333311 - 545-PUB
 	* 
-	* Obtenemos una lista de vuelos con destino similar. 	consultarVuelosSimilaresPorDestino();
-	* Obtenemos una lista de todos los pasajeros			vuelo.getPasajeros();
-	* Adentro de los vuelos con destino similar, vamos   	vendiendo pasajes vuelo.venderPasaje() SOLO a asientos con misma o mejor clase
-	* Añado estos pasajeros a una lista de vendidos.     	pasajesVendidos
-	* Si llegue al final de la lista de vuelos similares,	
-	* elimino los pasajes del vuelo							vuelo.cancelarPasaje()
-	* Por ultimo, print de los pasajeros revendidos Y print de los pasajeros cancelados
+	* Hacemos un listado con todos los vuelos que tengan el mismo destino que el a cancelar.
+	* Hacemos un listado con todos los pasajeros a reprogramar.
+	* Generamos un listado vacio que vamos a ir rellenando con los pasajes que se pudieron o no reprogramar. 
+	* Recordemos que un mismo pasajero puede tener multiples asientos, entonces capas se le pueden reprogramar
+	* algunos pero otros no.
+	* Nos metemos pasajero por pasajero, en todos sus asientos.
+	* Nos metemos en todos los vuelos con destino similar, a todos sus asientos disponibles. 
+	* Si el asiento disponible es de igual o mejor clase que el del pasajero, lo vendemos y sumamos eso a la lista.
+	* Si no, entonces sumammos a la lista que ese pasaje particular no se pudo revender. 
 	*/
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
@@ -726,6 +728,9 @@ public class Aerolinea implements IAerolinea
 	
 	private List<String> buscarAsientosAReprogramar(ArrayList<Vuelo> vuelosDestinoSimilar, ArrayList<Pasajero> pasajeros)
 	{
+		//En este listado vamos a meter todos los datos que necesitemos
+		List<String> listadoReprogramacion = new ArrayList<>();
+		
 		//Itero por todos los pasajeros a reprogramar
 		for(Pasajero pasajeroAReprogramar: pasajeros) 
 		{
@@ -734,37 +739,59 @@ public class Aerolinea implements IAerolinea
 			//Itero por todos los asientos de los pasajeros
 			for(Asiento asientoAReprogramar: asientosAReprogramar) 
 			{
-				buscarAsientosDisponibles(asientoAReprogramar, vuelosDestinoSimilar);
+				buscarAsientosDisponibles(asientoAReprogramar, vuelosDestinoSimilar, pasajeroAReprogramar, listadoReprogramacion);
 			}
 		}
 		
-		return null;
+		return listadoReprogramacion;
 	}
 	
-	private List<String> buscarAsientosDisponibles(Asiento asientoAReprogramar, ArrayList<Vuelo> vuelosDestinoSimilar)
+	private void buscarAsientosDisponibles(Asiento asientoAReprogramar, ArrayList<Vuelo> vuelosDestinoSimilar, Pasajero pasajeroAReprogramar, List<String> listadoReprogramacion)
 	{
 		//Itero por todos los vuelos con el mismo destino que el vuelo a cancelar
 		for(Vuelo vueloActual: vuelosDestinoSimilar) 
 		{
+			//Busco los asientos disponibles del vuelo actual. 
 			ArrayList<Asiento> asientosDisponibles = vueloActual.getAsientosDisponibles();
 			
-			//Itero todos los asientos disponibles que tienen los vuelos con el miso destino
+			//Itero todos los asientos disponibles que tienen los vuelos con el mismo destino
 			for(Asiento asientoDisponible: asientosDisponibles) 
 			{
-				//Si encuentro un asiento que sea de seccion igual o mejor que el asiento que iba a cancelar, obtengo su numero y vendo el voleto.
+				//Si encuentro un asiento disponible, de igual o mejor seccion que el que tengo que reprogramar, lo vendo.
 				if(esAceptable(asientoAReprogramar.getSeccion(), asientoDisponible.getSeccion())) 
 				{
-					return reprogramarPasaje(asientoAReprogramar, asientoDisponible);
-				}
+					//Vende el asiento y lo suma al listadoReprogramacion
+					reprogramarPasaje(asientoAReprogramar, asientoDisponible, pasajeroAReprogramar, vueloActual.getCodigo(), listadoReprogramacion);
+					
+					//Una vez vendi el asiento corto el ciclo para que me brindern el siguiente asientoAReprogramar
+					return;
+				}//Si no vendi el asiento porque no era aceptable, sigo buscando asientosDisponibles que cumplan la condicion
 			}
 		}
 		
-		return null;
+		//Si busque en todos los vuelos y nunca encontre un asientoDisponible que asignarle al pasajero a reprogramar, sumo el asiento a la lista de cancelados
+		decartarPasaje(pasajeroAReprogramar, asientoAReprogramar, listadoReprogramacion);
 	}
 	
-	private List<String> reprogramarPasaje(Asiento asientoAReprogramar, Asiento asientoDisponible)
+	private void decartarPasaje(Pasajero pasajeroAReprogramar, Asiento asientoAReprogramar, List<String> listadoReprogramacion) 
 	{
-		return null;
+		//Genero los datos del pasaje que no pude reprogramar
+		String datosPasajero = pasajeroAReprogramar.toString() + " - " + "CANCELADO" + "Numero de pasaje cancelado: " + asientoAReprogramar.getCodPasaje();
+		
+		//Sumo estos datos al lsitado de reprogramaciones
+		listadoReprogramacion.add(datosPasajero);
+		
+		//Llamo a cancelar passaje, que se va a encargar de destruir el pasaje en el vuelo a cancelar. No se pq hacemos esto si total al vuelo lo vamos a destruir pero bueno ponele onda
+		cancelarPasaje(pasajeroAReprogramar.getDniCliente(), asientoAReprogramar.getCodPasaje());
+	}
+	
+	private void reprogramarPasaje(Asiento asientoAReprogramar, Asiento asientoDisponible, Pasajero pasajeroAReprogramar, String codVuelo, List<String> listadoReprogramacion)
+	{
+		venderPasaje(pasajeroAReprogramar.getDniCliente(), codVuelo, asientoDisponible.getCodigo(), asientoAReprogramar.getOcupado());
+		
+		String datosPasajero = pasajeroAReprogramar.toString() + " - " + codVuelo;
+		
+		listadoReprogramacion.add(datosPasajero);
 	}
 	
 	private boolean esAceptable(String seccionDelPasajeroAReprogramar, String seccionDisponible) 

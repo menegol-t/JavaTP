@@ -1,5 +1,6 @@
 package aerolinea;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class Vuelo {
@@ -62,14 +63,18 @@ public abstract class Vuelo {
 		return porcentajeImpuesto;
 	}
 	
-	public HashMap<Integer, Asiento> getAsientosDisponibles()
+	public ArrayList<Asiento> getAsientosDisponibles()
 	{
-		return asientosDisponibles;
+		ArrayList<Asiento> asientos = new ArrayList<>(asientosDisponibles.values());
+		
+		return asientos;
 	}
 	
-	public HashMap<Integer, Pasajero> getPasajeros()
+	public ArrayList<Pasajero> getPasajeros()
 	{
-		return pasajeros;
+		ArrayList<Pasajero> pasajero = new ArrayList<>(pasajeros.values());
+		
+		return pasajero;
 	}
 	
 	public String getFechaSalida() 

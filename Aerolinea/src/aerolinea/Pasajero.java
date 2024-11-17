@@ -1,5 +1,6 @@
 package aerolinea;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,6 +26,13 @@ public class Pasajero
 		Asiento asiento = asientos.get(codigoAsiento);
 		
 		if(asiento == null) throw new RuntimeException("El numero de asiento provisto no corresponde a este pasajero :" + cliente.getDni());
+		
+		return asiento;
+	}
+	
+	public ArrayList<Asiento> getAsientos()
+	{
+		ArrayList<Asiento> asiento = new ArrayList<>(asientos.values());
 		
 		return asiento;
 	}

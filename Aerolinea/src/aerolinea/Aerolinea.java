@@ -458,7 +458,7 @@ public class Aerolinea implements IAerolinea
 		if(vuelo == null) throw new RuntimeException("asientosDisponibles: El codigo de vuelo no corresponde a ningun vuelo registrado.");
 		
 		//Obtenemos un hashMap de los asientos disponibles en el vuelo
-		HashMap<Integer, Asiento> asientosDisponibles = vuelo.getAsientosDisponibles();
+		ArrayList<Asiento> asientosDisponibles = vuelo.getAsientosDisponibles();
 		
 		//Generamos un nuevo diccionario vacio, el que retornaremos como resultado, que sera <Integer, Asiento.getClase()>
 		Map<Integer, String> diccionarioNroAsientoSeccion = new HashMap<>();
@@ -469,14 +469,9 @@ public class Aerolinea implements IAerolinea
 	/*
 	 * Dado un hashmap <Integer, Asiento>, retorna un Map <Integer, asiento.getSeccion()>
 	 * */
-	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, HashMap<Integer, Asiento> asientosDisponibles)
+	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, ArrayList<Asiento> asientosDisponibles)
 	{
-		//Generamos un iterador sobre todos los asientosDisponibles
-		Iterator<Map.Entry<Integer, Asiento>> iterador = asientosDisponibles.entrySet().iterator();
-		
-		while (iterador.hasNext()) {
-			Asiento asientoActual = (Asiento) iterador.next();
-			
+		for(Asiento asientoActual: asientosDisponibles) {
 			//En el diccionario que vamos a devolver, guardamos el codigo del asiento y su clase
 			diccionarioNroAsientoSeccion.put(asientoActual.getCodigo(), asientoActual.getSeccion());
 		}
@@ -693,7 +688,7 @@ public class Aerolinea implements IAerolinea
 	/** - 13
 	* Cancela un vuelo completo conociendo su codigo.
 	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 					
-	* si a igual seccion o a una mejor, y no importan las escalas.											
+	* si a igual seccion o a una mejor, y no importan las escalas.			|En los vuelos similares, tengo que ver sus asientosDisponibles, y llamar a venderPasaje por numero de asiento a aquellos que tengan mejor asiento									
 	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.										
 	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 			
 	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.			
@@ -714,23 +709,89 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public List<String> cancelarVuelo(String codVuelo) {
 		
+		//Busco el vuelo a cancelar
 		Vuelo vuelo = vuelos.get(codVuelo);
 		
+		//Si no exise largo exception
 		if(vuelo == null) throw new RuntimeException("El codigo no corresponde a ningun vuelo registrado.");
 		
-		ArrayList<String> vuelosDestinoSimilar = vuelosSimilaresPorDestino(vuelo); 
+		//Genero un array list de todos los vuelos que tengan el mismo nombre de aeropuerto de destino
+		ArrayList<Vuelo> vuelosDestinoSimilar = vuelosSimilaresPorDestino(vuelo); 
 		
-		HashMap<Integer, Pasajero> pasajeros = vuelo.getPasajeros();
+		//Busco todos los pasajeros del vuelo
+		ArrayList<Pasajero> pasajeros = vuelo.getPasajeros();
 		
-		
+		return buscarAsientosAReprogramar(vuelosDestinoSimilar, pasajeros);
+	}
+	
+	private List<String> buscarAsientosAReprogramar(ArrayList<Vuelo> vuelosDestinoSimilar, ArrayList<Pasajero> pasajeros)
+	{
+		//Itero por todos los pasajeros a reprogramar
+		for(Pasajero pasajeroAReprogramar: pasajeros) 
+		{
+			ArrayList<Asiento> asientosAReprogramar = pasajeroAReprogramar.getAsientos();
+			
+			//Itero por todos los asientos de los pasajeros
+			for(Asiento asientoAReprogramar: asientosAReprogramar) 
+			{
+				buscarAsientosDisponibles(asientoAReprogramar, vuelosDestinoSimilar);
+			}
+		}
 		
 		return null;
 	}
+	
+	private List<String> buscarAsientosDisponibles(Asiento asientoAReprogramar, ArrayList<Vuelo> vuelosDestinoSimilar)
+	{
+		//Itero por todos los vuelos con el mismo destino que el vuelo a cancelar
+		for(Vuelo vueloActual: vuelosDestinoSimilar) 
+		{
+			ArrayList<Asiento> asientosDisponibles = vueloActual.getAsientosDisponibles();
+			
+			//Itero todos los asientos disponibles que tienen los vuelos con el miso destino
+			for(Asiento asientoDisponible: asientosDisponibles) 
+			{
+				//Si encuentro un asiento que sea de seccion igual o mejor que el asiento que iba a cancelar, obtengo su numero y vendo el voleto.
+				if(esAceptable(asientoAReprogramar.getSeccion(), asientoDisponible.getSeccion())) 
+				{
+					return reprogramarPasaje(asientoAReprogramar, asientoDisponible);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private List<String> reprogramarPasaje(Asiento asientoAReprogramar, Asiento asientoDisponible)
+	{
+		return null;
+	}
+	
+	private boolean esAceptable(String seccionDelPasajeroAReprogramar, String seccionDisponible) 
+	{
+		/*
+		 * Por un lado, el pasajero tenia un asiento a reprogramar, el cual tenia una cierta seccion.
+		 * El nuevo asiento que le estamos consiguiendo tiene otra seccion. 
+		 * Si el asiento a reprogramar era de clase "Ejecutivo", pero el nuevo asiento es de clase 
+		 * "Economica", entonces retorno false, porque ejecutivo es una clase mas alta que economica. 
+		 * */
+		
+		//Si la seccion del pasajero antes era economica, sin importar el caso, un asiento en caulqueir seccion es aceptable
+		if(seccionDelPasajeroAReprogramar.equals("Economica")) return true;
+		
+		//Si la seccion del pasajero era turista, solo seria aceptable que su nueva seccion sea o turista o ejecutivo
+		if(seccionDelPasajeroAReprogramar.equals("Turista") && (seccionDisponible.equals("Turista") || seccionDisponible.equals("Ejecutivo"))) return true;
+		
+		//Si la seccion del pasajero era ejecutivo, solo seria aceptable que su nueva seccion sea ejecutivo
+		if(seccionDelPasajeroAReprogramar.equals("Ejecutivo") && seccionDisponible.equals("Ejecutivo")) return true;
+		
+		return false;
+	}
 
-	private ArrayList<String> vuelosSimilaresPorDestino(Vuelo vuelo) 
+	private ArrayList<Vuelo> vuelosSimilaresPorDestino(Vuelo vuelo) 
 	{
 		//Genero una lista donde voy a poner los codigos de todos los vuelos con el mismo destino
-		ArrayList <String> codVuelosSimilares = new ArrayList<String>();
+		ArrayList <Vuelo> codVuelosSimilares = new ArrayList<Vuelo>();
 		
 		//Genero un iterador de todos los vuelos de la aerolinea
 		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
@@ -741,7 +802,7 @@ public class Aerolinea implements IAerolinea
 			Vuelo vueloActual = (Vuelo) it.next();
 			
 			//Si el vuelo actual y el vuelo que me dieron tienen el mismo aerpuerto de destino, sumo el vuelo actual a la lista 
-			if(mismoDestino(vuelo, vueloActual)) codVuelosSimilares.add(vueloActual.getCodigo());
+			if(mismoDestino(vuelo, vueloActual)) codVuelosSimilares.add(vueloActual);
 		}
 		return codVuelosSimilares;
 	}

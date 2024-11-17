@@ -1,5 +1,6 @@
 package aerolinea;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -43,27 +44,23 @@ public class Privado extends Vuelo{
 	}
 	
 	
-	public void registrarPasajeros(Cliente[] acompaniantes, Cliente pasajeroComprador, HashMap<Integer, Asiento>asientosDisponibles)
+	public void registrarPasajeros(Cliente[] acompaniantes, Cliente pasajeroComprador, ArrayList<Asiento>asientosDisponibles)
 	{
 		int contador = 0;
 		
-		//Generamos un iterador sobre todos los asientosDisponibles
-		Iterator<Map.Entry<Integer, Asiento>> iterador = asientosDisponibles.entrySet().iterator();
-				
-		while (iterador.hasNext()) {
-		Asiento asientoActual = (Asiento) iterador.next();
-		
-		//Si el contador es mayor al largo del array de acompañantes, entonces agregamos al comprador
-		if(contador > acompaniantes.length) 
-		{
-			super.registrarAsiento(pasajeroComprador, asientoActual);
-			contador ++;
-		}
-		
-		else {
-			super.registrarAsiento(acompaniantes[contador], asientoActual);
-			contador ++;
-		}
+		for(Asiento asientoActual: asientosDisponibles) {
+			
+			//Si el contador es mayor al largo del array de acompañantes, entonces agregamos al comprador
+			if(contador > acompaniantes.length) 
+			{
+				super.registrarAsiento(pasajeroComprador, asientoActual);
+				contador ++;
+			}
+			
+			else {
+				super.registrarAsiento(acompaniantes[contador], asientoActual);
+				contador ++;
+			}
 		
 		
 		}

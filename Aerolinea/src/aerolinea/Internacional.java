@@ -45,25 +45,28 @@ public class Internacional extends Nacional{
 			{
 				//incrementamos el numero de asiento
 				contador += 1;
+
+				//Calculamos el pasaje con impuestos
+				double precioFinal = precios[i] + precios[i] * super.getPorcentajeImpuesto()/100;
 				
 				Asiento asientoNuevo;
 				
 				if(i == 0) 
 				{
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, precios[i], "Economica");
+					asientoNuevo = new Asiento(contador, precioFinal, "Economica");
 				}
 				
 				if(i == 1) //Si estamos en la segunda seccion
 				{
 					//Se crea un asiento de clase turista
-				    asientoNuevo = new Asiento(contador, precios[i], "Turista");
+				    asientoNuevo = new Asiento(contador, precioFinal, "Turista");
 				}
 				
 				else //Si estamos en la tercera seccion
 				{	
 					//Se crea un asiento de primera clase 
-					asientoNuevo = new Asiento(contador, precios[i], "Ejecutivo");	
+					asientoNuevo = new Asiento(contador, precioFinal, "Ejecutivo");	
 				}
 				
 				//Agregamos el asiento al diccionario de asientos disponibles. 

@@ -50,18 +50,21 @@ public class Nacional extends Vuelo {
 				//incrementamos el numero de asiento
 				contador += 1;
 				
+				//Calculamos el pasaje con impuestos
+				double precioFinal = precios[i] + precios[i] * super.getPorcentajeImpuesto()/100;
+				
 				Asiento asientoNuevo;
 				
 				if(i == 0) //Si estamos en la primera seccion
 				{
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, precios[i], "Economica");
+					asientoNuevo = new Asiento(contador, precioFinal, "Economica");
 				}
 				
 				else //Si estamos en la segunda seccion
 				{
 					//Se crea un asiento de primera clase
-					asientoNuevo = new Asiento(contador, precios[i], "Ejecutivo");
+					asientoNuevo = new Asiento(contador, precioFinal, "Ejecutivo");
 				}
 				
 				super.registrarAsientoDisponible(asientoNuevo);

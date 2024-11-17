@@ -56,6 +56,11 @@ public abstract class Vuelo {
 	{
 		return totalTripulantes;
 	}
+
+	public int getPorcentajeImpuesto()
+	{
+		return porcentajeImpuesto;
+	}
 	
 	public HashMap<Integer, Asiento> getAsientosDisponibles()
 	{
@@ -208,5 +213,9 @@ public abstract class Vuelo {
 	{
 		//Cada vuelo modificara los asientos antes de registrarlos. Cada vuelo debe implementar su propia manera de registrar los asientos.
 	}
-	
+
+	public void registrarAsientosDisponibles(int[] acompaniantes)
+	{
+		//version para vuelos privados
+	}
 }

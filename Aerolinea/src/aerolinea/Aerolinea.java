@@ -35,10 +35,10 @@ public class Aerolinea implements IAerolinea
 
 		this.nombre = nombre;
 		this.cuit = cuit;
-		this.vuelos = new HashMap<>();
-		this.aeropuertos = new HashMap<>();
-		this.clientes = new HashMap<>();
-		this.facturacionPorDestino  = new HashMap<>();	
+		this.vuelos = new HashMap<String, Vuelo>();
+		this.aeropuertos = new HashMap<String, Aeropuerto>();
+		this.clientes = new HashMap<Integer, Cliente>();
+		this.facturacionPorDestino  = new HashMap<String, Double>();	
 		this.codigoBase = 100;
 	}
 	
@@ -615,13 +615,8 @@ public class Aerolinea implements IAerolinea
 	 * */
 	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fechaAComparar)
 	{
-		//Genero un iterador de vuelos
-		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
-		
-		//Itero sobre todos los vuelos viendo si cumplen o no las condiciones. Si los cumplen, los añado a la lista a retornar.
-		while (it.hasNext()) {
-			
-			Vuelo vueloActual = (Vuelo) it.next();
+		//Itero sobre todos los vuelos en el diccionario de vuelos, viendo si cumplen o no las condiciones. Si los cumplen, los añado a la lista a retornar.
+		for(Vuelo vueloActual: vuelos.values()){
 			
 			//Si el vuelo cumple con los parametros, sumo su codigo al array de vuelos similares. 
 			if(vueloEsSimilar(vueloActual, origen, destino, fechaAComparar)) codVuelosSimilares.add(vueloActual.getCodigo());
@@ -762,7 +757,9 @@ public class Aerolinea implements IAerolinea
 		ArrayList<Vuelo> vuelosDestinoSimilar = vuelosSimilaresPorDestino(vuelo); 
 		
 		//Busco todos los pasajeros del vuelo
-		ArrayList<Pasajero> pasajeros = vuelo.getPasajeros();
+		ArrayList<Pasajero> pasajeros = vuelo.getAllPasajeros();
+		
+		System.out.print("\ncancelarVuelo Pasajeros: " + pasajeros.size());
 		
 		return buscarAsientosAReprogramar(vuelosDestinoSimilar, pasajeros);
 	}
@@ -887,13 +884,8 @@ public class Aerolinea implements IAerolinea
 		//Genero una lista donde voy a poner los codigos de todos los vuelos con el mismo destino
 		ArrayList <Vuelo> codVuelosSimilares = new ArrayList<Vuelo>();
 		
-		//Genero un iterador de todos los vuelos de la aerolinea
-		Iterator<Map.Entry<String, Vuelo>> it = vuelos.entrySet().iterator();
-		
-		//Itero sobre todos los vuelos viendo si cumplen o no las condiciones. Si los cumplen, los añado a la lista a retornar.
-		while (it.hasNext()) {
-			
-			Vuelo vueloActual = (Vuelo) it.next();
+		//Itero sobre todos los vuelos de la aerolinea
+		for(Vuelo vueloActual : vuelos.values()) {
 			
 			//Si el vuelo actual y el vuelo que me dieron tienen el mismo aerpuerto de destino, sumo el vuelo actual a la lista 
 			if(mismoDestino(vuelo, vueloActual)) codVuelosSimilares.add(vueloActual);
@@ -926,7 +918,12 @@ public class Aerolinea implements IAerolinea
 	*/
 	@Override
 	public double totalRecaudado(String destino) {
-		return facturacionPorDestino.get(destino);
+		
+		Double facturacion = facturacionPorDestino.get(destino);
+		
+		if(facturacion == null) return 0;
+		
+		return facturacion;
 	}
 
 

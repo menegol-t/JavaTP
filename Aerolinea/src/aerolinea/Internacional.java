@@ -37,17 +37,18 @@ public class Internacional extends Nacional{
 		
 		super.setLimitePasajerosEjecutivo(cantAsientos[2]);
 		
+		//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
+		int contador = 0;
+		
 		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Turista, Pimera]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
-			//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
-			int contador = 0;
 			
 			//En cada posicion del array de secciones, hay un array con los asientos de esa seccion. Aca se recorre ese sub array: cantiAsientos: [ [asiento0, asiento1, asiento2], [asiento3, asiento4, asiento6], [asiento7, asiento8] ]
 			for(int j = 0; j<cantAsientos[i]; j++)
 			{
 				//incrementamos el numero de asiento
-				contador += 1;
+				contador ++;
 
 				//Calculamos el pasaje con impuestos
 				double precioFinal = precios[i] + precios[i] * super.getPorcentajeImpuesto()/100;

@@ -119,8 +119,10 @@ public abstract class Vuelo {
 		return asientos;
 	}
 	
-	public ArrayList<Pasajero> getPasajeros()
-	{
+	public ArrayList<Pasajero> getAllPasajeros()
+	{	
+		System.out.print("\ngetAllPasajeros: " + pasajeros.size());
+		
 		ArrayList<Pasajero> pasajero = new ArrayList<>(pasajeros.values());
 		
 		return pasajero;
@@ -156,10 +158,10 @@ public abstract class Vuelo {
 		return true;
 	}
 	
-	public void eliminarPasajero(Integer dni)
-	{
-		pasajeros.remove(dni);
-	}
+//	public void eliminarPasajero(Integer dni)
+//	{
+//		pasajeros.remove(dni);
+//	}
 
 	public void cancelarPasaje(int dni, int nroAsiento)//Esta es en O(1) 
 	{
@@ -243,11 +245,19 @@ public abstract class Vuelo {
 	 * */
 	private int registrarPasajero(Cliente cliente, Asiento asiento) 
 	{
-		//Creo un nuevo pasajero en el diccionario de pasajeros.
-		pasajeros.put(cliente.getDni(), new Pasajero(cliente));
+		//Convierto el cliente en pasajero
+		Pasajero pasajero = new Pasajero(cliente);
+		
+		//Le asigno su nuevo asiento
+		int codPasaje = pasajero.asignarAsiento(asiento);
+		
+		//Lo agrego al diccionario de pasajeros
+		pasajeros.put(cliente.getDni(), pasajero);
+		
+		System.out.print("\nregistrarPasajero: " + pasajeros.size());
 		
 		//Busco al pasajero que acabo de registrar por su DNI para asegurarme que exista, le asigno su asiento
-		return pasajeros.get( cliente.getDni() ).asignarAsiento(asiento);
+		return codPasaje;
 	}
 	
 	/*

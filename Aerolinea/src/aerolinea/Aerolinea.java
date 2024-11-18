@@ -387,59 +387,100 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	
-	
+	/** 6 y 10 **** Se reune en esta firma ambos puntos de la especificación.
+	 * 
+	* Origen y destino son los Aeropuertos de donde parte y al que llega el jet. 
+	* Fecha es la fecha de salida y debe ser posterior a la fecha actual.
+	* Tripulantes es la cantidad de tripulantes del vuelo. 
+	* Precio es el de un(1) jet. 
+	* Se supone que se cuenta con todos los jets necesarios para trasladar todos los acompañantes. 
+	* Se usara la cantidad de jets (necesarios) para el calculo del costo total del Vuelo.
+	* IMPORTANTE; Se toma un sólo código para la compra aunque se necesiten mas de un jet. 
+	* No se sirven refrigerios
+	* 
+	* Devuelve el código del vuelo. Con el formato: {Nro_vuelo_privado}-PRI, por ejemplo: 103-PRI
+	* 
+	* Respecto a lo que decia la etapa de diseño, no nos pasan los datos para registrar Pasajeros realmente. 
+	*/
 	@Override
-	public String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
-			int dniComprador, int[] acompaniantes) 
+	public String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio, int dniComprador, int[] acompaniantes) 
 	{
-		//Validaciones. Si alguna falla se tira excepcion. 
-		stringInvalido(origen, "Origen"); stringInvalido(destino, "Destino"); stringInvalido(origen, "Fecha");
-		intInvalidoCero(tripulantes, "Tripulantes"); doubleInvalidoCero(precio, "Valor refrigerio");  
-		arrayIntInvalido(acompaniantes, "Acompañantes");
-		
-		
-		//1)
-		
-		//Creamos un codigo
+		//Generamos el codigo para el vuelo
 		String codigo = obtenerCodigoPrivado();
 		
-		//Obtencion de origen y destino
+		//Obtenemos los aeropuertos de origen y destino. Si son incorrectos, tira runtimeexception
 		Aeropuerto Origen = getAeropuerto(origen);
 		Aeropuerto Destino = getAeropuerto(destino);
 		
-		//Calculamos la cantidad de jets, siempre redondeamos hacia arriba
-		int cantidadJets = (int) Math.ceil(acompaniantes.length / 15);
-		
-		//total = cantidad acompa;antes + comprador
-		int totalAsientos = acompaniantes.length + 1;
-		
-		//Obtenemos el comprador
-		Cliente pasajeroComprador = clientes.get(dniComprador);
-		
-		//Creamos nuevo privado con 30% de impuesto
-		Privado nuevoPrivado = new Privado(codigo, Destino, Origen, totalAsientos, tripulantes, fecha, 30, pasajeroComprador, precio, cantidadJets);
-		
-		//2)
-		vuelos.put(codigo, nuevoPrivado); 
-		
-		//3)
-		
-		//Conseguimos los acompañantes clientes
-		Cliente[] Acompaniantes = conseguirClientes(acompaniantes, clientes);
-		
-		//Creamos los asientos 
-		nuevoPrivado.registrarAsientosDisponibles(acompaniantes);
-		
-		//Registramos los pasajeros
-		nuevoPrivado.registrarPasajeros(Acompaniantes, pasajeroComprador, nuevoPrivado.getAsientosDisponibles());
-		
-		
-		//4)
-		return codigo;
+		return verificarPasajerosPrivado(codigo, Origen, Destino, fecha, tripulantes, precio, dniComprador, acompaniantes);
 	}
 
+	/*
+	 * Verifica que el comprador exista, asi como sus acompaniantes
+	 * */
+	private String verificarPasajerosPrivado(String codigo, Aeropuerto origen, Aeropuerto destino, String fecha, int tripulantes, double precio, int dniComprador, int[] acompaniantes) {
+		
+		//El total de asientos son los acompañantes mas el comprador
+		int totalAsientos = acompaniantes.length + 1;
+		
+		//Buscamos al comprador como cliente registrado en la aerolinea
+		Cliente comprador = clientes.get(dniComprador);
+		
+		//Si el cliente no existe, lanzo excepcion
+		if(comprador == null) throw new RuntimeException("registrarVueloPrivado: El DNI provisto no pertenece a un cliente registrado.");
+		
+		//Buscamos a todos los acompaniantes como clientes registrados .Si alguno no esta registrado, tira excepcion 
+		ArrayList<Cliente> pasajeros = validarAcompaniantes(acompaniantes);
+		
+		return registrarPrivado(codigo, origen, destino, fecha, totalAsientos, tripulantes, precio, comprador, pasajeros, acompaniantes);
+	}
+
+	/*
+	 * Dado un array de dnis, genera un array de clientes. Si algun dni no corresponde a un clinete, tira exception
+	 * */
+	private ArrayList<Cliente> validarAcompaniantes(int[] acompaniantes)
+	{	
+		//Generamos un array list de los clientes a registrar
+		ArrayList<Cliente> pasajeros = new ArrayList<>();
+		
+		for(int i = 0; i<acompaniantes.length; i++)
+		{
+			//Buscamos al pasajero puntiual como cliente
+			Cliente pasajeroActual = clientes.get(acompaniantes[i]);
+			
+			//Si el pasajero no esta registrado en la compania, tiro excepcion
+			if(pasajeroActual == null) throw new RuntimeException("Algun acompaniante no esta registrado en la compañia.");
+			
+			//Si no, lo añado a la lista de pasajeros
+			pasajeros.add(pasajeroActual);
+		}
+		
+		return pasajeros;
+	}
+	
+	/*
+	 * Genera el vuelo privado, registra sus asientos, los vende, y lo guarda en el diccionario de vuelos.  
+	 */
+	private String registrarPrivado(String codigo, Aeropuerto origen, Aeropuerto destino, String fecha, int totalAsientos, int tripulantes, double precio, Cliente comprador, ArrayList<Cliente> pasajeros, int[] acompaniantes) 
+	{
+		//Genero un nuevo vuelo privado
+		Privado nuevoPrivado = new Privado(codigo, origen, destino, totalAsientos, tripulantes, fecha, precio, 30, comprador);
+		
+		//Registra la cantidad de asientos disponibles segun la cantidad de acompañantes
+		nuevoPrivado.registrarAsientosDisponibles(acompaniantes);
+		
+		//Le asigna a cada pasajero y al comprador sus asientos
+		nuevoPrivado.registrarPasajeros(pasajeros, comprador);
+		
+		vuelos.put(codigo, nuevoPrivado);
+		
+		return vuelos.get(codigo).getCodigo();
+	}
 	
 	
+	
+	
+
 	/** - 7 
 	*  Dado el código del vuelo, devuelve un diccionario con los asientos aún disponibles para la venta 
 	*  --> clave:  el número de asiento
@@ -522,7 +563,6 @@ public class Aerolinea implements IAerolinea
 		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
 		
 		return validarVuelo(pasajero, codVuelo, nroAsiento, aOcupar);
-		
 	}
 	
 	/*
@@ -680,7 +720,6 @@ public class Aerolinea implements IAerolinea
 			//Si encuentro al cliente, le elimino el pasaje y termino.  
 			if(vueloActual.contienePasajero(dni)) vueloActual.eliminarPasaje(dni, pasaje);
 		}
-		
 	}
 
 	
@@ -726,6 +765,12 @@ public class Aerolinea implements IAerolinea
 		return buscarAsientosAReprogramar(vuelosDestinoSimilar, pasajeros);
 	}
 	
+	/*
+	 * Devuelve la lista completa de todos los pasajes reprogramados y todos los cancelados.
+	 * Para esto, itera sobre todos los pasajeros del vuelo a cancelar, y dentro de estos, 
+	 * itera sobre todos sus asientos.
+	 * Le pasa un asiento por vez a buscarAsientosDisponibles
+	 * */
 	private List<String> buscarAsientosAReprogramar(ArrayList<Vuelo> vuelosDestinoSimilar, ArrayList<Pasajero> pasajeros)
 	{
 		//En este listado vamos a meter todos los datos que necesitemos
@@ -746,6 +791,11 @@ public class Aerolinea implements IAerolinea
 		return listadoReprogramacion;
 	}
 	
+	/*
+	 * Itera sobre todos los vuelos con destino similar al vuelo a cancelar. Dentro de cada vuelo, itera sobre sus asientos disponibles.
+	 * Compara los asientos disponibles con un asiento dado, y si se cumple que el asiento disponible tiene clase 
+	 * mejor o igual que el asiento dado, lo vende. Si no, cancela el pasaje.
+	 * */
 	private void buscarAsientosDisponibles(Asiento asientoAReprogramar, ArrayList<Vuelo> vuelosDestinoSimilar, Pasajero pasajeroAReprogramar, List<String> listadoReprogramacion)
 	{
 		//Itero por todos los vuelos con el mismo destino que el vuelo a cancelar
@@ -773,10 +823,16 @@ public class Aerolinea implements IAerolinea
 		decartarPasaje(pasajeroAReprogramar, asientoAReprogramar, listadoReprogramacion);
 	}
 	
+	/*
+	 * Llama a eliminar el pasaje adentro del vuelo a cancelar, y añade el pasaje a la lista de pasajes cancelados. 
+	 * */
 	private void decartarPasaje(Pasajero pasajeroAReprogramar, Asiento asientoAReprogramar, List<String> listadoReprogramacion) 
 	{
 		//Genero los datos del pasaje que no pude reprogramar
-		String datosPasajero = pasajeroAReprogramar.toString() + " - " + "CANCELADO" + "Numero de pasaje cancelado: " + asientoAReprogramar.getCodPasaje();
+		String datosPasajero = pasajeroAReprogramar.toString() + " - " + "CANCELADO";
+		//+ "Numero de pasaje cancelado: " + asientoAReprogramar.getCodPasaje()
+		//Puede darse, que para un mismo pasajero, algunos asientos se pudieron reprogramar y otros no. 
+		// Habria que indicar el numero de pasaje para saber cual es cual. 
 		
 		//Sumo estos datos al lsitado de reprogramaciones
 		listadoReprogramacion.add(datosPasajero);
@@ -785,6 +841,9 @@ public class Aerolinea implements IAerolinea
 		cancelarPasaje(pasajeroAReprogramar.getDniCliente(), asientoAReprogramar.getCodPasaje());
 	}
 	
+	/*
+	 * Dado un numero de asiento disponible y un codigo de vuelo, vende un pasaje, y lo suma al listado de pasajes reprogramados.
+	 * */
 	private void reprogramarPasaje(Asiento asientoAReprogramar, Asiento asientoDisponible, Pasajero pasajeroAReprogramar, String codVuelo, List<String> listadoReprogramacion)
 	{
 		venderPasaje(pasajeroAReprogramar.getDniCliente(), codVuelo, asientoDisponible.getCodigo(), asientoAReprogramar.getOcupado());
@@ -794,6 +853,9 @@ public class Aerolinea implements IAerolinea
 		listadoReprogramacion.add(datosPasajero);
 	}
 	
+	/*
+	 * Dados dos asientos, determina si la clase de uno es igual o mejor a la clase del otro. 
+	 * */
 	private boolean esAceptable(String seccionDelPasajeroAReprogramar, String seccionDisponible) 
 	{
 		/*
@@ -815,6 +877,9 @@ public class Aerolinea implements IAerolinea
 		return false;
 	}
 
+	/*
+	 * Devuelve una lista de todos los vuelos cuyos destinos sean iguales al de un vuelo dado.
+	 * */
 	private ArrayList<Vuelo> vuelosSimilaresPorDestino(Vuelo vuelo) 
 	{
 		//Genero una lista donde voy a poner los codigos de todos los vuelos con el mismo destino
@@ -834,6 +899,9 @@ public class Aerolinea implements IAerolinea
 		return codVuelosSimilares;
 	}
 	
+	/*
+	 * Verifica si los destinos de dos vuelos son iguales (el nombre de su aeropuerto)
+	 * */
 	private boolean mismoDestino(Vuelo vueloReferencia, Vuelo vueloAComparar) 
 	{
 		//Obtengo el nombre del aeropuerto de destino
@@ -848,6 +916,8 @@ public class Aerolinea implements IAerolinea
 		return false;
 	}
 	
+	
+	
 	/** - 14
 	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 
 	* IMPORTANTE: Se debe resolver en O(1).
@@ -859,6 +929,16 @@ public class Aerolinea implements IAerolinea
 
 
 	
+	/** - 15 
+	* Detalle de un vuelo
+	* devuelve un texto con el detalle un vuelo en particular.
+	* Formato del String: CodigoVuelo - Nombre Aeropuerto de salida - Nombre Aeropuerto de llegada - 
+	*                     fecha de salida - [NACIONAL /INTERNACIONAL / PRIVADO + cantidad de jets necesarios].
+	* --> Ejemplo:
+	*   . 545-PUB - Bariloche - Jujuy - 10/11/2024 - NACIONAL
+	*   . 103-PUB - Ezeiza  - Madrid -  15/11/2024 - INTERNACIONAL
+	*   . 222-PRI - Ezeiza - Tierra del Fuego - 3/12/2024 - PRIVADO (3)
+	*/
 	@Override
 	public String detalleDeVuelo(String codVuelo) {
 		// TODO Auto-generated method stub

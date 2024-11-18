@@ -180,7 +180,7 @@ public abstract class Vuelo {
 		asientosDisponibles.remove(asiento.getCodigo());
 		
 		//Busco al pasajero por su DNI
-		Pasajero pasajero = getPasajero(cliente.getDni());
+		Pasajero pasajero = pasajeros.get(cliente.getDni());
 
 		//Si el pasajero no estaba previamente registrado en el vuelo, lo registro y asigno su asiento.
 		if(pasajero == null) return registrarPasajero(cliente, asiento);
@@ -214,8 +214,4 @@ public abstract class Vuelo {
 		//Cada vuelo modificara los asientos antes de registrarlos. Cada vuelo debe implementar su propia manera de registrar los asientos.
 	}
 
-	public void registrarAsientosDisponibles(int[] acompaniantes)
-	{
-		//version para vuelos privados
-	}
 }

@@ -6,65 +6,67 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class Privado extends Vuelo{
-
 	
 	private Cliente comprador;
 	private int asientosPorJet;
 	private double precioPorJet;
 	private int cantidadDeJets;
-
-	//String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,  int dniComprador, int[] acompaniantes)
 	
-	public Privado(String codigo, Aeropuerto destino, Aeropuerto origen, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto,
-				   Cliente comprador, double precioPorJet, int cantidadDeJets)
+	public Privado(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes,  String fechaSalida, double precioPorJet, int porcentajeImpuesto, Cliente comprador)
 	{
 		
-		super(codigo, destino, origen, totalAsientos, totalTripulantes, fechaSalida, 30);
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30);
 		
 		this.comprador = comprador;
 		this.asientosPorJet = 15;
 		this.precioPorJet = precioPorJet;
-		
-		this.cantidadDeJets = cantidadDeJets;
+//		this.cantidadDeJets = cantidadDeJets; Hay que calcular
 		
 	}
 	
 	public void registrarAsientosDisponibles(int[] acompaniantes)
 	{
-		int contador =0;
+		int nroAsiento = 0;
 		
 		for(int i = 0; i<acompaniantes.length + 1; i++)
 		{
-			contador += 1;
+			nroAsiento += 1;
 			
-			Asiento nuevoAsiento = new Asiento(contador, 0, "Privado");
+			//Generamos un asiento privado por acompaniante + comprador. Estos asientos no tiene precio, porque este es a nivel vuelo.
+			Asiento nuevoAsiento = new Asiento(nroAsiento, 0, "Privado");
 			
+			//Va a haber 1 asiento por ocupante
+			nuevoAsiento.setOcupado(true);
+			
+			//Añadimos los asientos a los disponibles
 			super.registrarAsientoDisponible(nuevoAsiento);
 		}
 	}
+
 	
-	
-	public void registrarPasajeros(Cliente[] acompaniantes, Cliente pasajeroComprador, ArrayList<Asiento>asientosDisponibles)
+	public void registrarPasajeros(ArrayList<Cliente> acompaniantes, Cliente pasajeroComprador)
 	{
+		ArrayList<Asiento> asientosDisponibles = super.getAsientosDisponibles();
+		
 		int contador = 0;
 		
+		//Itero sobre todos los asientos disponibles
 		for(Asiento asientoActual: asientosDisponibles) {
 			
-			//Si el contador es mayor al largo del array de acompañantes, entonces agregamos al comprador
-			if(contador > acompaniantes.length) 
+			//Tengo que asignarle asientos tanto al comprador como a los acompañantes.
+			//Si ya registre todos los acompañantes, registro el asiento del pasajeroComprador
+			if(contador > acompaniantes.size()) 
 			{
 				super.registrarAsiento(pasajeroComprador, asientoActual);
+				
+				contador ++;
+				
+			//Si no, es porque todavia tengo que registrar a los acompañantes
+			}else {
+				super.registrarAsiento(acompaniantes.get(contador), asientoActual);
 				contador ++;
 			}
-			
-			else {
-				super.registrarAsiento(acompaniantes[contador], asientoActual);
-				contador ++;
-			}
-		
-		
 		}
-		
 	}
 	
 	

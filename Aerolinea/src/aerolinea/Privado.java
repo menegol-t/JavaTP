@@ -14,7 +14,7 @@ public class Privado extends Vuelo{
 	
 	public Privado(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes,  String fechaSalida, int porcentajeImpuesto, double precioPorJet, Cliente comprador)
 	{
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30, "PRIVADO" + " ( )");
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30, "PRIVADO");
 		
 		validarParametros(precioPorJet, comprador);
 		
@@ -22,6 +22,9 @@ public class Privado extends Vuelo{
 		this.asientosPorJet = 15;
 		this.precioPorJet = precioPorJet;
 		this.cantidadDeJets = calcularCantJets(totalAsientos);
+		
+		//Para realizar el toString de un vuelo privado, tengo que mostrar tambien la cantidad de jets que tiene. 
+		super.setTipoDeVuelo("PRIVADO (" + cantidadDeJets + ")");
 	}
 	
 	private void validarParametros(double precioPorJet, Cliente comprador) 
@@ -36,8 +39,18 @@ public class Privado extends Vuelo{
 	 * */
 	private int calcularCantJets(int totalAsientos) 
 	{
-		//Divido los asientos necesarios por los que lleva un jet, y redondeo el resultado al int mayor mas cercano
-		return Math.round(totalAsientos / 15);
+		/*
+		 * Aca tengo un problema: Ponele que divido 2 ints, total asientos = 1 y hago totalAsientos /15, eso me da 0,0067. Yo quiero redondear ese numero con
+		 * coma a 1 en int. Como totalAsientos es un int, y necesito que me de el numero con coma para redondearlo, lo casteo como double.
+		 * Entonces, con math.ceil, el double 0,0067 lo puedo redondear a 1.0, genial. Problema: Tengo que retornar un int no un 1,0 entonces 
+		 * casteo tambien el resultado de la operacion como un int.
+		 * */
+		
+		double asientosRequeridos = totalAsientos;
+		
+		int jetsRequeridos = (int) Math.ceil(asientosRequeridos / 15);
+		
+		return jetsRequeridos;
 	}
 	
 	public void registrarAsientosDisponibles(int[] acompaniantes)
@@ -87,7 +100,7 @@ public class Privado extends Vuelo{
 		double precioFinal = precioPorJet * cantidadDeJets;
 		
 		return precioFinal += (precioFinal * (super.getPorcentajeImpuesto() / 100));
-		
 	}
+	
 	
 }

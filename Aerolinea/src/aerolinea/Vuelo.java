@@ -270,4 +270,9 @@ public abstract class Vuelo {
 	{
 		return codigo + " - " + origen.getNombre() + " - " + destino.getNombre() + " - " + fechaSalida + " - " + tipoDeVuelo;
 	}
+	
+	public void setTipoDeVuelo(String tipo) 
+	{
+		this.tipoDeVuelo = tipo;
+	}
 }

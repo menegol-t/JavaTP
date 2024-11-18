@@ -215,6 +215,10 @@ public class Aerolinea implements IAerolinea
 	{	
 		Integer Dni = dni;
 		
+		Cliente clienteYaRegistrado = clientes.get(Dni);
+		
+		if(clienteYaRegistrado != null) throw new RuntimeException("registrarCliente: El cliente ya estaba registrado. ");
+		
 		//Añado el nuevo cliente a la lista de clientes. Si los datos que me pasaron son invalidos, el constructor de cliente rebota
 		clientes.put(Dni, new Cliente(dni, nombre, telefono));
 	}
@@ -234,14 +238,12 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public void registrarAeropuerto(String nombre, String pais, String estado, String direccion) 
 	{	
-		//Verifico si pais es null antes de utilizarla para determinar esNacional. El resto de variables se verifican en el constructor de aeropuerto.
-		if(pais == null) throw new RuntimeException("registrarAeropuerto: ni el nombre ni el pais del aeropuerto pueden ser vacios.");
+		Aeropuerto aeropuertoYaRegistrado = aeropuertos.get(nombre);
 		
-		//Verifico si el pais es o no es argentina (es igual de valido que me pasen Argentina, argentina, aRgEnTiNa, etc)
-		boolean esNacional = pais.equalsIgnoreCase("Argentina");
+		if(aeropuertoYaRegistrado != null) throw new RuntimeException("registrarAeropuerto: El aeropuerto ya estaba registrado.");
 		
 		//Creo el nuevo aeropuerto y lo guardo en el diccionario aeropuertos. Si los datos del aeropurto son invalidos, el constructor del mismo tira excepcion. 
-		aeropuertos.put(nombre, new Aeropuerto(nombre, pais, estado, direccion, esNacional));
+		aeropuertos.put(nombre, new Aeropuerto(nombre, pais, estado, direccion));
 	}
 	
 	
@@ -464,7 +466,7 @@ public class Aerolinea implements IAerolinea
 	private String registrarPrivado(String codigo, Aeropuerto origen, Aeropuerto destino, String fecha, int totalAsientos, int tripulantes, double precio, Cliente comprador, ArrayList<Cliente> pasajeros, int[] acompaniantes) 
 	{
 		//Genero un nuevo vuelo privado
-		Privado nuevoPrivado = new Privado(codigo, origen, destino, totalAsientos, tripulantes, fecha, precio, 30, comprador);
+		Privado nuevoPrivado = new Privado(codigo, origen, destino, totalAsientos, tripulantes, fecha, 30, precio, comprador);
 		
 		//Registra la cantidad de asientos disponibles segun la cantidad de acompañantes
 		nuevoPrivado.registrarAsientosDisponibles(acompaniantes);

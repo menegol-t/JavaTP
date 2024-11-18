@@ -21,6 +21,11 @@ public class Pasajero
 		this.costo = 0.0;
 	}
 	
+	private void verificarParametros(Cliente cliente) 
+	{
+		if(cliente == null) throw new RuntimeException("Pasajeros: Se debe pasar un cliente para generar el pasajero");
+	}
+	
 	public Asiento getAsiento(Integer codigoAsiento)
 	{
 		Asiento asiento = asientos.get(codigoAsiento);

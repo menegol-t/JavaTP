@@ -12,15 +12,32 @@ public class Privado extends Vuelo{
 	private double precioPorJet;
 	private int cantidadDeJets;
 	
-	public Privado(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes,  String fechaSalida, double precioPorJet, int porcentajeImpuesto, Cliente comprador)
+	public Privado(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes,  String fechaSalida, int porcentajeImpuesto, double precioPorJet, Cliente comprador)
 	{
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30, "PRIVADO" + " ( )");
+		
+		validarParametros(precioPorJet, comprador);
 		
 		this.comprador = comprador;
 		this.asientosPorJet = 15;
 		this.precioPorJet = precioPorJet;
-//		this.cantidadDeJets = cantidadDeJets; Hay que calcular
-		
+		this.cantidadDeJets = calcularCantJets(totalAsientos);
+	}
+	
+	private void validarParametros(double precioPorJet, Cliente comprador) 
+	{
+		if(precioPorJet < 0) throw new RuntimeException("Privado: El precio por jet no puede ser negativo");
+		if(comprador == null) throw new RuntimeException("Privado: Se debe bridnar un comprador");
+	}
+	
+	/*
+	 * Dado un numero de asientos, sabiendo que cada jet lleva maximo 15, devuelve un int como
+	 * la cantidad de jets necesarios. 
+	 * */
+	private int calcularCantJets(int totalAsientos) 
+	{
+		//Divido los asientos necesarios por los que lleva un jet, y redondeo el resultado al int mayor mas cercano
+		return Math.round(totalAsientos / 15);
 	}
 	
 	public void registrarAsientosDisponibles(int[] acompaniantes)

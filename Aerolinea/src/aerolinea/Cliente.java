@@ -10,10 +10,19 @@ public class Cliente
 	
 	public Cliente(Integer dni, String nombre, String telefono)
 	{
+		validarParametros(dni, nombre, telefono);
+		
 		this.dni = dni;
 		this.nombre = nombre;
 		this.telefono =telefono; 
 	} 
+	
+	private void validarParametros(Integer dni, String nombre, String telefono) 
+	{
+		if(dni <= 0 ) throw new RuntimeException("Cliente: El DNI no puede ser menor a 1.");
+		if(nombre.length() == 0) throw new RuntimeException("Cliente: El nombre no puede ser vacio");
+		if(telefono.length() == 0) throw new RuntimeException("Cliente: El telefono no puede ser vacio");
+	}
 	
 	public Integer getDni()
 	{

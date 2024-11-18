@@ -14,6 +14,8 @@ public class Nacional extends Vuelo {
 		//Se crea la clase padre vuelo, por lo que su irep se mantiene. Se le pasa "porcentajeImpuesto" como 20
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, tipoDeVuelo);
 		
+		validarParametros(refrigeriosPorPasajero, precioPorRefrigerio);
+		
 		this.refrigeriosPorPasajero = refrigeriosPorPasajero;
 		this.precioPorRefrigerio = precioPorRefrigerio;
 		
@@ -25,6 +27,12 @@ public class Nacional extends Vuelo {
 		limitePasajerosEconomica = 0;
 		limitePasajerosEjecutivo = 0;
 		
+	}
+	
+	private void validarParametros(int refrigeriosPorPasajero, double precioPorRefrigerio) 
+	{
+		if(refrigeriosPorPasajero < 0) throw new RuntimeException("VueloNacional: No puede haber una cantidad negativa de refrigerios.");
+		if(precioPorRefrigerio < 0) throw new RuntimeException("VueloNacional: Los refrigerios no pueden tener un precio negativo.");
 	}
 	
 	/*

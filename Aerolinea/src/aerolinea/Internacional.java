@@ -20,8 +20,11 @@ public class Internacional extends Nacional{
 		//El limite de pasajeros aparentemente no me lo pasan, solo lo sacamos nosotros??????
 		this.limitePasajerosTurista = 0;
 		
+		this.escalas = escalas;
+		
+		//Si el diccionario de escalas mide "0", es un vuelo directo, porque no tiene escalas
 		this.vueloDirecto = escalas.size() == 0;
-		this.escalas = new HashMap<String, Aeropuerto>();
+		
 	}
 	
 	@Override

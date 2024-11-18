@@ -13,11 +13,20 @@ public class Asiento
 	{	
 		Integer cod = codigo;
 		
+		verificarParametros(codigo, precio, seccion);
+		
 		this.codigo = cod;
 		this.seccion = seccion;
 		this.precio = precio;
 		this.ocupado = false;
 		this.codPasaje = 0;
+	}
+	
+	private void verificarParametros(int codigo, double precio, String seccion) 
+	{
+		if(codigo < 0) throw new RuntimeException("Asiento: El numero de asiento no puede ser negativo");
+		if(precio < 0) throw new RuntimeException("Asiento: El precio del asiento no puede ser negativo");
+		if( !( seccion.equals("Economica") || seccion.equals("Turista") || seccion.equals("Ejecutivo") || seccion.equals("Privado") ) ) throw new RuntimeException("Asiento: Seccion invalida.");
 	}
 	
 	public Integer getCodigo()

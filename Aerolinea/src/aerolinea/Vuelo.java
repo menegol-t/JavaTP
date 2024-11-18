@@ -1,5 +1,7 @@
 package aerolinea;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,18 +20,63 @@ public abstract class Vuelo {
 	
 	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, String tipoDeVuelo)
 	{
-			this.codigo = codigo;
-			this.destino = destino;
-			this.origen = origen;
-			this.totalAsientos =  totalAsientos;
-			this.totalTripulantes= totalTripulantes;
-			this.asientosDisponibles = new HashMap<Integer, Asiento>();
-			this.pasajeros = new HashMap<Integer, Pasajero>();
-			this.fechaSalida= fechaSalida;
-			this.porcentajeImpuesto = porcentajeImpuesto;
-			this.tipoDeVuelo = tipoDeVuelo;
+		validarParametros(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, tipoDeVuelo);
+		
+		this.codigo = codigo;
+		this.destino = destino;
+		this.origen = origen;
+		this.totalAsientos =  totalAsientos;
+		this.totalTripulantes= totalTripulantes;
+		this.asientosDisponibles = new HashMap<Integer, Asiento>();
+		this.pasajeros = new HashMap<Integer, Pasajero>();
+		this.fechaSalida= fechaSalida;
+		this.porcentajeImpuesto = porcentajeImpuesto;
+		this.tipoDeVuelo = tipoDeVuelo;
+	}
+	
+	private void validarParametros(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, String tipoDeVuelo) 
+	{
+		if(codigo.length() == 0) throw new RuntimeException("Vuelo: El codigo no puede ser vacio.");
+		
+		if(origen == null) throw new RuntimeException("Vuelo: Origen debe ser un aeropuerto.");
+		
+		if(destino == null) throw new RuntimeException("Vuelo: Destino debe ser un aeropuerto.");
+		
+		if(totalAsientos <= 0) throw new RuntimeException("Vuelo: El total de asientos no puede ser menor a 1.");
+		
+		if(totalTripulantes<= 0) throw new RuntimeException("Vuelo: El total de tripulantes no puede ser menor a 1.");
+		
+		compararFecha(fechaSalida);
+		
+		if(porcentajeImpuesto < 0) throw new RuntimeException("Vuelo: El porcentaje de impuesto no puede ser negativo.");
+		
+		if(tipoDeVuelo.length() == 0) throw new RuntimeException("Vuelo: Se debe indicar el tipo de vuelo.");
 	}
 		
+	private void compararFecha(String fecha) 
+	{
+		LocalDate fechaSalida = obtenerFecha(fecha);
+		
+		LocalDate fechaActual = LocalDate.now();
+		
+		if (fechaSalida.isBefore(fechaActual)) {
+	        throw new RuntimeException("Vuelo: La fecha de salida no puede ser en el pasado");
+	    }
+	}
+	
+	private LocalDate obtenerFecha(String fecha) 
+	{	
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		
+		try {
+            LocalDate objetoFecha= LocalDate.parse(fecha, formato);
+            return objetoFecha;
+            
+		}catch(Exception e){
+			throw new RuntimeException("Vuelo: La fecha de salida es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
+		}	
+	}
+	
 	public String getCodigo() 
 	{
 		return codigo;

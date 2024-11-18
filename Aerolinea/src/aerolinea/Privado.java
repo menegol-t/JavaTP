@@ -14,8 +14,7 @@ public class Privado extends Vuelo{
 	
 	public Privado(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes,  String fechaSalida, double precioPorJet, int porcentajeImpuesto, Cliente comprador)
 	{
-		
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30);
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30, "PRIVADO" + " ( )");
 		
 		this.comprador = comprador;
 		this.asientosPorJet = 15;

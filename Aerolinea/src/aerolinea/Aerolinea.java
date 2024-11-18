@@ -290,7 +290,7 @@ public class Aerolinea implements IAerolinea
 	private String registrarNacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int[] asientos, double[] precios) 
 	{
 		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException. (20 = porcentajeImpuesto, 1 = cantidad de refrigerios por pasajero)
-		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, 1, valorRefrigerio);
+		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, 1, valorRefrigerio, "NACIONAL");
 		
 		//Asignamos sus asienos al nuevo vuelo
 		nuevoNacional.registrarAsientosDisponibles(asientos, precios);
@@ -941,8 +941,12 @@ public class Aerolinea implements IAerolinea
 	*/
 	@Override
 	public String detalleDeVuelo(String codVuelo) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Vuelo vuelo = vuelos.get(codVuelo);
+		
+		if (vuelo == null) throw new RuntimeException("El codigo de vuelo no corresponde a ningun codigo de vuelo registrado.");
+		
+		return vuelo.toString();
 	}
 	
 }

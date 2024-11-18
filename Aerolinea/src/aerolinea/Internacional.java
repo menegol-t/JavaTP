@@ -12,7 +12,7 @@ public class Internacional extends Nacional{
 	
 	public Internacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, int cantidadRefrigerios, double precioRefrigerio, HashMap <String, Aeropuerto> escalas)
 	{
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, cantidadRefrigerios, precioRefrigerio);
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, cantidadRefrigerios, precioRefrigerio, "INTERNACIONAL");
 		
 		//El numero de pasajeros empieza vacio, se van sumando conforme se suman pasajes.
 		this.pasajerosTurista = 0;

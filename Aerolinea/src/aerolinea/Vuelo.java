@@ -14,8 +14,9 @@ public abstract class Vuelo {
 	private HashMap <Integer, Pasajero> pasajeros;
 	private String fechaSalida;
 	private int porcentajeImpuesto;
+	private String tipoDeVuelo;
 	
-	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto)
+	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, String tipoDeVuelo)
 	{
 			this.codigo = codigo;
 			this.destino = destino;
@@ -26,6 +27,7 @@ public abstract class Vuelo {
 			this.pasajeros = new HashMap<Integer, Pasajero>();
 			this.fechaSalida= fechaSalida;
 			this.porcentajeImpuesto = porcentajeImpuesto;
+			this.tipoDeVuelo = tipoDeVuelo;
 	}
 		
 	public String getCodigo() 
@@ -202,16 +204,23 @@ public abstract class Vuelo {
 	}
 	
 	/*
-	 * Registra asientos, uno por uno. Se utiliza dentro de registrarAsientoSdisponibles aca abajo.
+	 * Registra un solo asiento disponible. Se utiliza dentro de registrarAsientoSdisponibles aca abajo.
 	 * */
 	public void registrarAsientoDisponible(Asiento asiento) 
 	{
 		asientosDisponibles.put(asiento.getCodigo(), asiento);
 	}
 	
+	/*
+	 * Registra multiples asientos dispomibles
+	 * */
 	public void  registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{
 		//Cada vuelo modificara los asientos antes de registrarlos. Cada vuelo debe implementar su propia manera de registrar los asientos.
 	}
 
+	public String toString() 
+	{
+		return codigo + " - " + origen.getNombre() + " - " + destino.getNombre() + " - " + fechaSalida + " - " + tipoDeVuelo;
+	}
 }

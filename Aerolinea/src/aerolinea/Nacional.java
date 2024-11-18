@@ -9,10 +9,10 @@ public class Nacional extends Vuelo {
 	int limitePasajerosEjecutivo;
 	int pasajerosEjecutivo;
 
-	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, int refrigeriosPorPasajero, double precioPorRefrigerio) 
+	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, int refrigeriosPorPasajero, double precioPorRefrigerio, String tipoDeVuelo) 
 	{	
 		//Se crea la clase padre vuelo, por lo que su irep se mantiene. Se le pasa "porcentajeImpuesto" como 20
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto);
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, tipoDeVuelo);
 		
 		this.refrigeriosPorPasajero = refrigeriosPorPasajero;
 		this.precioPorRefrigerio = precioPorRefrigerio;

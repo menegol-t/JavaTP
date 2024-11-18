@@ -66,34 +66,27 @@ public class Privado extends Vuelo{
 		
 		int contador = 0;
 		
+		//Primero registro al comprador como pasajero. Esto tambien va a remover el asiento disponible.
+		super.registrarAsiento(pasajeroComprador, asientosDisponibles.get(contador));
+		
+		asientosDisponibles = super.getAsientosDisponibles();
+		
 		//Itero sobre todos los asientos disponibles
 		for(Asiento asientoActual: asientosDisponibles) {
 			
-			//Tengo que asignarle asientos tanto al comprador como a los acompañantes.
-			//Si ya registre todos los acompañantes, registro el asiento del pasajeroComprador
-			if(contador > acompaniantes.size()) 
-			{
-				super.registrarAsiento(pasajeroComprador, asientoActual);
+			super.registrarAsiento(acompaniantes.get(contador), asientoActual);
 				
-				contador ++;
-				
-			//Si no, es porque todavia tengo que registrar a los acompañantes
-			}else {
-				super.registrarAsiento(acompaniantes.get(contador), asientoActual);
-				contador ++;
-			}
+			contador ++;
 		}
 	}
 	
 	
 	public double conseguiPresioFinal()
 	{
-		
 		//Calculamos el precio final + impuestos
-		
 		double precioFinal = precioPorJet * cantidadDeJets;
 		
-		return precioFinal += precioFinal * super.getPorcentajeImpuesto() / 100;
+		return precioFinal += (precioFinal * (super.getPorcentajeImpuesto() / 100));
 		
 	}
 	

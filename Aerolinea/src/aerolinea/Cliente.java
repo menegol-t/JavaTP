@@ -41,17 +41,20 @@ public class Cliente
 	
 	public String toString() 
 	{
-		StringBuilder st = new StringBuilder("Cliente: ");
+//		StringBuilder st = new StringBuilder();
+//		
+//		st.append(dni);
+//		st.append(" - ");
+//		
+//		st.append(nombre);
+//		st.append(" - ");
+//		
+//		st.append(telefono);
+//		st.append("\n");
+//		
+//		return st.toString();
 		
-		st.append(dni);
-		st.append(" - ");
+		return dni + " - " + nombre + " - " + telefono;
 		
-		st.append(nombre);
-		st.append(" - ");
-		
-		st.append(telefono);
-		st.append("\n");
-		
-		return st.toString();
 	}
 }

@@ -55,18 +55,12 @@ public class Aerolinea implements IAerolinea
 
 	public String obtenerCodigoPublico()
 	{
-		Integer parteNumerica = obtenerCodigo();
-		StringBuilder codigoVueloPublico= new StringBuilder(parteNumerica);
-		codigoVueloPublico.append("-PUB");
-		return codigoVueloPublico.toString();
+		return obtenerCodigo() + "-PUB";
 	}
 	
 	public String obtenerCodigoPrivado()
 	{
-		Integer parteNumerica = obtenerCodigo();
-		StringBuilder codigoVueloPrivado= new StringBuilder(parteNumerica);
-		codigoVueloPrivado.append("-PRI");
-		return codigoVueloPrivado.toString();
+		return obtenerCodigo() + "-PRI";
 	}
 	
 	private Aeropuerto getAeropuerto(String nombre)
@@ -582,7 +576,9 @@ public class Aerolinea implements IAerolinea
 		int codigoPasaje = obtenerCodigo();
 		
 		//Mando al vuelo a que venda el pasaje
-		return vuelo.venderPasaje(cliente, nroAsiento, aOcupar, codigoPasaje);
+		int k =  vuelo.venderPasaje(cliente, nroAsiento, aOcupar, codigoPasaje);
+				
+		return k;
 	}
 	
 	
@@ -759,8 +755,6 @@ public class Aerolinea implements IAerolinea
 		//Busco todos los pasajeros del vuelo
 		ArrayList<Pasajero> pasajeros = vuelo.getAllPasajeros();
 		
-		System.out.print("\ncancelarVuelo Pasajeros: " + pasajeros.size());
-		
 		return buscarAsientosAReprogramar(vuelosDestinoSimilar, pasajeros);
 	}
 	
@@ -847,7 +841,7 @@ public class Aerolinea implements IAerolinea
 	{
 		venderPasaje(pasajeroAReprogramar.getDniCliente(), codVuelo, asientoDisponible.getCodigo(), asientoAReprogramar.getOcupado());
 		
-		String datosPasajero = pasajeroAReprogramar.toString() + " - " + codVuelo;
+		String datosPasajero = pasajeroAReprogramar.getCliente().toString() + " - " + codVuelo;
 		
 		listadoReprogramacion.add(datosPasajero);
 	}
@@ -887,8 +881,8 @@ public class Aerolinea implements IAerolinea
 		//Itero sobre todos los vuelos de la aerolinea
 		for(Vuelo vueloActual : vuelos.values()) {
 			
-			//Si el vuelo actual y el vuelo que me dieron tienen el mismo aerpuerto de destino, sumo el vuelo actual a la lista 
-			if(mismoDestino(vuelo, vueloActual)) codVuelosSimilares.add(vueloActual);
+			//Si el vuelo actual y el vuelo que me dieron tienen el mismo aerpuerto de destino (pero no son el mismo vuelo), sumo el vuelo actual a la lista 
+			if(mismoDestino(vuelo, vueloActual) && ! vuelo.getCodigo().equals(vueloActual.getCodigo())) codVuelosSimilares.add(vueloActual);
 		}
 		return codVuelosSimilares;
 	}

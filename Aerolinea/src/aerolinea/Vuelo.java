@@ -121,8 +121,6 @@ public abstract class Vuelo {
 	
 	public ArrayList<Pasajero> getAllPasajeros()
 	{	
-		System.out.print("\ngetAllPasajeros: " + pasajeros.size());
-		
 		ArrayList<Pasajero> pasajero = new ArrayList<>(pasajeros.values());
 		
 		return pasajero;
@@ -253,8 +251,6 @@ public abstract class Vuelo {
 		
 		//Lo agrego al diccionario de pasajeros
 		pasajeros.put(cliente.getDni(), pasajero);
-		
-		System.out.print("\nregistrarPasajero: " + pasajeros.size());
 		
 		//Busco al pasajero que acabo de registrar por su DNI para asegurarme que exista, le asigno su asiento
 		return codPasaje;

@@ -2,11 +2,14 @@ package aerolinea;
 
 public class Asiento 
 {
-
 	private Integer codigo;
+	
 	private int codPasaje;
+	
 	private String seccion;
+	
 	private boolean ocupado;
+	
 	private double precio;
 	
 	public Asiento(int codigo, double precio, String seccion)

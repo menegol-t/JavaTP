@@ -14,7 +14,7 @@ public class Privado extends Vuelo{
 	
 	public Privado(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes,  String fechaSalida, int porcentajeImpuesto, double precioPorJet, Cliente comprador)
 	{
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30, "PRIVADO");
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30);
 		
 		validarParametros(precioPorJet, comprador);
 		
@@ -23,8 +23,6 @@ public class Privado extends Vuelo{
 		this.precioPorJet = precioPorJet;
 		this.cantidadDeJets = calcularCantJets(totalAsientos);
 		
-		//Para realizar el toString de un vuelo privado, tengo que mostrar tambien la cantidad de jets que tiene. 
-		super.setTipoDeVuelo("PRIVADO (" + cantidadDeJets + ")");
 	}
 	
 	private void validarParametros(double precioPorJet, Cliente comprador) 
@@ -53,25 +51,6 @@ public class Privado extends Vuelo{
 		return jetsRequeridos;
 	}
 	
-	public void registrarAsientosDisponibles(int[] acompaniantes)
-	{
-		int nroAsiento = 0;
-		
-		for(int i = 0; i<acompaniantes.length + 1; i++)
-		{
-			nroAsiento += 1;
-			
-			//Generamos un asiento privado por acompaniante + comprador. Estos asientos no tiene precio, porque este es a nivel vuelo.
-			Asiento nuevoAsiento = new Asiento(nroAsiento, 0, "Privado");
-			
-			//Va a haber 1 asiento por ocupante
-			nuevoAsiento.setOcupado(true);
-			
-			//Añadimos los asientos a los disponibles
-			super.registrarAsientoDisponible(nuevoAsiento);
-		}
-	}
-
 	
 	public void registrarPasajeros(ArrayList<Cliente> acompaniantes, Cliente pasajeroComprador)
 	{
@@ -93,13 +72,40 @@ public class Privado extends Vuelo{
 		}
 	}
 	
-	
-	public double conseguiPresioFinal()
-	{
+
+	@Override
+	public String toString() {
+		return super.getCodigo()+ " - " + super.getOrigen().getNombre() + " - " + super.getDestino().getNombre() + " - " + super.getFechaSalida()+ " - " + "PRIVADO (" + this.cantidadDeJets + ")";
+	}
+
+
+	@Override
+	public double getPrecio() {
 		//Calculamos el precio final + impuestos
 		double precioFinal = precioPorJet * cantidadDeJets;
-		
+				
 		return precioFinal += (precioFinal * (super.getPorcentajeImpuesto() / 100));
+	}
+
+	@Override
+	public void registrarAsientosDisponibles(int[] cantAsientos, double[] precios) {
+		
+		int nroAsiento = 0;
+		
+		for(int i = 0; i<cantAsientos.length + 1; i++)
+		{
+			nroAsiento += 1;
+			
+			//Generamos un asiento privado por acompaniante + comprador. Estos asientos no tiene precio, porque este es a nivel vuelo.
+			Asiento nuevoAsiento = new Asiento(nroAsiento, 0, "Privado");
+			
+			//Va a haber 1 asiento por ocupante
+			nuevoAsiento.setOcupado(true);
+			
+			//Añadimos los asientos a los disponibles
+			super.registrarAsientoDisponible(nuevoAsiento);
+		}
+		
 	}
 	
 	

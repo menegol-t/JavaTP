@@ -16,11 +16,10 @@ public abstract class Vuelo {
 	private HashMap <Integer, Pasajero> pasajeros;
 	private String fechaSalida;
 	private int porcentajeImpuesto;
-	private String tipoDeVuelo;
 	
-	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, String tipoDeVuelo)
+	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto)
 	{
-		validarParametros(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, tipoDeVuelo);
+		validarParametros(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto);
 		
 		this.codigo = codigo;
 		this.destino = destino;
@@ -31,10 +30,9 @@ public abstract class Vuelo {
 		this.pasajeros = new HashMap<Integer, Pasajero>();
 		this.fechaSalida= fechaSalida;
 		this.porcentajeImpuesto = porcentajeImpuesto;
-		this.tipoDeVuelo = tipoDeVuelo;
 	}
 	
-	private void validarParametros(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, String tipoDeVuelo) 
+	private void validarParametros(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto) 
 	{
 		if(codigo.length() == 0) throw new RuntimeException("Vuelo: El codigo no puede ser vacio.");
 		
@@ -50,7 +48,6 @@ public abstract class Vuelo {
 		
 		if(porcentajeImpuesto < 0) throw new RuntimeException("Vuelo: El porcentaje de impuesto no puede ser negativo.");
 		
-		if(tipoDeVuelo.length() == 0) throw new RuntimeException("Vuelo: Se debe indicar el tipo de vuelo.");
 	}
 		
 	private void compararFecha(String fecha) 
@@ -265,20 +262,18 @@ public abstract class Vuelo {
 	}
 	
 	/*
-	 * Registra multiples asientos dispomibles
+	 * Clase abstracta toString, cada subclase elige como es su toString
 	 * */
-	public void  registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
-	{
-		//Cada vuelo modificara los asientos antes de registrarlos. Cada vuelo debe implementar su propia manera de registrar los asientos.
-	}
-
-	public String toString() 
-	{
-		return codigo + " - " + origen.getNombre() + " - " + destino.getNombre() + " - " + fechaSalida + " - " + tipoDeVuelo;
-	}
+	public abstract String toString();
+		
+	/*
+	 * Clase abstracta registra multiples asientos disponibles, cada clase decide como se registran.
+	 * */
+	public abstract void  registrarAsientosDisponibles(int[]cantAsientos, double[]precios);
 	
-	public void setTipoDeVuelo(String tipo) 
-	{
-		this.tipoDeVuelo = tipo;
-	}
+	/*
+	 * Clase abstracta para calcular y devolver el precio del vuelo 
+	 * */
+	public abstract double getPrecio();
+	
 }

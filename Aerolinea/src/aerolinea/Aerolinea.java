@@ -121,61 +121,61 @@ public class Aerolinea implements IAerolinea
 		}
 	}
 	
-	/*
-	 * Con esta funcion detectamos si un numero Double es invalido, es decir si vale 0 o vale negativo.
-	 * */
-	private void doubleInvalidoCero(double d, String valor) {
-	    
-		if (d <= 0) {
-	        StringBuilder st = new StringBuilder("Error, ingresaste un valor inválido: ");
-	        
-	        st.append(valor);
-	        st.append("\n");
-	        
-	        throw new RuntimeException(st.toString());
-	    }
-	}
-	
-	/*
-	 * Con esta funcion valido si me pasaron un Array Int vacio
-	 * */
-	private void arrayIntInvalido(int[] array, String valor) {
-	    if (array == null || array.length == 0) {
-	        StringBuilder st = new StringBuilder("Error, ingresaste un array de enteros inválido o vacío: ");
-	        st.append(valor);
-	        st.append("\n");
-
-	        throw new RuntimeException(st.toString());
-	    }
-	}
-	
-	/*
-	 * Con esta funcion valido si me pasaron un Array Double vacio
-	 * */
-	private void arrayDoubleInvalido(double[] array, String valor) {
-	    if (array == null || array.length == 0) {
-	        StringBuilder st = new StringBuilder("Error, ingresaste un array de dobles inválido o vacío: ");
-	        st.append(valor);
-	        st.append("\n");
-
-	        throw new RuntimeException(st.toString());
-	    }
-	}
-	
-	/*
-	 * Con esta funcion valido si me pasaron un Array de cualquier objeto vacio 
-	 * */
-	private <T> void arrayInvalido(T[] array, String valor) {
-	    
-		if (array == null || array.length == 0) {
-	        StringBuilder st = new StringBuilder("Error, ingresaste un array inválido o vacío: ");
-	        
-	        st.append(valor);
-	        st.append("\n");
-
-	        throw new RuntimeException(st.toString());
-	    }
-	}
+//	/*
+//	 * Con esta funcion detectamos si un numero Double es invalido, es decir si vale 0 o vale negativo.
+//	 * */
+//	private void doubleInvalidoCero(double d, String valor) {
+//	    
+//		if (d <= 0) {
+//	        StringBuilder st = new StringBuilder("Error, ingresaste un valor inválido: ");
+//	        
+//	        st.append(valor);
+//	        st.append("\n");
+//	        
+//	        throw new RuntimeException(st.toString());
+//	    }
+//	}
+//	
+//	/*
+//	 * Con esta funcion valido si me pasaron un Array Int vacio
+//	 * */
+//	private void arrayIntInvalido(int[] array, String valor) {
+//	    if (array == null || array.length == 0) {
+//	        StringBuilder st = new StringBuilder("Error, ingresaste un array de enteros inválido o vacío: ");
+//	        st.append(valor);
+//	        st.append("\n");
+//
+//	        throw new RuntimeException(st.toString());
+//	    }
+//	}
+//	
+//	/*
+//	 * Con esta funcion valido si me pasaron un Array Double vacio
+//	 * */
+//	private void arrayDoubleInvalido(double[] array, String valor) {
+//	    if (array == null || array.length == 0) {
+//	        StringBuilder st = new StringBuilder("Error, ingresaste un array de dobles inválido o vacío: ");
+//	        st.append(valor);
+//	        st.append("\n");
+//
+//	        throw new RuntimeException(st.toString());
+//	    }
+//	}
+//	
+//	/*
+//	 * Con esta funcion valido si me pasaron un Array de cualquier objeto vacio 
+//	 * */
+//	private <T> void arrayInvalido(T[] array, String valor) {
+//	    
+//		if (array == null || array.length == 0) {
+//	        StringBuilder st = new StringBuilder("Error, ingresaste un array inválido o vacío: ");
+//	        
+//	        st.append(valor);
+//	        st.append("\n");
+//
+//	        throw new RuntimeException(st.toString());
+//	    }
+//	}
 	
 	
 	//AUXILIAR
@@ -286,7 +286,7 @@ public class Aerolinea implements IAerolinea
 	private String registrarNacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int[] asientos, double[] precios) 
 	{
 		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException. (20 = porcentajeImpuesto, 1 = cantidad de refrigerios por pasajero)
-		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, 1, valorRefrigerio, "NACIONAL");
+		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, valorRefrigerio);
 		
 		//Asignamos sus asienos al nuevo vuelo
 		nuevoNacional.registrarAsientosDisponibles(asientos, precios);
@@ -462,8 +462,8 @@ public class Aerolinea implements IAerolinea
 		//Genero un nuevo vuelo privado
 		Privado nuevoPrivado = new Privado(codigo, origen, destino, totalAsientos, tripulantes, fecha, 30, precio, comprador);
 		
-		//Registra la cantidad de asientos disponibles segun la cantidad de acompañantes
-		nuevoPrivado.registrarAsientosDisponibles(acompaniantes);
+		//Registra la cantidad de asientos disponibles segun la cantidad de acompañantes. Como el precio del vuelo privado es por vuelo y no por asiento, como precio envio 0
+		nuevoPrivado.registrarAsientosDisponibles(acompaniantes, new double[] {0.0});
 		
 		//Le asigna a cada pasajero y al comprador sus asientos
 		nuevoPrivado.registrarPasajeros(pasajeros, comprador);
@@ -553,7 +553,7 @@ public class Aerolinea implements IAerolinea
 		Integer Dni = dni;
 		
 		//Busco el cliente y verifico si existe en la aerolinea
-		Cliente pasajero = clientes.get(dni);
+		Cliente pasajero = clientes.get(Dni);
 		
 		//Si el cliente no existe, lanzo excepcion
 		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
@@ -822,10 +822,13 @@ public class Aerolinea implements IAerolinea
 	private void decartarPasaje(Pasajero pasajeroAReprogramar, Asiento asientoAReprogramar, List<String> listadoReprogramacion) 
 	{
 		//Genero los datos del pasaje que no pude reprogramar
-		String datosPasajero = pasajeroAReprogramar.toString() + " - " + "CANCELADO";
-		//+ "Numero de pasaje cancelado: " + asientoAReprogramar.getCodPasaje()
-		//Puede darse, que para un mismo pasajero, algunos asientos se pudieron reprogramar y otros no. 
-		// Habria que indicar el numero de pasaje para saber cual es cual. 
+		String datosPasajero = pasajeroAReprogramar.getCliente().toString() + " - " + "CANCELADO";
+		
+		/*
+		 * Puede darse, que para un mismo pasajero, algunos asientos se pudieron reprogramar y otros no. 
+		 * Habria que indicar el numero de pasaje para saber cual es cual.
+		 * Para esto, habria que sumar lo siguiente a datosPasajero
+		 * */ 
 		
 		//Sumo estos datos al lsitado de reprogramaciones
 		listadoReprogramacion.add(datosPasajero);
@@ -893,13 +896,13 @@ public class Aerolinea implements IAerolinea
 	private boolean mismoDestino(Vuelo vueloReferencia, Vuelo vueloAComparar) 
 	{
 		//Obtengo el nombre del aeropuerto de destino
-		String destino = vueloReferencia.getDestino().getNombre();
+		String destinoReferencia = vueloReferencia.getDestino().getNombre();
 		
 		//Obtengo el nombre del vueloActual
-		String comparador = vueloAComparar.getDestino().getNombre();
+		String destino = vueloAComparar.getDestino().getNombre();
 		
 		//Si son iguales, retorno true.
-		if(destino.equals(comparador)) return true;
+		if(destinoReferencia.equals(destino)) return true;
 		
 		return false;
 	}

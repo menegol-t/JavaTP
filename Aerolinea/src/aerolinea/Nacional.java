@@ -1,38 +1,22 @@
 package aerolinea;
 
-public class Nacional extends Vuelo {
-	
-	int refrigeriosPorPasajero;
-	double precioPorRefrigerio;
-	int limitePasajerosEconomica;
-	int pasajerosEconomica;
-	int limitePasajerosEjecutivo;
-	int pasajerosEjecutivo;
+import java.util.HashMap;
 
-	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, int refrigeriosPorPasajero, double precioPorRefrigerio, String tipoDeVuelo) 
-	{	
+public class Nacional extends Internacional {
+	
+
+	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double precioPorRefrigerio) 
+	{			
 		//Se crea la clase padre vuelo, por lo que su irep se mantiene. Se le pasa "porcentajeImpuesto" como 20
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto, tipoDeVuelo);
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, 1, precioPorRefrigerio, new HashMap<>());
 		
-		validarParametros(refrigeriosPorPasajero, precioPorRefrigerio);
-		
-		this.refrigeriosPorPasajero = refrigeriosPorPasajero;
-		this.precioPorRefrigerio = precioPorRefrigerio;
-		
-		//De momento no tiene pasajeros, la logica de aumentar este numero es de venderPasaje, al igual que incrementar agregar el pasajero a la lista
-		pasajerosEconomica = 0;
-		pasajerosEjecutivo = 0;
-		
-		//El limite de pasajeros aparentemente no me lo pasan, solo lo sacamos nosotros??????
-		limitePasajerosEconomica = 0;
-		limitePasajerosEjecutivo = 0;
+		validarParametros(destino);
 		
 	}
 	
-	private void validarParametros(int refrigeriosPorPasajero, double precioPorRefrigerio) 
+	private void validarParametros(Aeropuerto destino) 
 	{
-		if(refrigeriosPorPasajero < 0) throw new RuntimeException("VueloNacional: No puede haber una cantidad negativa de refrigerios.");
-		if(precioPorRefrigerio < 0) throw new RuntimeException("VueloNacional: Los refrigerios no pueden tener un precio negativo.");
+		if(!destino.esNacional()) throw new RuntimeException("VueloNacional: Los vuelos nacionales solo pueden ir a destinos nacionales.");
 	}
 	
 	/*
@@ -41,10 +25,6 @@ public class Nacional extends Vuelo {
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{
-		//Al registrar los asientos, registramos cual es el limite de asientos por clase, algo que solicitaba la etapa de diseño pero en la segunda etapa no se especifica. 
-		setLimitePasajerosEconomica(cantAsientos[0]);
-		
-		setLimitePasajerosEjecutivo(cantAsientos[1]);
 		
 		//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
 		int contador = 0;
@@ -80,16 +60,16 @@ public class Nacional extends Vuelo {
 		}
 	}
 	
-	//Hacemos este setter por la subclase internacional
-	public void setLimitePasajerosEconomica(int cant) 
-	{
-		limitePasajerosEconomica = cant;
+
+	@Override
+	public String toString() {
+		return super.getCodigo()+ " - " + super.getOrigen().getNombre() + " - " + super.getDestino().getNombre() + " - " + super.getFechaSalida()+ " - " + "NACIONAL";
 	}
-	
-	//Hacemos este setter por la subclase internacional
-	public void setLimitePasajerosEjecutivo(int cant) 
-	{
-		limitePasajerosEjecutivo = cant;
+
+	@Override
+	public double getPrecio() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 	

@@ -1,5 +1,4 @@
 package aerolinea;
-//package ar.edu.ungs.prog2.aerolinea;
 
 import static org.junit.Assert.*;
 

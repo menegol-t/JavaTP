@@ -2,13 +2,15 @@ package aerolinea;
 
 public class Aeropuerto 
 {
-	String nombre;
-	String pais;
-	String estado;
-	String direccion;
-	boolean esNacional;
+	private String nombre;
 	
-	//Acordate que tiene que ser runtimeException
+	private String pais;
+	
+	private String estado;
+	
+	private String direccion;
+	
+	private boolean esNacional;
 	
 	public Aeropuerto(String nombre, String pais, String estado, String direccion)
 	{	
@@ -35,7 +37,7 @@ public class Aeropuerto
 		return nombre;
 	}
 	
-	public boolean getNacional()
+	public boolean esNacional()
 	{
 		return esNacional;
 	}

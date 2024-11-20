@@ -63,8 +63,17 @@ public class Aerolinea implements IAerolinea
 		return obtenerCodigo() + "-PRI";
 	}
 	
+	/*
+	 * Si encuentra el aeropuerto buscandolo por su nombre, lo retorna. Si no lo encuentra, tira excepcion
+	 * */
 	private Aeropuerto getAeropuerto(String nombre)
 	{
+		for(Aeropuerto a: aeropuertos.values()) {
+			System.out.print("Aeropuertos registrados: " + a.getNombre()+ "\n");
+		}
+		
+		System.out.print("Nombre solicitadp: " + nombre + "\n");
+		
 		Aeropuerto aeropuerto = aeropuertos.get(nombre);
 		
 		if(aeropuerto == null) throw new RuntimeException("getAeropuerto: El nombre dado no corresponde a ningun aeropuerto registrado.");
@@ -72,6 +81,9 @@ public class Aerolinea implements IAerolinea
 		return aeropuerto;
 	}
 	
+	/*
+	 * Si encuentra el cliente buscandolo por su dni, lo retorna. Si no lo encuentra, tira excepcion
+	 * */
 	private Cliente getCliente(int dni) 
 	{
 		Cliente cliente = clientes.get(dni);
@@ -81,6 +93,9 @@ public class Aerolinea implements IAerolinea
 		return cliente;
 	}
 	
+	/*
+	 * Si encuentra el vuelo buscandolo por su codigo, lo retorna. Si no lo encuentra, tira excepcion
+	 * */
 	private Vuelo getVuelo(String codVuelo) 
 	{
 		Vuelo vuelo = vuelos.get(codVuelo);
@@ -285,13 +300,16 @@ public class Aerolinea implements IAerolinea
 		//Calculo total de asientos entre la primera y la segunda clase.
 		int totalAsientos = cantAsientos[0] + cantAsientos[1] + cantAsientos[2]; 
 		
-		return verificarEscalas(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, valorRefrigerio, cantRefrigerios, precios, cantAsientos, escalas);
+		//Obtengo un hashMap de todas las escalas
+		HashMap<String, Aeropuerto> Escalas = verificarEscalas(escalas);
+		
+		return registrarDatosInternacional(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, valorRefrigerio, cantRefrigerios, precios, cantAsientos, Escalas);
 	}
 	
 	/*
 	 * Verifica que las escalas sean validas antes de pasarlas al vuelo.
 	 * */
-	private String verificarEscalas(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] asientos, String[] aeropuertos) 
+	private HashMap<String, Aeropuerto> verificarEscalas(String[] aeropuertos) 
 	{
 		//Realizamos un nuevo hashMap para guardar las escalas
 		HashMap<String, Aeropuerto> escalas = new HashMap<>(); 
@@ -305,21 +323,21 @@ public class Aerolinea implements IAerolinea
 				
 				escalas.put(nombre, aeropuerto);
 			}
-		}//Es posible que nos pidan hacer un vuelo internacional SIN escalas, en cuyo caso mandamos el diccionario "escalas" vacio al vuelo. 
+		}//Es posible que nos pidan hacer un vuelo internacional SIN escalas, en cuyo caso mandamos el diccionario "escalas" va vacio al vuelo. 
 		
-		return registrarDatosInternacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, valorRefrigerio, cantRefrigerios, precios, asientos, escalas);
+		return escalas;
 	}
 	
 	/*
 	 * Dados todos los datos necesarios, genera un vuelo publico internacional, registra sus asientos disponibles y guarda dicho vuelo en el diccionario vuelos de Aerolinea.
 	 * */
-	private String registrarDatosInternacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] asientos, HashMap<String, Aeropuerto> escala) 
+	private String registrarDatosInternacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int tripulantes, String fecha, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, HashMap<String, Aeropuerto> escalas) 
 	{
-		//Generamos un nuevo vuelo internacional. Si algun dato es incorrecto, el constructor tira runtimeException					(20 = porcentajeImpuesto)
-		Internacional nuevoInternacional = new Internacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, cantRefrigerios, valorRefrigerio, escala);
+		//Generamos un nuevo vuelo internacional. Si algun dato es incorrecto, el constructor tira runtimeException
+		Internacional nuevoInternacional = new Internacional(codigo, origen, destino, totalAsientos, tripulantes, fecha, cantRefrigerios, valorRefrigerio, escalas);
 		
 		//Registramos todos los asientos del vuelo internacional
-		nuevoInternacional.registrarAsientosDisponibles(asientos, precios);
+		nuevoInternacional.registrarAsientosDisponibles(cantAsientos, precios);
 		
 		//Guardamos el vuelo en el diccionario de vuelos
 		vuelos.put(codigo, nuevoInternacional);
@@ -859,4 +877,25 @@ public class Aerolinea implements IAerolinea
 		return vuelo.toString();
 	}
 	
+	public String toString() 
+	{
+		StringBuilder st = new StringBuilder();
+		
+		for(Cliente clienteActual: clientes.values()) 
+		{
+			st.append(clienteActual.toString() + "\n");
+		}
+		
+		for(Aeropuerto aeropuertoActual: aeropuertos.values()) 
+		{
+			st.append(aeropuertoActual.toString() + "\n");
+		}
+		
+		for(Vuelo vueloActual: vuelos.values()) 
+		{
+			st.append(detalleDeVuelo(vueloActual.getCodigo()).toString() + "\n");
+		}
+		
+		return st.toString();
+	}
 }

@@ -44,7 +44,7 @@ public abstract class Vuelo {
 		
 		if(totalTripulantes<= 0) throw new RuntimeException("Vuelo: El total de tripulantes no puede ser menor a 1.");
 		
-		compararFecha(fechaSalida);
+		//compararFecha(fechaSalida);
 		
 		if(porcentajeImpuesto < 0) throw new RuntimeException("Vuelo: El porcentaje de impuesto no puede ser negativo.");
 		
@@ -152,11 +152,6 @@ public abstract class Vuelo {
 		
 		return true;
 	}
-	
-//	public void eliminarPasajero(Integer dni)
-//	{
-//		pasajeros.remove(dni);
-//	}
 
 	public void cancelarPasaje(int dni, int nroAsiento)//Esta es en O(1) 
 	{

@@ -7,8 +7,8 @@ public class Nacional extends Internacional {
 
 	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double precioPorRefrigerio) 
 	{			
-		//Se crea la clase padre vuelo, por lo que su irep se mantiene. Se le pasa "porcentajeImpuesto" como 20
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, 1, precioPorRefrigerio, new HashMap<>());
+		//Se crea la clase padre vuelo internacional, por lo que mantiene cosas como que el impuesto es del 20
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 1, precioPorRefrigerio, new HashMap<>());
 		
 		validarParametros(destino);
 		

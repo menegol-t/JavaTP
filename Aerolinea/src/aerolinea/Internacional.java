@@ -16,10 +16,10 @@ public class Internacional extends Vuelo{
 	private HashMap<String, Aeropuerto> escalas;
 	
 	
-	public Internacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto, int cantidadRefrigerios, double precioRefrigerio, HashMap <String, Aeropuerto> escalas)
+	public Internacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int cantidadRefrigerios, double precioRefrigerio, HashMap <String, Aeropuerto> escalas)
 	{
 		//Generamos el vuelo
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto);
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20);
 		
 		validarParametros(cantidadRefrigerios, precioRefrigerio);
 		

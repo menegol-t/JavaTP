@@ -16,7 +16,7 @@ public class Privado extends Vuelo{
 	{
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30);
 		
-		validarParametros(precioPorJet, comprador);
+		validarParametros(destino, precioPorJet, comprador);
 		
 		this.comprador = comprador;
 		this.asientosPorJet = 15;
@@ -25,8 +25,9 @@ public class Privado extends Vuelo{
 		
 	}
 	
-	private void validarParametros(double precioPorJet, Cliente comprador) 
+	private void validarParametros(Aeropuerto destino, double precioPorJet, Cliente comprador) 
 	{
+		if(!destino.esNacional()) throw new RuntimeException("Privado: El vuelo solo puede llegar a destinos nacionales");
 		if(precioPorJet < 0) throw new RuntimeException("Privado: El precio por jet no puede ser negativo");
 		if(comprador == null) throw new RuntimeException("Privado: Se debe bridnar un comprador");
 	}

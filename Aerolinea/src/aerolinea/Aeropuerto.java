@@ -41,4 +41,9 @@ public class Aeropuerto
 	{
 		return esNacional;
 	}
+	
+	public String toString() 
+	{
+		return nombre + " - " + pais + " - " + estado + " - " + direccion; 
+	}
 }

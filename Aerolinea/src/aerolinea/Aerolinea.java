@@ -71,6 +71,24 @@ public class Aerolinea implements IAerolinea
 		
 		return aeropuerto;
 	}
+	
+	private Cliente getCliente(int dni) 
+	{
+		Cliente cliente = clientes.get(dni);
+		
+		if(cliente == null) throw new RuntimeException("getCliente: El cliente solicitado no esta registrado en la compañia");
+		
+		return cliente;
+	}
+	
+	private Vuelo getVuelo(String codVuelo) 
+	{
+		Vuelo vuelo = vuelos.get(codVuelo);
+		
+		if(vuelo == null) throw new RuntimeException("getVuelo: El vuelo solicitado no esta registrado en el aeropuerto");
+		
+		return vuelo;
+	}
 
 	/*
 	 * Con esta funcion, convierto un String del formato dd/mm/aaaa en un objeto Fecha el cual puedo manipular, por ejemplo,
@@ -107,7 +125,7 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	/*
-	 * Con esta funcion valido si me pasaron un String vacio
+	 * Con esta funcion valido si me pasaron un String vacio y tiro un error
 	 * */
 	private void stringInvalido(String s, String valor) 
 	{
@@ -121,79 +139,7 @@ public class Aerolinea implements IAerolinea
 		}
 	}
 	
-//	/*
-//	 * Con esta funcion detectamos si un numero Double es invalido, es decir si vale 0 o vale negativo.
-//	 * */
-//	private void doubleInvalidoCero(double d, String valor) {
-//	    
-//		if (d <= 0) {
-//	        StringBuilder st = new StringBuilder("Error, ingresaste un valor inválido: ");
-//	        
-//	        st.append(valor);
-//	        st.append("\n");
-//	        
-//	        throw new RuntimeException(st.toString());
-//	    }
-//	}
-//	
-//	/*
-//	 * Con esta funcion valido si me pasaron un Array Int vacio
-//	 * */
-//	private void arrayIntInvalido(int[] array, String valor) {
-//	    if (array == null || array.length == 0) {
-//	        StringBuilder st = new StringBuilder("Error, ingresaste un array de enteros inválido o vacío: ");
-//	        st.append(valor);
-//	        st.append("\n");
-//
-//	        throw new RuntimeException(st.toString());
-//	    }
-//	}
-//	
-//	/*
-//	 * Con esta funcion valido si me pasaron un Array Double vacio
-//	 * */
-//	private void arrayDoubleInvalido(double[] array, String valor) {
-//	    if (array == null || array.length == 0) {
-//	        StringBuilder st = new StringBuilder("Error, ingresaste un array de dobles inválido o vacío: ");
-//	        st.append(valor);
-//	        st.append("\n");
-//
-//	        throw new RuntimeException(st.toString());
-//	    }
-//	}
-//	
-//	/*
-//	 * Con esta funcion valido si me pasaron un Array de cualquier objeto vacio 
-//	 * */
-//	private <T> void arrayInvalido(T[] array, String valor) {
-//	    
-//		if (array == null || array.length == 0) {
-//	        StringBuilder st = new StringBuilder("Error, ingresaste un array inválido o vacío: ");
-//	        
-//	        st.append(valor);
-//	        st.append("\n");
-//
-//	        throw new RuntimeException(st.toString());
-//	    }
-//	}
 	
-	
-	//AUXILIAR
-	
-	public Cliente[] conseguirClientes(int[] acompaniantes, HashMap<Integer, Cliente> clientes)
-	{
-		
-		Cliente[] retorno = new Cliente[acompaniantes.length];
-		
-		for(int i = 0; i<acompaniantes.length; i++)
-		{
-			retorno[i] = clientes.get(acompaniantes[i]);
-		}
-		
-		return retorno;
-	}
-	
-
 	
 	/**
 	* - 2
@@ -211,6 +157,7 @@ public class Aerolinea implements IAerolinea
 		
 		Cliente clienteYaRegistrado = clientes.get(Dni);
 		
+		//Si el cliente existia en clientes, tiro runtimeException
 		if(clienteYaRegistrado != null) throw new RuntimeException("registrarCliente: El cliente ya estaba registrado. ");
 		
 		//Añado el nuevo cliente a la lista de clientes. Si los datos que me pasaron son invalidos, el constructor de cliente rebota
@@ -234,6 +181,7 @@ public class Aerolinea implements IAerolinea
 	{	
 		Aeropuerto aeropuertoYaRegistrado = aeropuertos.get(nombre);
 		
+		//Si el aeropuerto existia en clientes, tiro runtimeException
 		if(aeropuertoYaRegistrado != null) throw new RuntimeException("registrarAeropuerto: El aeropuerto ya estaba registrado.");
 		
 		//Creo el nuevo aeropuerto y lo guardo en el diccionario aeropuertos. Si los datos del aeropurto son invalidos, el constructor del mismo tira excepcion. 
@@ -261,8 +209,6 @@ public class Aerolinea implements IAerolinea
 	* Posterior, generamos el nuevo vuelo. El constructor de este debe tirar runtimeException si algun dato es invalido (lso tripulantes no pueden ser 0, etc)
 	* Si todo esta bien, retornamos el codigo guardado. 
 	*/
-	
-	//El constructor de esto deberia validar que los datos no sean invalidos
 	@Override
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio, double[] precios, int[] cantAsientos) 
 	{
@@ -277,15 +223,15 @@ public class Aerolinea implements IAerolinea
 		int totalAsientos = cantAsientos[0] + cantAsientos[1];
 		
 		//Mando a generar el vuelo nacional, y a registrar todos sus asientos.
-		return registrarNacional(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, valorRefrigerio, cantAsientos, precios);
+		return registrarDatosNacional(codigo, Origen, Destino, totalAsientos, tripulantes, fecha, valorRefrigerio, cantAsientos, precios);
 	}
 	
 	/*
 	 * Dados los datos necesarios, genera un vuelo publico nacional, registra sus asientos disponibles y guarda dicho vuelo en el diccionario vuelos de Aerolinea.
 	 * */
-	private String registrarNacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int[] asientos, double[] precios) 
+	private String registrarDatosNacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int[] asientos, double[] precios) 
 	{
-		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException. (20 = porcentajeImpuesto, 1 = cantidad de refrigerios por pasajero)
+		//Generamos nuevo vuelo nacional. Si algun dato es incorrecto, tira runtimeException.
 		Nacional nuevoNacional = new Nacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, valorRefrigerio);
 		
 		//Asignamos sus asienos al nuevo vuelo
@@ -295,7 +241,7 @@ public class Aerolinea implements IAerolinea
 		vuelos.put(codigo, nuevoNacional);
 		
 		//Para retornar el codigo, buscamos al nuevoNacional en el diccionario de vuelos donde lo acabamos de registrar, y devolvemos su codigo. Con esto validamos que se guardo bien. 
-		return vuelos.get(codigo).getCodigo();
+		return getVuelo(codigo).getCodigo();
 	}
 
 	
@@ -361,13 +307,13 @@ public class Aerolinea implements IAerolinea
 			}
 		}//Es posible que nos pidan hacer un vuelo internacional SIN escalas, en cuyo caso mandamos el diccionario "escalas" vacio al vuelo. 
 		
-		return registrarInternacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, valorRefrigerio, cantRefrigerios, precios, asientos, escalas);
+		return registrarDatosInternacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, valorRefrigerio, cantRefrigerios, precios, asientos, escalas);
 	}
 	
 	/*
-	 * Dados los datos de un vuelo, lo registra, registra sus asientos y desponibles y lo añade al diccionario de vuelos de la aerolinea
+	 * Dados todos los datos necesarios, genera un vuelo publico internacional, registra sus asientos disponibles y guarda dicho vuelo en el diccionario vuelos de Aerolinea.
 	 * */
-	private String registrarInternacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] asientos, HashMap<String, Aeropuerto> escala) 
+	private String registrarDatosInternacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double valorRefrigerio, int cantRefrigerios, double[] precios, int[] asientos, HashMap<String, Aeropuerto> escala) 
 	{
 		//Generamos un nuevo vuelo internacional. Si algun dato es incorrecto, el constructor tira runtimeException					(20 = porcentajeImpuesto)
 		Internacional nuevoInternacional = new Internacional(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20, cantRefrigerios, valorRefrigerio, escala);
@@ -379,8 +325,9 @@ public class Aerolinea implements IAerolinea
 		vuelos.put(codigo, nuevoInternacional);
 		
 		//Para retornar el codigo, buscamos al nuevoInternacional en el diccionario de vuelos donde lo acabamos de registrar, y devolvemos su codigo. Con esto validamos que se guardo bien. 
-		return vuelos.get(codigo).getCodigo();
+		return getVuelo(codigo).getCodigo();
 	}
+	
 	
 	
 	/** 6 y 10 **** Se reune en esta firma ambos puntos de la especificación.
@@ -412,27 +359,24 @@ public class Aerolinea implements IAerolinea
 	}
 
 	/*
-	 * Verifica que el comprador exista, asi como sus acompaniantes
+	 * Verifica que el comprador sea un cliente ya registrado, asi como sus acompaniantes antes de generar el vuelo
 	 * */
 	private String verificarPasajerosPrivado(String codigo, Aeropuerto origen, Aeropuerto destino, String fecha, int tripulantes, double precio, int dniComprador, int[] acompaniantes) {
 		
 		//El total de asientos son los acompañantes mas el comprador
 		int totalAsientos = acompaniantes.length + 1;
 		
-		//Buscamos al comprador como cliente registrado en la aerolinea
-		Cliente comprador = clientes.get(dniComprador);
-		
-		//Si el cliente no existe, lanzo excepcion
-		if(comprador == null) throw new RuntimeException("registrarVueloPrivado: El DNI provisto no pertenece a un cliente registrado.");
+		//Obtengo el comprador como cliente. Si no estaba registrado en la aerolina, patea
+		Cliente comprador = getCliente(dniComprador);
 		
 		//Buscamos a todos los acompaniantes como clientes registrados .Si alguno no esta registrado, tira excepcion 
 		ArrayList<Cliente> pasajeros = validarAcompaniantes(acompaniantes);
 		
-		return registrarPrivado(codigo, origen, destino, fecha, totalAsientos, tripulantes, precio, comprador, pasajeros, acompaniantes);
+		return registrarDatosPrivado(codigo, origen, destino, fecha, totalAsientos, tripulantes, precio, comprador, pasajeros, acompaniantes);
 	}
 
 	/*
-	 * Dado un array de dnis, genera un array de clientes. Si algun dni no corresponde a un clinete, tira exception
+	 * Dado un array de dnis, devuelve un array de clientes. Si algun dni no corresponde a un clinete, tira exception
 	 * */
 	private ArrayList<Cliente> validarAcompaniantes(int[] acompaniantes)
 	{	
@@ -442,10 +386,7 @@ public class Aerolinea implements IAerolinea
 		for(int i = 0; i<acompaniantes.length; i++)
 		{
 			//Buscamos al pasajero puntiual como cliente
-			Cliente pasajeroActual = clientes.get(acompaniantes[i]);
-			
-			//Si el pasajero no esta registrado en la compania, tiro excepcion
-			if(pasajeroActual == null) throw new RuntimeException("Algun acompaniante no esta registrado en la compañia.");
+			Cliente pasajeroActual = getCliente(acompaniantes[i]);
 			
 			//Si no, lo añado a la lista de pasajeros
 			pasajeros.add(pasajeroActual);
@@ -455,9 +396,9 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	/*
-	 * Genera el vuelo privado, registra sus asientos, los vende, y lo guarda en el diccionario de vuelos.  
+	 * Dados todos los datos necesarios, crea un nuevo vuelo privado, genera todos sus asientos disponibles, asigna y pone el vuelo en el diccionario de vuelos.
 	 */
-	private String registrarPrivado(String codigo, Aeropuerto origen, Aeropuerto destino, String fecha, int totalAsientos, int tripulantes, double precio, Cliente comprador, ArrayList<Cliente> pasajeros, int[] acompaniantes) 
+	private String registrarDatosPrivado(String codigo, Aeropuerto origen, Aeropuerto destino, String fecha, int totalAsientos, int tripulantes, double precio, Cliente comprador, ArrayList<Cliente> pasajeros, int[] acompaniantes) 
 	{
 		//Genero un nuevo vuelo privado
 		Privado nuevoPrivado = new Privado(codigo, origen, destino, totalAsientos, tripulantes, fecha, 30, precio, comprador);
@@ -470,13 +411,11 @@ public class Aerolinea implements IAerolinea
 		
 		vuelos.put(codigo, nuevoPrivado);
 		
-		return vuelos.get(codigo).getCodigo();
+		return getVuelo(codigo).getCodigo();
 	}
 	
 	
 	
-	
-
 	/** - 7 
 	*  Dado el código del vuelo, devuelve un diccionario con los asientos aún disponibles para la venta 
 	*  --> clave:  el número de asiento
@@ -490,9 +429,7 @@ public class Aerolinea implements IAerolinea
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
 		
 		//Obtenemos el vuelo por su codigo
-		Vuelo vuelo = vuelos.get(codVuelo);
-		
-		if(vuelo == null) throw new RuntimeException("asientosDisponibles: El codigo de vuelo no corresponde a ningun vuelo registrado.");
+		Vuelo vuelo = getVuelo(codVuelo);
 		
 		//Obtenemos un hashMap de los asientos disponibles en el vuelo
 		ArrayList<Asiento> asientosDisponibles = vuelo.getAsientosDisponibles();
@@ -500,15 +437,17 @@ public class Aerolinea implements IAerolinea
 		//Generamos un nuevo diccionario vacio, el que retornaremos como resultado, que sera <Integer, Asiento.getClase()>
 		Map<Integer, String> diccionarioNroAsientoSeccion = new HashMap<>();
 		
-		return numeroDeAsintoYSeccion(diccionarioNroAsientoSeccion, asientosDisponibles);
+		return numeroDeAsientoYSeccion(diccionarioNroAsientoSeccion, asientosDisponibles);
 	}
 
 	/*
 	 * Dado un hashmap <Integer, Asiento>, retorna un Map <Integer, asiento.getSeccion()>
 	 * */
-	public Map <Integer, String> numeroDeAsintoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, ArrayList<Asiento> asientosDisponibles)
+	public Map <Integer, String> numeroDeAsientoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, ArrayList<Asiento> asientosDisponibles)
 	{
+		
 		for(Asiento asientoActual: asientosDisponibles) {
+			
 			//En el diccionario que vamos a devolver, guardamos el codigo del asiento y su clase
 			diccionarioNroAsientoSeccion.put(asientoActual.getCodigo(), asientoActual.getSeccion());
 		}
@@ -545,40 +484,20 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	/*
-	 * Valida si el cliente y el vuelo dados existen en la aerolinea antes de vender el asiento. 
+	 * Valida si el cliente existen en la aerolinea antes de vender el asiento. 
 	 * */
 	private int validarCliente(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
-		//Nos pasaron el dni como int asi que lo convertimos en Integer, porque el DNI es una clave en los diccionarios que usamos, y como tal necesita ser Integer.
-		Integer Dni = dni;
-		
 		//Busco el cliente y verifico si existe en la aerolinea
-		Cliente pasajero = clientes.get(Dni);
+		Cliente pasajero = getCliente(dni);
 		
-		//Si el cliente no existe, lanzo excepcion
-		if(pasajero == null) throw new RuntimeException("venderPasaje: El DNI provisto no pertenece a un cliente registrado.");
-		
-		return validarVuelo(pasajero, codVuelo, nroAsiento, aOcupar);
-	}
-	
-	/*
-	 * Validamos si el vuelo existe. Si existe, genero un codigo de pasaje, y mando al vuelo a vender el asiento.
-	 * */
-	private int validarVuelo(Cliente cliente, String codVuelo, int nroAsiento, boolean aOcupar) 
-	{
 		//Busco el vuelo y verifico si esta registrado en la aerolinea. 
-		Vuelo vuelo = vuelos.get(codVuelo);
-		
-		//Si no esta registrado en la aeolina lanzo una excepcion.
-		if(vuelo == null) throw new RuntimeException("venderPasaje: El codigo de vuelo provisto no pertenece a un vuelo registrado.");
+		Vuelo vuelo = getVuelo(codVuelo);
 		
 		//Genero un codigo unico en toda la aerolinea para el pasaje.
-		int codigoPasaje = obtenerCodigo();
-		
-		//Mando al vuelo a que venda el pasaje
-		int k =  vuelo.venderPasaje(cliente, nroAsiento, aOcupar, codigoPasaje);
+		int codigoPasaje = obtenerCodigo();  
 				
-		return k;
+		return vuelo.venderPasaje(pasajero, nroAsiento, aOcupar, codigoPasaje);
 	}
 	
 	
@@ -676,10 +595,7 @@ public class Aerolinea implements IAerolinea
 		intInvalidoCero(nroAsiento, "Numero asiento");
 		
 		//Obtengo el vuelo
-		Vuelo vuelo = vuelos.get(codVuelo); //O(1)
-		
-		//Si el vuelo no se encontro, tiro excepcion.
-		if(vuelo == null) throw new RuntimeException("El codigo de vuelo no corresponde a ningun vuelo registrado.");
+		Vuelo vuelo = getVuelo(codVuelo); //O(1)
 		
 		//mando a que el vuelo cancele el pasaje
 		vuelo.cancelarPasaje(dni, nroAsiento);
@@ -744,10 +660,7 @@ public class Aerolinea implements IAerolinea
 	public List<String> cancelarVuelo(String codVuelo) {
 		
 		//Busco el vuelo a cancelar
-		Vuelo vuelo = vuelos.get(codVuelo);
-		
-		//Si no exise largo exception
-		if(vuelo == null) throw new RuntimeException("El codigo no corresponde a ningun vuelo registrado.");
+		Vuelo vuelo = getVuelo(codVuelo);
 		
 		//Genero un array list de todos los vuelos que tengan el mismo nombre de aeropuerto de destino
 		ArrayList<Vuelo> vuelosDestinoSimilar = vuelosSimilaresPorDestino(vuelo); 
@@ -842,10 +755,13 @@ public class Aerolinea implements IAerolinea
 	 * */
 	private void reprogramarPasaje(Asiento asientoAReprogramar, Asiento asientoDisponible, Pasajero pasajeroAReprogramar, String codVuelo, List<String> listadoReprogramacion)
 	{
+		//Mando a vender el pasaje con todos los datos del cliente, el vuelo al que debe ir y los datos del asiento
 		venderPasaje(pasajeroAReprogramar.getDniCliente(), codVuelo, asientoDisponible.getCodigo(), asientoAReprogramar.getOcupado());
 		
+		//Guardo la informacion del pasajero que fue reprogramado como string
 		String datosPasajero = pasajeroAReprogramar.getCliente().toString() + " - " + codVuelo;
 		
+		//Sumo la informacion del pasajero a la lista que indica el estatus de todos los pasajeros
 		listadoReprogramacion.add(datosPasajero);
 	}
 	
@@ -938,9 +854,7 @@ public class Aerolinea implements IAerolinea
 	@Override
 	public String detalleDeVuelo(String codVuelo) {
 		
-		Vuelo vuelo = vuelos.get(codVuelo);
-		
-		if (vuelo == null) throw new RuntimeException("El codigo de vuelo no corresponde a ningun codigo de vuelo registrado.");
+		Vuelo vuelo = getVuelo(codVuelo);
 		
 		return vuelo.toString();
 	}

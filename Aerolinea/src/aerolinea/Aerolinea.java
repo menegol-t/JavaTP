@@ -68,11 +68,11 @@ public class Aerolinea implements IAerolinea
 	 * */
 	private Aeropuerto getAeropuerto(String nombre)
 	{
-		for(Aeropuerto a: aeropuertos.values()) {
-			System.out.print("Aeropuertos registrados: " + a.getNombre()+ "\n");
-		}
-		
-		System.out.print("Nombre solicitadp: " + nombre + "\n");
+//		for(Aeropuerto a: aeropuertos.values()) {
+//			System.out.print("Aeropuertos registrados: " + a.getNombre()+ "\n");
+//		}
+//		
+//		System.out.print("Nombre solicitadp: " + nombre + "\n");
 		
 		Aeropuerto aeropuerto = aeropuertos.get(nombre);
 		
@@ -449,6 +449,7 @@ public class Aerolinea implements IAerolinea
 		//Obtenemos el vuelo por su codigo
 		Vuelo vuelo = getVuelo(codVuelo);
 		
+		
 		//Obtenemos un hashMap de los asientos disponibles en el vuelo
 		ArrayList<Asiento> asientosDisponibles = vuelo.getAsientosDisponibles();
 		
@@ -516,6 +517,8 @@ public class Aerolinea implements IAerolinea
 		int codigoPasaje = obtenerCodigo();  
 				
 		return vuelo.venderPasaje(pasajero, nroAsiento, aOcupar, codigoPasaje);
+		
+		
 	}
 	
 	
@@ -879,7 +882,15 @@ public class Aerolinea implements IAerolinea
 	
 	public String toString() 
 	{
-		StringBuilder st = new StringBuilder();
+		StringBuilder st = new StringBuilder("Aerolinea: ");
+		
+		st.append(nombre);
+		
+		st.append(" - ");
+		
+		st.append(cuit);
+		
+		st.append("\n");
 		
 		for(Cliente clienteActual: clientes.values()) 
 		{

@@ -109,5 +109,9 @@ public class Privado extends Vuelo{
 		
 	}
 	
-	
+	@Override
+	public ArrayList<Asiento> getAsientosDisponibles()
+	{
+		throw new RuntimeException("VueloPrivado: No se pueden consultar los asientos disponibles de un vuelo privado");
+	}
 }

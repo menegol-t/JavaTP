@@ -131,7 +131,7 @@ public abstract class Vuelo {
 		return true;
 	}
 
-	public void cancelarPasaje(int dni, int nroAsiento)//Esta es en O(1) 
+	public double cancelarPasaje(int dni, int nroAsiento)//Esta es en O(1) 
 	{
 		//Busco al pasajero dentro del vuelo por su DNI. Si no existe, el vuelo tira una excepcion. 
 		Pasajero pasajero = getPasajero(dni);
@@ -141,14 +141,17 @@ public abstract class Vuelo {
 		
 		//Disponibilizo nuevamente el asiento en el listado de asientos disponibles del vuelo
 		registrarAsientoDisponible(asiento);
+		
+		//Como se cancelo el pasaje, retorno el precio del asiento para que se pueda quitar de facturacionPorDestino
+		return asiento.getPrecio();
 	}
 	
-	public void eliminarPasaje(int dni, int codPasaje) //Lo mismo que la de arriba pero no en O(1)
+	public double eliminarPasaje(int dni, int codPasaje) //Lo mismo que la de arriba pero no en O(1)
 	{
 		//Si el dni que me pasaron es invalido, getPasajero() se encarga de tirar una runtimeexception
 		Pasajero pasajero = getPasajero(dni);
 		
-		pasajero.eliminarPasaje(codPasaje);
+		return pasajero.eliminarPasaje(codPasaje);
 
 	}
 	

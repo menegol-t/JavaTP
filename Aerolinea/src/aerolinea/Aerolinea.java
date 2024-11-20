@@ -6,7 +6,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,13 +66,7 @@ public class Aerolinea implements IAerolinea
 	 * Si encuentra el aeropuerto buscandolo por su nombre, lo retorna. Si no lo encuentra, tira excepcion
 	 * */
 	private Aeropuerto getAeropuerto(String nombre)
-	{
-//		for(Aeropuerto a: aeropuertos.values()) {
-//			System.out.print("Aeropuertos registrados: " + a.getNombre()+ "\n");
-//		}
-//		
-//		System.out.print("Nombre solicitadp: " + nombre + "\n");
-		
+	{	
 		Aeropuerto aeropuerto = aeropuertos.get(nombre);
 		
 		if(aeropuerto == null) throw new RuntimeException("getAeropuerto: El nombre dado no corresponde a ningun aeropuerto registrado.");
@@ -424,14 +417,29 @@ public class Aerolinea implements IAerolinea
 		//Registra la cantidad de asientos disponibles segun la cantidad de acompañantes. Como el precio del vuelo privado es por vuelo y no por asiento, como precio envio 0
 		nuevoPrivado.registrarAsientosDisponibles(acompaniantes, new double[] {0.0});
 		
+		return registrarPasajerosPrivado(comprador, pasajeros, nuevoPrivado);
+	}
+	
+	/*
+	 * Dado el cliente comprador, el array de clientes passajeros y un vuelo privado, vende todos los asientos del vuelo privado
+	 * */
+	private String registrarPasajerosPrivado(Cliente comprador, ArrayList<Cliente> pasajeros, Privado nuevoPrivado) 
+	{		
 		//Le asigna a cada pasajero y al comprador sus asientos
 		nuevoPrivado.registrarPasajeros(pasajeros, comprador);
 		
-		vuelos.put(codigo, nuevoPrivado);
+		//Calculo el precio total del vuelo privado
+		double precioPrivado = nuevoPrivado.getPrecio();
 		
-		return getVuelo(codigo).getCodigo();
+		//Pongo el vuelo privado en el diccionario de vuelos
+		vuelos.put(nuevoPrivado.getCodigo(), nuevoPrivado);
+		
+		//Actualizo la facturacion, sumando el precio de este nuevo vuelo a facturacionPorDestino
+		agregarFacturacion(0.0, precioPrivado, nuevoPrivado);
+		
+		//Devuelvo el codigo del vuelo privado, asegurandome que se haya guardado bien en el diccionario. Si no se guardo bien, getVuelo explota
+		return getVuelo(nuevoPrivado.getCodigo()).getCodigo();
 	}
-	
 	
 	
 	/** - 7 
@@ -508,7 +516,7 @@ public class Aerolinea implements IAerolinea
 	private int validarCliente(int dni, String codVuelo, int nroAsiento, boolean aOcupar) 
 	{
 		//Busco el cliente y verifico si existe en la aerolinea
-		Cliente pasajero = getCliente(dni);
+		Cliente cliente = getCliente(dni);
 		
 		//Busco el vuelo y verifico si esta registrado en la aerolinea. 
 		Vuelo vuelo = getVuelo(codVuelo);
@@ -516,11 +524,21 @@ public class Aerolinea implements IAerolinea
 		//Genero un codigo unico en toda la aerolinea para el pasaje.
 		int codigoPasaje = obtenerCodigo();  
 		
+		return venderPasaje(cliente, vuelo, nroAsiento, aOcupar, codigoPasaje);	
+	}
+	
+	/*
+	 *Dado un cliente, un vuelo y los datos de un asiento, se encarga de vender el asiento al cliente.
+	 * Esto significa, si el cliente ya era un pasajero del vuelo y solo esta comprando un asiento mas, solo se le suma ese asiento
+	 * Si el cliente es nuevo en el vuelo, se lo guarda como pasajero con su nuevo asiento. 
+	 */
+	private int venderPasaje(Cliente cliente, Vuelo vuelo, int nroAsiento, boolean aOcupar, int codigoPasaje) 
+	{
 		//Conseguimos la recaudacion antes de vender el pasaje
 		double antes = vuelo.getPrecio();
 		
-		//Realizamos la venta
-		int retorno = vuelo.venderPasaje(pasajero, nroAsiento, aOcupar, codigoPasaje);
+		//Realizamos la venta, lo que devuelve el codigo de pasaje si se asigno bien el asiento.
+		int codPasaje = vuelo.venderPasaje(cliente, nroAsiento, aOcupar, codigoPasaje);
 		
 		//Conseguimos la recaudacion despues de vender el pasaje
 		double despues = vuelo.getPrecio();
@@ -528,8 +546,8 @@ public class Aerolinea implements IAerolinea
 		//Actualizamos la facturacion
 		agregarFacturacion(antes, despues, vuelo);
 		
-		//Retornamos
-		return retorno;
+		//Retornamos el codigo de pasaje obtenido de la venta.
+		return codPasaje;
 	}
 	
 	
@@ -589,7 +607,6 @@ public class Aerolinea implements IAerolinea
 		{
 			return true;
 		}
-		
 		return false;
 	}
 	
@@ -622,24 +639,16 @@ public class Aerolinea implements IAerolinea
 	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) 	
 	{
 		//Valido que no me hayan pasado datos vacios
-		intInvalidoCero(dni, "DNI"); 
-		stringInvalido(codVuelo, "Codigo de vuelo"); 
-		intInvalidoCero(nroAsiento, "Numero asiento");
+		intInvalidoCero(dni, "DNI"); stringInvalido(codVuelo, "Codigo de vuelo"); intInvalidoCero(nroAsiento, "Numero asiento");
 		
 		//Obtengo el vuelo
 		Vuelo vuelo = getVuelo(codVuelo); //O(1)
 		
-		//Conseguimos la recaudacion antes de vender el pasaje
-		double antes = vuelo.getPrecio();
-		
 		//mando a que el vuelo cancele el pasaje
-		vuelo.cancelarPasaje(dni, nroAsiento);
-		
-		//Conseguimos la recaudacion despues de vender el pasaje
-		double despues = vuelo.getPrecio();
+		double costoPasajeCancelado = vuelo.cancelarPasaje(dni, nroAsiento); //O(1)
 	
-		//Actualizamos la facturacion
-		quitarFacturacion(antes, despues, vuelo);
+		//Actualizamos la facturacion a ese destino quitando el pasaje
+		quitarFacturacion(costoPasajeCancelado, vuelo);
 	}
 
 	
@@ -670,16 +679,11 @@ public class Aerolinea implements IAerolinea
 			//Si encuentro al cliente, le elimino el pasaje y termino.  
 			if(vueloActual.contienePasajero(dni)) {
 				
-				//Conseguimos la recaudacion antes de vender el pasaje
-				double antes = vueloActual.getPrecio();
-				
-				vueloActual.eliminarPasaje(dni, pasaje);
-				
-				//Conseguimos la recaudacion despues de vender el pasaje
-				double despues = vueloActual.getPrecio();
+				//Mando a eliminar su pasaje. Esto me retorna el costo de ese pasaje
+				double costoPasajeCancelado = vueloActual.eliminarPasaje(dni, pasaje);
 			
-				//Actualizamos la facturacion
-				quitarFacturacion(antes, despues, vueloActual);
+				//Actualizamos la facturacion a ese destino (le resto el precio del pasaje que acabo de cancelar)
+				quitarFacturacion(costoPasajeCancelado, vueloActual);
 				
 			}
 		}
@@ -877,63 +881,58 @@ public class Aerolinea implements IAerolinea
 		return false;
 	}
 	
-	
+	/*
+	 * Dado un vuelo y dos precios, calcula la diferencia entre ellos y agrega la diferencia
+	 * (es decir, el valor de vender 1 pasaje) al diccionario de facturacionPorDestino.
+	 * */
 	public void agregarFacturacion(double antes, double despues, Vuelo vuelo)
 	{
-		
 		//Conseguimos el destino
 		String destino = vuelo.getDestino().getNombre();
 		
-		//Conseguimos la diferencia 
+		//Conseguimos la diferencia entre antes y despues de vender el pasaje 
 		double diferencia = despues - antes;
 		
+		//Si el destin ya estaba registrado, sumamos el valor del pasaje recien vendido
 		if(facturacionPorDestino.containsKey(destino))
 		{
 			
 			//Conseguimos la factuacion actual
 			double recaudacionActual = facturacionPorDestino.get(destino);
 			
-			//Actualizamos
+			//Actualizamos la facturacion, sumandole el precio del pasaje que se acaba de vender.
 			recaudacionActual += diferencia;
 			
 			//Agregamos a facturacionPorDestino
 			facturacionPorDestino.put(destino, recaudacionActual);
 			
 		}
-		
+		//Si es la primera vez que se compra un pasaje a ese destino, ponemos el precio de ese unico pasaje
 		else
 		{
 			facturacionPorDestino.put(destino, diferencia);
-		}
-		
+		}	
 	}
 	
-	
-	public void quitarFacturacion(double antes, double despues, Vuelo vuelo)
+	/*
+	 * Dado el precio de un pasaje cancelado y un vuelo, actualiza facturacionPorDestino
+	 * quitandole el precio de ese pasaje que se cancelo.
+	 * */
+	public void quitarFacturacion(double costoPasjeCancelado, Vuelo vuelo)
 	{
-		
 		//Conseguimos el destino
 		String destino = vuelo.getDestino().getNombre();
 		
-		if(facturacionPorDestino.containsKey(destino))
+		if(facturacionPorDestino.containsKey(destino)) 
 		{
+			//Obtengo la facturacion anterior
+			double facturacionAnterior = facturacionPorDestino.get(destino);
 			
-			//Conseguimos la diferencia 
-			double diferencia = despues - antes;
+			//Pongo la facturacion actualizada en facturacion por destino. 
+			double facturacionActualizada = facturacionAnterior - costoPasjeCancelado;
 			
-			//Conseguimos la factuacion actual
-			double recaudacionActual = facturacionPorDestino.get(destino);
-			
-			//Actualizamos
-			recaudacionActual -= diferencia;
-			
-			//Agregamos a facturacionPorDestino
-			facturacionPorDestino.put(destino, recaudacionActual);
-			
+			facturacionPorDestino.put(destino, facturacionActualizada);
 		}
-		
-		else throw new RuntimeException("Aerolinea.quitarFacturacion: No se puede restar recaudacion no iniciada. ");
-		
 	}
 	
 	

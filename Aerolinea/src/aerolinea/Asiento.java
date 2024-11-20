@@ -36,7 +36,7 @@ public class Asiento
 	{
 		return codigo;
 	}
-	
+ 
 	public String getSeccion()
 	{
 		return seccion;

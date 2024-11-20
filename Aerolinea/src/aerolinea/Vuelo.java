@@ -1,7 +1,5 @@
 package aerolinea;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -44,34 +42,14 @@ public abstract class Vuelo {
 		
 		if(totalTripulantes<= 0) throw new RuntimeException("Vuelo: El total de tripulantes no puede ser menor a 1.");
 		
-		//compararFecha(fechaSalida);
-		
 		if(porcentajeImpuesto < 0) throw new RuntimeException("Vuelo: El porcentaje de impuesto no puede ser negativo.");
 		
 	}
-		
-	private void compararFecha(String fecha) 
-	{
-		LocalDate fechaSalida = obtenerFecha(fecha);
-		
-		LocalDate fechaActual = LocalDate.now();
-		
-		if (fechaSalida.isBefore(fechaActual)) {
-	        throw new RuntimeException("Vuelo: La fecha de salida no puede ser en el pasado");
-	    }
-	}
 	
-	private LocalDate obtenerFecha(String fecha) 
-	{	
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		
-		try {
-            LocalDate objetoFecha= LocalDate.parse(fecha, formato);
-            return objetoFecha;
-            
-		}catch(Exception e){
-			throw new RuntimeException("Vuelo: La fecha de salida es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
-		}	
+	//For test, quiero ver si podemos meter un iterator sin explotar -leo
+	public HashMap<Integer, Pasajero> getPasajeros()
+	{
+		return pasajeros;
 	}
 	
 	public String getCodigo() 

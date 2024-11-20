@@ -10,15 +10,19 @@ public class Pasajero
 {
 	private Cliente cliente;
 	private HashMap<Integer,Asiento> asientos;
-	private int refrigeriosConsumidos;
-	private double costo;
+	//private int refrigeriosConsumidos;
+	//private double costo;
 	
 	public Pasajero(Cliente cliente) 
 	{
+		verificarParametros(cliente);
+		
 		this.cliente = cliente;
 		this.asientos = new HashMap<Integer, Asiento>();
-		this.refrigeriosConsumidos = 0;
-		this.costo = 0.0;
+		
+		//Los podemos omitir, no se necesitan
+		//this.refrigeriosConsumidos = 0;
+		//this.costo = 0.0;
 	}
 	
 	private void verificarParametros(Cliente cliente) 
@@ -42,30 +46,58 @@ public class Pasajero
 		return asiento;
 	}
 	
-	public int getCantAsientos()
+	//no se si la usamos, omitir?
+	public int getCantAsientos() 
 	{
 		return asientos.size();
 	}
 	
-	public void consumirRefrigerio()
+	/*public void consumirRefrigerio()  --> se puede omitir
 	{
 		refrigeriosConsumidos += 1;
 	}
 	
-	public int getRefrigeriosConsumidos()
+	public int getRefrigeriosConsumidos() --> se puede omitir
 	{
 		return refrigeriosConsumidos;
 	}
 	
+	
+	
+	//Esta no se para que estar, borrar?
+	//Pq querriamos alterar el costo si solo al asignar asiento y removerlo el valor se altera
 	public double getCosto()
 	{
 		return costo;
 	}
 	
-	public void setCosto(double costo)
+	public void setCosto(double costo) --> se puede omitir
 	{
 		this.costo = costo;
 	}
+	
+	*/
+	
+	//Funcion que calcula el costo total de todos los asientos
+	public double calcularCosto()
+	{
+		if(asientos.size() == 0) throw new RuntimeException("Pasajero.calcularCosto: No se puede calcular el costo de un avion sin asientos vendidos. ");
+		
+		double total = 0;
+		
+		Iterator<Asiento> iterator = asientos.values().iterator();
+		
+		while(iterator.hasNext())
+		{
+			Asiento asiento = iterator.next();
+			
+			total = total + asiento.getPrecio();
+			
+		}
+		
+		return total;
+	}
+ 
 	
 	public int asignarAsiento(Asiento asiento) 
 	{	
@@ -81,6 +113,7 @@ public class Pasajero
 		Integer codigoPasaje = asientos.get(asiento.getCodigo()).getCodPasaje();
 
 		if(codigoPasaje == null) throw new RuntimeException("Pasajero.asignarAsiento: Hello darkness my old friend...");
+		
 		
 		return codigoPasaje;
 		

@@ -235,7 +235,7 @@ public class AerolineaTest {
 	    // y por ultimo sumo el 20 porciento de impuestos.
 	    double recaudacionEsperada=4488000.0;
 	    assertEquals(recaudacionEsperada, aerolinea.totalRecaudado("Barajas"), 0.1);
-	}
+	} 
 	
 	@Test
 	public void ej15_detalleVuelo_OK() {	

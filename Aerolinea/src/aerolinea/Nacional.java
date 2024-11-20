@@ -1,21 +1,45 @@
 package aerolinea;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
-public class Nacional extends Internacional {
+public class Nacional extends Vuelo {
 	
-
+	private int refrigeriosPorPasajero;
+	private double precioPorRefrigerio;
+	private int pasajerosEconomica;
+	private int pasajerosEjecutivo;
+	private int limitePasajerosEconomica;
+	private int limitePasajerosEjecutivo;
+	
+	
 	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double precioPorRefrigerio) 
 	{			
-		//Se crea la clase padre vuelo internacional, por lo que mantiene cosas como que el impuesto es del 20
-		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 1, precioPorRefrigerio, new HashMap<>());
+		//Se crea la clase padre vuelo, seteamos impuesto como 20
+		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20);
 		
-		validarParametros(destino);
+		//Establecemos un solo refrigerio por pasajero y el precio del mismo
+		this.refrigeriosPorPasajero = 1;
+		this.precioPorRefrigerio = precioPorRefrigerio;
+		
+		validarParametros(destino, precioPorRefrigerio);
+		
+		//El numero de pasajeros empieza vacio, se van sumando conforme se suman pasajes.
+		this.pasajerosEconomica = 0;
+		this.pasajerosEjecutivo = 0;
+		
+		//Esto se puede solucionar, give me time bitch - leo
+		this.limitePasajerosEconomica = 0;
+		this.limitePasajerosEjecutivo = 0;
+		
 		
 	}
 	
-	private void validarParametros(Aeropuerto destino) 
+	//Agregue las validaciones de refrigerios
+	
+	private void validarParametros(Aeropuerto destino, double precioPorRefrigerio2) 
 	{
+		if(precioPorRefrigerio2 < 0) throw new RuntimeException("VueloPublico: El precio de los refrigerios no puede ser negativo.");
 		if(!destino.esNacional()) throw new RuntimeException("VueloNacional: Los vuelos nacionales solo pueden ir a destinos nacionales.");
 	}
 	
@@ -62,14 +86,57 @@ public class Nacional extends Internacional {
 	
 
 	@Override
-	public String toString() {
+	public String toString() 
+	{
 		return super.getCodigo()+ " - " + super.getOrigen().getNombre() + " - " + super.getDestino().getNombre() + " - " + super.getFechaSalida()+ " - " + "NACIONAL";
 	}
 
 	@Override
-	public double getPrecio() {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getPrecio() 
+
+	/* Retorna la recaudacion total del vuelo
+	 * 
+	 * 1) recorremos pasajero a pasajero
+	 * 2) sumar el precio de todos sus asientos + el precio de los refrigerios
+	 * 3) sumar el procentaje de impuesto
+	 * 4) retornar el total
+	 * 
+	 */
+	
+	
+	{
+		
+		//Obtenemos los pasajeros
+		HashMap<Integer, Pasajero> pasajeros = super.getPasajeros();
+		
+		//no hay pasajeros, no se recaudo nada
+		if(pasajeros.size() == 0) return 0;
+		
+		double retorno = 0;
+		
+		//Calculamos el total por los refrigerios por pasajero
+		double refrigerios = precioPorRefrigerio * refrigeriosPorPasajero;
+		
+		//Creamos el iterador, este es por valores, es decir por pasajeros
+		Iterator<Pasajero> iterator = pasajeros.values().iterator();
+		
+		//Recorremos los pasajeros
+		while(iterator.hasNext())
+		{
+			Pasajero pasajero = iterator.next();
+			
+			//Sumamos el costo total de los pasajes + impuestos
+			retorno += pasajero.calcularCosto() /*+ refrigerios*/;
+			
+		}
+	 
+		
+		//agregamos el porcentaje de impuesto
+		retorno += (retorno * (super.getPorcentajeImpuesto() / 100));
+		
+		//retornamos
+		return retorno;
+		
 	}
 	
 	

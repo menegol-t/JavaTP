@@ -1,6 +1,9 @@
 package aerolinea;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class Internacional extends Vuelo{
 
@@ -21,7 +24,7 @@ public class Internacional extends Vuelo{
 		//Generamos el vuelo
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20);
 		
-		validarParametros(cantidadRefrigerios, precioRefrigerio);
+		validarParametros(cantidadRefrigerios, precioRefrigerio, fechaSalida);
 		
 		this.refrigeriosPorPasajero = cantidadRefrigerios;
 		this.precioPorRefrigerio = precioRefrigerio;
@@ -43,10 +46,38 @@ public class Internacional extends Vuelo{
 		
 	}
 	
-	private void validarParametros(int cantidadRefrigerios, double precioRefrigerio) 
+	//Validacion de la fecha segun indica la Interfaz
+	
+	private void compararFecha(String fecha) 
 	{
-		if(cantidadRefrigerios < 0) throw new RuntimeException("VueloPublico: La cantidad de refrigerios no puede ser negativa.");
+		LocalDate fechaSalida = obtenerFecha(fecha);
+		
+		LocalDate fechaActual = LocalDate.now();
+		
+		if (fechaSalida.isBefore(fechaActual)) {
+	        throw new RuntimeException("Vuelo: La fecha de salida no puede ser en el pasado");
+	    }
+	}
+	
+	private LocalDate obtenerFecha(String fecha) 
+	{	
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		
+		try {
+            LocalDate objetoFecha= LocalDate.parse(fecha, formato);
+            return objetoFecha;
+            
+		}catch(Exception e){
+			throw new RuntimeException("Vuelo: La fecha de salida es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
+		}	
+	}
+	
+	
+	private void validarParametros(int cantidadRefrigerios, double precioRefrigerio, String fecha) 
+	{
+		if(cantidadRefrigerios != 3) throw new RuntimeException("VueloPublico: La cantidad de refrigerios no puede ser negativa.");
 		if(precioRefrigerio < 0) throw new RuntimeException("VueloPublico: El precio de los refrigerios no puede ser negativo.");
+		compararFecha(fecha);
 	}
 	
 	@Override
@@ -116,8 +147,52 @@ public class Internacional extends Vuelo{
 	}
 
 	@Override
-	public double getPrecio() {
+	public double getPrecio() 
+
+	/* Retorna la recaudacion total del vuelo
+	 * 
+	 * 1) recorremos pasajero a pasajero
+	 * 2) sumar el precio de todos sus asientos + el precio de los refrigerios
+	 * 3) sumar el procentaje de impuesto
+	 * 4) retornar el total
+	 * 
+	 */
+	
+	
+	{
 		
-		return 0;
+		//Obtenemos los pasajeros
+		HashMap<Integer, Pasajero> pasajeros = super.getPasajeros();
+		
+		//no hay pasajeros, no se recaudo nada
+		if(pasajeros.size() == 0) return 0;
+		
+		double retorno = 0;
+		
+		//Calculamos el total por los refrigerios por pasajero
+		double refrigerios = precioPorRefrigerio * refrigeriosPorPasajero;
+		
+		//Creamos el iterador, este es por valores, es decir por pasajeros
+		Iterator<Pasajero> iterator = pasajeros.values().iterator();
+		
+		//Recorremos los pasajeros
+		while(iterator.hasNext())
+		{
+			Pasajero pasajero = iterator.next();
+			
+			//Sumamos el costo total de los pasajes + impuestos
+			retorno += pasajero.calcularCosto();
+			
+			retorno += refrigerios;
+			
+		}
+	 
+		
+		//agregamos el porcentaje de impuesto
+		retorno += (retorno * (super.getPorcentajeImpuesto() / 100));
+		
+		//retornamos
+		return retorno;
+		
 	}
 }

@@ -1,5 +1,7 @@
 package aerolinea;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,7 +18,7 @@ public class Privado extends Vuelo{
 	{
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 30);
 		
-		validarParametros(destino, precioPorJet, comprador);
+		validarParametros(destino, precioPorJet, comprador, fechaSalida);
 		
 		this.comprador = comprador;
 		this.asientosPorJet = 15;
@@ -25,11 +27,40 @@ public class Privado extends Vuelo{
 		
 	}
 	
-	private void validarParametros(Aeropuerto destino, double precioPorJet, Cliente comprador) 
+	
+	//Validacion de la fecha segun indica la Interfaz
+	
+	private void compararFecha(String fecha) 
+	{
+		LocalDate fechaSalida = obtenerFecha(fecha);
+		
+		LocalDate fechaActual = LocalDate.now();
+		
+		if (fechaSalida.isBefore(fechaActual)) {
+	        throw new RuntimeException("Vuelo: La fecha de salida no puede ser en el pasado");
+	    }
+	}
+	
+	private LocalDate obtenerFecha(String fecha) 
+	{	
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		
+		try {
+            LocalDate objetoFecha= LocalDate.parse(fecha, formato);
+            return objetoFecha;
+            
+		}catch(Exception e){
+			throw new RuntimeException("Vuelo: La fecha de salida es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
+		}	
+	}	
+ 
+	
+	private void validarParametros(Aeropuerto destino, double precioPorJet, Cliente comprador, String fecha) 
 	{
 		if(!destino.esNacional()) throw new RuntimeException("Privado: El vuelo solo puede llegar a destinos nacionales");
 		if(precioPorJet < 0) throw new RuntimeException("Privado: El precio por jet no puede ser negativo");
 		if(comprador == null) throw new RuntimeException("Privado: Se debe bridnar un comprador");
+		compararFecha(fecha);
 	}
 	
 	/*

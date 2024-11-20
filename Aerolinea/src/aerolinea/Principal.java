@@ -43,7 +43,7 @@ public class Principal {
         // Registrar un vuelo internacional con escalas
         double[] preciosInternacional = {20000.0, 40000.0, 60000.0};
         int[] cantAsientosInternacional = {200, 50, 10};
-        String[] escalas = {"San Pablo", "JFK"};
+        String[] escalas = { "San Pablo", "JFK"};
         String codVueloInternacional = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "Charles de Gaulle", "20/11/2024", 12, 6000, 3, preciosInternacional, cantAsientosInternacional, escalas);
 
         // Vender pasajes

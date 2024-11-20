@@ -10,8 +10,6 @@ public class Pasajero
 {
 	private Cliente cliente;
 	private HashMap<Integer,Asiento> asientos;
-	//private int refrigeriosConsumidos;
-	//private double costo;
 	
 	public Pasajero(Cliente cliente) 
 	{
@@ -19,10 +17,6 @@ public class Pasajero
 		
 		this.cliente = cliente;
 		this.asientos = new HashMap<Integer, Asiento>();
-		
-		//Los podemos omitir, no se necesitan
-		//this.refrigeriosConsumidos = 0;
-		//this.costo = 0.0;
 	}
 	
 	private void verificarParametros(Cliente cliente) 
@@ -46,58 +40,20 @@ public class Pasajero
 		return asiento;
 	}
 	
-	//no se si la usamos, omitir?
-	public int getCantAsientos() 
+	/*
+	 * Para obtener el costo de cada pasajero, sumo el costo de todos los asientos que tiene. 
+	 * */
+	public double getCosto() 
 	{
-		return asientos.size();
-	}
-	
-	/*public void consumirRefrigerio()  --> se puede omitir
-	{
-		refrigeriosConsumidos += 1;
-	}
-	
-	public int getRefrigeriosConsumidos() --> se puede omitir
-	{
-		return refrigeriosConsumidos;
-	}
-	
-	
-	
-	//Esta no se para que estar, borrar?
-	//Pq querriamos alterar el costo si solo al asignar asiento y removerlo el valor se altera
-	public double getCosto()
-	{
-		return costo;
-	}
-	
-	public void setCosto(double costo) --> se puede omitir
-	{
-		this.costo = costo;
-	}
-	
-	*/
-	
-	//Funcion que calcula el costo total de todos los asientos
-	public double calcularCosto()
-	{
-		if(asientos.size() == 0) throw new RuntimeException("Pasajero.calcularCosto: No se puede calcular el costo de un avion sin asientos vendidos. ");
+		double costo = 0;
 		
-		double total = 0;
-		
-		Iterator<Asiento> iterator = asientos.values().iterator();
-		
-		while(iterator.hasNext())
+		for(Asiento asientoActual: asientos.values() ) 
 		{
-			Asiento asiento = iterator.next();
-			
-			total = total + asiento.getPrecio();
-			
+			costo =+ asientoActual.getPrecio();
 		}
 		
-		return total;
-	}
- 
+		return costo;
+	} 
 	
 	public int asignarAsiento(Asiento asiento) 
 	{	

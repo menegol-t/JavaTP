@@ -62,21 +62,20 @@ public class Nacional extends Vuelo {
 				//incrementamos el numero de asiento
 				contador++;
 				
-				//Calculamos el pasaje con impuestos
-				double precioFinal = precios[i] + precios[i] * super.getPorcentajeImpuesto()/100;
+				double precio = precios[i];
 				
 				Asiento asientoNuevo;
 				
 				if(i == 0) //Si estamos en la primera seccion
 				{
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, precioFinal, "Economica");
+					asientoNuevo = new Asiento(contador, precio, "Economica");
 				}
 				
 				else //Si estamos en la segunda seccion
 				{
 					//Se crea un asiento de primera clase
-					asientoNuevo = new Asiento(contador, precioFinal, "Ejecutivo");
+					asientoNuevo = new Asiento(contador, precio, "Ejecutivo");
 				}
 				
 				super.registrarAsientoDisponible(asientoNuevo);
@@ -91,53 +90,24 @@ public class Nacional extends Vuelo {
 		return super.getCodigo()+ " - " + super.getOrigen().getNombre() + " - " + super.getDestino().getNombre() + " - " + super.getFechaSalida()+ " - " + "NACIONAL";
 	}
 
+	
+	/*
+	 * El precio se obtiene de la cantidad de refrigerios que consumieron los pasajeros + la sumatoria de todos los 
+	 * precios de sus asientos. A eso se le suma el 20%
+	 * */
 	@Override
 	public double getPrecio() 
-
-	/* Retorna la recaudacion total del vuelo
-	 * 
-	 * 1) recorremos pasajero a pasajero
-	 * 2) sumar el precio de todos sus asientos + el precio de los refrigerios
-	 * 3) sumar el procentaje de impuesto
-	 * 4) retornar el total
-	 * 
-	 */
-	
-	
 	{
+		//El precio base es cantidadDePasajeros * refrigeriosPorPasajero * precioPorRefrigerio
+		double precio =  (super.getAllPasajeros().size() * refrigeriosPorPasajero) * precioPorRefrigerio;
 		
-		//Obtenemos los pasajeros
-		HashMap<Integer, Pasajero> pasajeros = super.getPasajeros();
-		
-		//no hay pasajeros, no se recaudo nada
-		if(pasajeros.size() == 0) return 0;
-		
-		double retorno = 0;
-		
-		//Calculamos el total por los refrigerios por pasajero
-		double refrigerios = precioPorRefrigerio * refrigeriosPorPasajero;
-		
-		//Creamos el iterador, este es por valores, es decir por pasajeros
-		Iterator<Pasajero> iterator = pasajeros.values().iterator();
-		
-		//Recorremos los pasajeros
-		while(iterator.hasNext())
+		//Recorro todos los pasajeros y voy sumando el precio de su costo total (la sumatoria de todos los asientos que tienen)
+		for(Pasajero pasajeroaActual: super.getAllPasajeros()) 
 		{
-			Pasajero pasajero = iterator.next();
-			
-			//Sumamos el costo total de los pasajes + impuestos
-			retorno += pasajero.calcularCosto() /*+ refrigerios*/;
-			
+			precio = precio + pasajeroaActual.getCosto();
 		}
-	 
 		
-		//agregamos el porcentaje de impuesto
-		retorno += (retorno * (super.getPorcentajeImpuesto() / 100));
-		
-		//retornamos
-		return retorno;
-		
+		//Al precio final le sumo el 20%. O sea "precio * 1.20"
+		return precio * (1 + (super.getPorcentajeImpuesto()/100));
 	}
-	
-	
 }

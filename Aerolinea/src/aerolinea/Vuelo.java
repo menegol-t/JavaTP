@@ -13,9 +13,9 @@ public abstract class Vuelo {
 	private HashMap <Integer, Asiento> asientosDisponibles;
 	private HashMap <Integer, Pasajero> pasajeros;
 	private String fechaSalida;
-	private int porcentajeImpuesto;
+	private double porcentajeImpuesto;
 	
-	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto)
+	public Vuelo(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double porcentajeImpuesto)
 	{
 		validarParametros(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, porcentajeImpuesto);
 		
@@ -30,7 +30,7 @@ public abstract class Vuelo {
 		this.porcentajeImpuesto = porcentajeImpuesto;
 	}
 	
-	private void validarParametros(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, int porcentajeImpuesto) 
+	private void validarParametros(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double porcentajeImpuesto) 
 	{
 		if(codigo.length() == 0) throw new RuntimeException("Vuelo: El codigo no puede ser vacio.");
 		
@@ -82,7 +82,7 @@ public abstract class Vuelo {
 		return totalTripulantes;
 	}
 
-	public int getPorcentajeImpuesto()
+	public double getPorcentajeImpuesto()
 	{
 		return porcentajeImpuesto;
 	}

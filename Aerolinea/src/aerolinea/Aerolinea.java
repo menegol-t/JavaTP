@@ -880,6 +880,8 @@ public class Aerolinea implements IAerolinea
 		return vuelo.toString();
 	}
 	
+	
+	
 	public String toString() 
 	{
 		StringBuilder st = new StringBuilder("Aerolinea: ");

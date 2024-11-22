@@ -52,12 +52,12 @@ public class Aerolinea implements IAerolinea
 		return codigoBase;
 	}
 
-	public String obtenerCodigoPublico()
+	private String obtenerCodigoPublico()
 	{
 		return obtenerCodigo() + "-PUB";
 	}
 	
-	public String obtenerCodigoPrivado()
+	private String obtenerCodigoPrivado()
 	{
 		return obtenerCodigo() + "-PRI";
 	}
@@ -470,7 +470,7 @@ public class Aerolinea implements IAerolinea
 	/*
 	 * Dado un hashmap <Integer, Asiento>, retorna un Map <Integer, asiento.getSeccion()>
 	 * */
-	public Map <Integer, String> numeroDeAsientoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, ArrayList<Asiento> asientosDisponibles)
+	private Map <Integer, String> numeroDeAsientoYSeccion(Map<Integer, String> diccionarioNroAsientoSeccion, ArrayList<Asiento> asientosDisponibles)
 	{
 		
 		for(Asiento asientoActual: asientosDisponibles) {
@@ -578,7 +578,7 @@ public class Aerolinea implements IAerolinea
 	/*
 	 * Añade a la lista los vuelos que cumplan con mismo destino, origen y estar a una semana de la fecha.
 	 * */
-	public List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fechaAComparar)
+	private List<String> verificarVuelosSimilares(List <String> codVuelosSimilares, String origen, String destino, LocalDate fechaAComparar)
 	{
 		//Itero sobre todos los vuelos en el diccionario de vuelos, viendo si cumplen o no las condiciones. Si los cumplen, los añado a la lista a retornar.
 		for(Vuelo vueloActual: vuelos.values()){
@@ -881,11 +881,27 @@ public class Aerolinea implements IAerolinea
 		return false;
 	}
 	
+	
+	
+	/** - 14
+	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 
+	* IMPORTANTE: Se debe resolver en O(1).
+	*/
+	@Override
+	public double totalRecaudado(String destino) {
+		
+		Double facturacion = facturacionPorDestino.get(destino);
+		
+		if(facturacion == null) return 0;
+		
+		return facturacion;
+	}
+
 	/*
 	 * Dado un vuelo y dos precios, calcula la diferencia entre ellos y agrega la diferencia
 	 * (es decir, el valor de vender 1 pasaje) al diccionario de facturacionPorDestino.
 	 * */
-	public void agregarFacturacion(double antes, double despues, Vuelo vuelo)
+	private void agregarFacturacion(double antes, double despues, Vuelo vuelo)
 	{
 		//Conseguimos el destino
 		String destino = vuelo.getDestino().getNombre();
@@ -918,7 +934,7 @@ public class Aerolinea implements IAerolinea
 	 * Dado el precio de un pasaje cancelado y un vuelo, actualiza facturacionPorDestino
 	 * quitandole el precio de ese pasaje que se cancelo.
 	 * */
-	public void quitarFacturacion(double costoPasjeCancelado, Vuelo vuelo)
+	private void quitarFacturacion(double costoPasjeCancelado, Vuelo vuelo)
 	{
 		//Conseguimos el destino
 		String destino = vuelo.getDestino().getNombre();
@@ -936,21 +952,6 @@ public class Aerolinea implements IAerolinea
 	}
 	
 	
-	/** - 14
-	* devuelve el total recaudado por todos los viajes al destino pasado por parámetro. 
-	* IMPORTANTE: Se debe resolver en O(1).
-	*/
-	@Override
-	public double totalRecaudado(String destino) {
-		
-		Double facturacion = facturacionPorDestino.get(destino);
-		
-		if(facturacion == null) return 0;
-		
-		return facturacion;
-	}
-
-
 	
 	/** - 15 
 	* Detalle de un vuelo

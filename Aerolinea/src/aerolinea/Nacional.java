@@ -13,7 +13,7 @@ public class Nacional extends Vuelo {
 		validarParametros(destino, precioPorRefrigerio);
 		
 		//Establecemos un solo refrigerio por pasajero y el precio del mismo
-		this.refrigeriosPorPasajero = 1;
+		this.refrigeriosPorPasajero = 1; 
 		this.precioPorRefrigerio = precioPorRefrigerio;
 	}
 	

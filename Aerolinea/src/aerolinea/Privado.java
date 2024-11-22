@@ -119,7 +119,7 @@ public class Privado extends Vuelo{
 	
 	
 	/*
-	 * Segun el IREP no se pueden consultar los asientos disponible sde un vuelo privado. 
+	 * Segun el IREP no se pueden consultar los asientos disponibles de un vuelo privado. 
 	 * */
 	@Override
 	public ArrayList<Asiento> getAsientosDisponibles()

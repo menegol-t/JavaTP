@@ -96,21 +96,6 @@ public abstract class Vuelo {
 	{
 		return destino;
 	}
-	
-	public int getCantidadPasajeros()
-	{
-		return pasajeros.size(); 
-	}
-	
-	public int getTotalAsientos() 
-	{
-		return totalAsientos;
-	}
-	
-	public int getTotalTripulantes() 
-	{
-		return totalTripulantes;
-	}
 
 	public double getPorcentajeImpuesto()
 	{
@@ -136,7 +121,7 @@ public abstract class Vuelo {
 		return fechaSalida;
 	}
 	
-	public Pasajero getPasajero(int dni) 
+	private Pasajero getPasajero(int dni) 
 	{
 		Integer Dni = dni;
 		
@@ -198,7 +183,7 @@ public abstract class Vuelo {
 	/*
 	 * Busca un asiento disponible por su codigo. Si no lo encuentra, dinamita todo.
 	 * */
-	public Asiento getAsientoDisponible(Integer codAsiento) 
+	private Asiento getAsientoDisponible(Integer codAsiento) 
 	{
 		//Busco el asiento disponible dentro del vuelo
 		Asiento asiento =  asientosDisponibles.get(codAsiento);

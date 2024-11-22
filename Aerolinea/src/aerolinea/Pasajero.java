@@ -24,7 +24,7 @@ public class Pasajero
 		if(cliente == null) throw new RuntimeException("Pasajeros: Se debe pasar un cliente para generar el pasajero");
 	}
 	
-	public Asiento getAsiento(Integer codigoAsiento)
+	private Asiento getAsiento(Integer codigoAsiento)
 	{
 		Asiento asiento = asientos.get(codigoAsiento);
 		

@@ -50,7 +50,7 @@ public class Privado extends Vuelo{
 		
 		double asientosRequeridos = totalAsientos;
 		
-		int jetsRequeridos = (int) Math.ceil(asientosRequeridos / 15);
+		int jetsRequeridos = (int) Math.ceil(asientosRequeridos / asientosPorJet);
 		
 		return jetsRequeridos;
 	}
@@ -86,6 +86,8 @@ public class Privado extends Vuelo{
 		return super.getCodigo()+ " - " + super.getOrigen().getNombre() + " - " + super.getDestino().getNombre() + " - " + super.getFechaSalida()+ " - " + "PRIVADO (" + this.cantidadDeJets + ")";
 	}
 
+	
+	
 	/*
 	 * El precio final del vuelo privado es la cantidad de jets * precio por jet. Mas su impuesto del 30%
 	 **/
@@ -96,6 +98,7 @@ public class Privado extends Vuelo{
 				
 		return precioFinal += (precioFinal * (super.getPorcentajeImpuesto() / 100));
 	}
+
 
 	
 	/*

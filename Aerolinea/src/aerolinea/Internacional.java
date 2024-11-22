@@ -9,12 +9,6 @@ public class Internacional extends Vuelo{
 
 	private int refrigeriosPorPasajero;
 	private double precioPorRefrigerio;
-	private int pasajerosEconomica;
-	private int pasajerosTurista;
-	private int pasajerosEjecutivo;
-	private int limitePasajerosEconomica;
-	private int limitePasajerosTurista;
-	private int limitePasajerosEjecutivo;
 	private boolean vueloDirecto;
 	private HashMap<String, Aeropuerto> escalas;
 	
@@ -28,17 +22,6 @@ public class Internacional extends Vuelo{
 		
 		this.refrigeriosPorPasajero = cantidadRefrigerios;
 		this.precioPorRefrigerio = precioRefrigerio;
-		
-		//El numero de pasajeros empieza vacio, se van sumando conforme se suman pasajes.
-		this.pasajerosEconomica = 0;
-		this.pasajerosTurista = 0;
-		this.pasajerosEjecutivo = 0;
-		
-		//El limite de pasajeros aparentemente no me lo pasan, solo lo sacamos nosotros??????
-		this.limitePasajerosEconomica = 0;
-		this.limitePasajerosTurista = 0;
-		this.limitePasajerosEjecutivo = 0;
-		
 		this.escalas = escalas;
 		
 		//Si el diccionario de escalas mide "0", es un vuelo directo, porque no tiene escalas
@@ -63,13 +46,6 @@ public class Internacional extends Vuelo{
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{	
-		//Al registrar los asientos, registramos cual es el limite de asientos por clase, algo que solicitaba la etapa de diseño pero en la segunda etapa no se especifica. 
-		limitePasajerosEconomica = cantAsientos[0];
-		
-		limitePasajerosTurista = cantAsientos[1];
-		
-		limitePasajerosEjecutivo = cantAsientos[2];
-		
 		//El contador sirve para numerar los asientos y darles un codigo unico dentro del vuelo
 		int contador = 0;
 		
@@ -114,13 +90,13 @@ public class Internacional extends Vuelo{
 	}
 
 
-	public HashMap<String, Aeropuerto> getEscalas() {
-		return escalas;
-	}
-
-	public boolean isVueloDirecto() {
-		return vueloDirecto;
-	}
+//	public HashMap<String, Aeropuerto> getEscalas() {
+//		return escalas;
+//	}
+//
+//	public boolean esVueloDirecto() {
+//		return vueloDirecto;
+//	}
 	
 	@Override
 	public String toString() {

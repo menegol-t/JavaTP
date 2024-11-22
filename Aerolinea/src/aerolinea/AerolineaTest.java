@@ -202,7 +202,7 @@ public class AerolineaTest {
 	    }
 	
 	    // El cliente compra un vuelo privado de Aeroparque a Bariloche para 40 personas
-	    String fechaVueloPrivado = "21/11/2024";
+	    String fechaVueloPrivado = "21/12/2024";
 	    double precioVueloPrivado = 500000.0;
 	    // porque Necesita 3 aviones para poder llevar a los 40 pasajeros y se le suma el 30% de impuestos.
 	    double recaudacionEsperada= 1950000.0; 

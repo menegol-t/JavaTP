@@ -62,11 +62,6 @@ public class Asiento
 		ocupado = aOcupar;
 	}
 	
-	public void setPrecio(double val)
-	{
-		precio = val;
-	}
-	
 	public void setCodPasaje(int codigo) 
 	{
 		codPasaje = codigo;

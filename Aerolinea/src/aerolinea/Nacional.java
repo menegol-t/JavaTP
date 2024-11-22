@@ -7,11 +7,6 @@ public class Nacional extends Vuelo {
 	
 	private int refrigeriosPorPasajero;
 	private double precioPorRefrigerio;
-	private int pasajerosEconomica;
-	private int pasajerosEjecutivo;
-	private int limitePasajerosEconomica;
-	private int limitePasajerosEjecutivo;
-	
 	
 	public Nacional(String codigo, Aeropuerto origen, Aeropuerto destino, int totalAsientos, int totalTripulantes, String fechaSalida, double precioPorRefrigerio) 
 	{			
@@ -23,16 +18,6 @@ public class Nacional extends Vuelo {
 		//Establecemos un solo refrigerio por pasajero y el precio del mismo
 		this.refrigeriosPorPasajero = 1;
 		this.precioPorRefrigerio = precioPorRefrigerio;
-		
-		//El numero de pasajeros empieza vacio, se van sumando conforme se suman pasajes.
-		this.pasajerosEconomica = 0;
-		this.pasajerosEjecutivo = 0;
-		
-		//Esto se puede solucionar, give me time bitch - leo
-		this.limitePasajerosEconomica = 0;
-		this.limitePasajerosEjecutivo = 0;
-		
-		
 	}
 	
 	

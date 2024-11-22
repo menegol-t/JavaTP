@@ -24,7 +24,7 @@ public class Internacional extends Vuelo{
 		//Generamos el vuelo
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20);
 		
-		validarParametros(cantidadRefrigerios, precioRefrigerio, fechaSalida);
+		validarParametros(cantidadRefrigerios, precioRefrigerio);
 		
 		this.refrigeriosPorPasajero = cantidadRefrigerios;
 		this.precioPorRefrigerio = precioRefrigerio;
@@ -46,40 +46,20 @@ public class Internacional extends Vuelo{
 		
 	}
 	
-	//Validacion de la fecha segun indica la Interfaz
 	
-	private void compararFecha(String fecha) 
+	
+	private void validarParametros(int cantidadRefrigerios, double precioRefrigerio) 
 	{
-		LocalDate fechaSalida = obtenerFecha(fecha);
-		
-		LocalDate fechaActual = LocalDate.now();
-		
-		if (fechaSalida.isBefore(fechaActual)) {
-	        throw new RuntimeException("Vuelo: La fecha de salida no puede ser en el pasado");
-	    }
-	}
-	
-	private LocalDate obtenerFecha(String fecha) 
-	{	
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		
-		try {
-            LocalDate objetoFecha= LocalDate.parse(fecha, formato);
-            return objetoFecha;
-            
-		}catch(Exception e){
-			throw new RuntimeException("Vuelo: La fecha de salida es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
-		}	
-	}
-	
-	
-	private void validarParametros(int cantidadRefrigerios, double precioRefrigerio, String fecha) 
-	{
-		if(cantidadRefrigerios != 3) throw new RuntimeException("VueloPublico: La cantidad de refrigerios no puede ser negativa.");
+		if(cantidadRefrigerios < 0) throw new RuntimeException("VueloPublico: La cantidad de refrigerios no puede ser negativa.");
 		if(precioRefrigerio < 0) throw new RuntimeException("VueloPublico: El precio de los refrigerios no puede ser negativo.");
-		compararFecha(fecha);
 	}
 	
+	/*
+	 * Dado un array de ints, siendo la primer posicion la cantidad de asientos de clase Economica,
+	 * la segunda posicion la cantidad de asientos de clase turista y la tercera la cantidad de asientos
+	 * de clase ejecutivo, con otro array de precios siguiendo la misma logica, crea los asientos
+	 * del vuelo con estos datos y los añade a asientos disponibles.
+	 * */
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{	
@@ -90,21 +70,23 @@ public class Internacional extends Vuelo{
 		
 		limitePasajerosEjecutivo = cantAsientos[2];
 		
-		//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
+		//El contador sirve para numerar los asientos y darles un codigo unico dentro del vuelo
 		int contador = 0;
 		
 		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Turista, Pimera]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
 			
-			//En cada posicion del array de secciones, hay un array con los asientos de esa seccion. Aca se recorre ese sub array: cantiAsientos: [ [asiento0, asiento1, asiento2], [asiento3, asiento4, asiento6], [asiento7, asiento8] ]
+			//Se itera la cantidad de veces que determine la seccion. Por ejemplo:[15, 10, 2] si estoy en clase Turista, iterare 10 veces, creando 10 asientos.   
 			for(int j = 0; j<cantAsientos[i]; j++)
 			{
 				//incrementamos el numero de asiento
 				contador ++;
 
+				//Establecemos su precio segun la seccion en la que nos encontramos.
 				double precio = precios[i];
 				
+				//Guardo una variable de tipo asiento. Dependiendo su clase generare uno u otro.
 				Asiento asientoNuevo;
 				
 				if(i == 0) 
@@ -119,7 +101,7 @@ public class Internacional extends Vuelo{
 				    asientoNuevo = new Asiento(contador, precio, "Turista");
 				}
 				
-				else //Si estamos en la tercera seccion
+				else //Si estamos en la tercera seccion. Segun la consigna, para un vuelo internacional, NO HAY mas de 3 secciones. 
 				{	
 					//Se crea un asiento de primera clase 
 					asientoNuevo = new Asiento(contador, precio, "Ejecutivo");	
@@ -147,7 +129,7 @@ public class Internacional extends Vuelo{
 
 	/*
 	 * El precio se obtiene de la cantidad de refrigerios que consumieron los pasajeros + la sumatoria de todos los 
-	 * precios de sus asientos. A eso se le suma el 20%
+	 * precios de sus asientos. A eso se le suma el 20% de impuesto
 	 * */
 	@Override
 	public double getPrecio() 

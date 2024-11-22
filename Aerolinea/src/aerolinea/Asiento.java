@@ -72,7 +72,7 @@ public class Asiento
 		codPasaje = codigo;
 	}
 	
-	@Override //La reescribimos en cada clase vuelo para agregar la logica
+	@Override
 	public String toString()
 	{
 		StringBuilder retorno = new StringBuilder();

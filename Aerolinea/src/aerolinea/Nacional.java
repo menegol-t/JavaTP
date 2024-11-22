@@ -18,11 +18,11 @@ public class Nacional extends Vuelo {
 		//Se crea la clase padre vuelo, seteamos impuesto como 20
 		super(codigo, origen, destino, totalAsientos, totalTripulantes, fechaSalida, 20);
 		
+		validarParametros(destino, precioPorRefrigerio);
+		
 		//Establecemos un solo refrigerio por pasajero y el precio del mismo
 		this.refrigeriosPorPasajero = 1;
 		this.precioPorRefrigerio = precioPorRefrigerio;
-		
-		validarParametros(destino, precioPorRefrigerio);
 		
 		//El numero de pasajeros empieza vacio, se van sumando conforme se suman pasajes.
 		this.pasajerosEconomica = 0;
@@ -35,11 +35,11 @@ public class Nacional extends Vuelo {
 		
 	}
 	
-	//Agregue las validaciones de refrigerios
 	
-	private void validarParametros(Aeropuerto destino, double precioPorRefrigerio2) 
+	
+	private void validarParametros(Aeropuerto destino, double precioPorRefrigerio) 
 	{
-		if(precioPorRefrigerio2 < 0) throw new RuntimeException("VueloPublico: El precio de los refrigerios no puede ser negativo.");
+		if(precioPorRefrigerio < 0) throw new RuntimeException("VueloPublico: El precio de los refrigerios no puede ser negativo.");
 		if(!destino.esNacional()) throw new RuntimeException("VueloNacional: Los vuelos nacionales solo pueden ir a destinos nacionales.");
 	}
 	

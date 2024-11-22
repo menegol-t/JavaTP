@@ -55,55 +55,64 @@ public class Pasajero
 		return costo;
 	} 
 	
+	/*
+	 * Esto suma un asiento a los asientos que compro el pasajero
+	 * */
 	public int asignarAsiento(Asiento asiento) 
 	{	
 		//Guardo el asiento en el diccionario de asientos del pasajero.
 		asientos.put(asiento.getCodigo(), asiento);
 		
-		/*
-		 * Esto debe retornar el codigo de pasaje para asegurarse que todo salio bien. 
-		 * Para asegurarnos que todo salio bien, el codigo de pasaje lo vamos a buscar desde el asiento que acabmos de crear.
-		 * Entonces, busco el asiento que acabo de añadir al diccionario, busco su codigo de pasaje, y retorno eso.
-		 */ 
-		
-		Integer codigoPasaje = asientos.get(asiento.getCodigo()).getCodPasaje();
-
-		if(codigoPasaje == null) throw new RuntimeException("Pasajero.asignarAsiento: Hello darkness my old friend...");
-		
-		
-		return codigoPasaje;
-		
-//		return asiento.getCodigo();
+		return asiento.getCodPasaje();
 	}
+
 	
+	/*
+	 * Para cancelar un pasaje O(1) y redisponibilizar el asiento, elimino el asiento del pasajero
+	 * Lo "limpio" (quito su numero de pasaje y lo pongo desocupado)
+	 * Y finalmente lo retorno.
+	 * */
 	public Asiento removerAsiento(Integer nroAsiento)
 	{
+		//Busco el asiento.
 		Asiento asiento = getAsiento(nroAsiento);
 		
+		//Lo "limpio" (pongo en desocupado y reseteo su codigo de pasaje)
 		asiento.setOcupado(false);
 		
 		asiento.setCodPasaje(0);
 		
+		//Remuevo el asiento del diccionario de asientos 
 		asientos.remove(asiento.getCodigo());
 		
+		//Retorno el asiento ya liberado
 		return asiento;
 	}
 	
+	/*
+	 * Para cancelarPasje busco entre todos los asientos del cliente cual es el que me pidieron eliminar por su numero de pasaje
+	 * Si lo encontre, lo elimino y retorno su precio. 
+	 * Si no lo encontre, es que ya estaba eliminado y retorno el precio 0.
+	 * */
 	public double eliminarPasaje(int codPasaje) 
 	{
+		double precio = 0.0;
+		
 		for(Asiento asientoActual: asientos.values()) {
 			 
 			/* Cuando encuentro el asiento cuyo codigo coincide con el dado, lo elimino de memoria y que el garbage colector se encargue. 
 			 * Si nunca lo encuentro, entonces ya estaba eliminado.
 			 * */
 			if(asientoActual.getCodPasaje() == codPasaje) {
+				
+				precio = asientoActual.getPrecio();
+				
 				asientoActual = null;
-				return asientoActual.getPrecio();
 			}
 		}
 		
 		//Si nunca encontre el asiento, great ya estaba eliminado, retorno que el precio de ese asiento a cancelar es 0.
-		return 0.0;
+		return precio;
 	}
 	
 	public Cliente getCliente()

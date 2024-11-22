@@ -676,16 +676,16 @@ public class Aerolinea implements IAerolinea
 			
 			Vuelo vueloActual = (Vuelo) it.next();
 
-			//Si encuentro al cliente, le elimino el pasaje y termino.  
+			//Si encuentro al cliente, voy al vuelo a eliminar el pasaje  
 			if(vueloActual.contienePasajero(dni)) {
 				
-				//Mando a eliminar su pasaje. Esto me retorna el costo de ese pasaje
+				//Mando a eliminar el pasaje dentro del cliente. Esto me retorna el costo de ese pasaje
 				double costoPasajeCancelado = vueloActual.eliminarPasaje(dni, pasaje);
 			
 				//Actualizamos la facturacion a ese destino (le resto el precio del pasaje que acabo de cancelar)
 				quitarFacturacion(costoPasajeCancelado, vueloActual);
 				
-			}
+			}//Si no encontre al cliente, o sigo buscando, o el pasaje ya estaba eliminado.
 		}
 	}
 

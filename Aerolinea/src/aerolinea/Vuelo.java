@@ -1,5 +1,7 @@
 package aerolinea;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -42,14 +44,42 @@ public abstract class Vuelo {
 		
 		if(totalTripulantes<= 0) throw new RuntimeException("Vuelo: El total de tripulantes no puede ser menor a 1.");
 		
+		fechaSalidaPosteriorAEsteMomento(fechaSalida);
+		
 		if(porcentajeImpuesto < 0) throw new RuntimeException("Vuelo: El porcentaje de impuesto no puede ser negativo.");
 		
 	}
 	
-	//For test, quiero ver si podemos meter un iterator sin explotar -leo
-	public HashMap<Integer, Pasajero> getPasajeros()
+	/*
+	 * Dado un string en el formato "dd/mm/aaaa", compara si esta fecha es posterior al momento actual
+	 * Si no lo es, el vuelo es invalido (una fecha de salida no puede ser en el pasado)
+	 * Entonces tira excepcion. Si no es este el caso, no hace nada. 
+	 * */
+	private void fechaSalidaPosteriorAEsteMomento(String fecha) 
 	{
-		return pasajeros;
+		LocalDate fechaSalida = obtenerFecha(fecha);
+		
+		LocalDate fechaActual = LocalDate.now();
+		
+		if (fechaSalida.isBefore(fechaActual)) {
+	        throw new RuntimeException("Vuelo: La fecha de salida no puede ser en el pasado");
+	    }
+	}
+	
+	/*
+	 * Traduce un string "dd/mm/aaaa" a un objeto fecha para manipularlo.
+	 * */
+	private LocalDate obtenerFecha(String fecha) 
+	{	
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		
+		try {
+            LocalDate objetoFecha= LocalDate.parse(fecha, formato);
+            return objetoFecha;
+            
+		}catch(Exception e){
+			throw new RuntimeException("Vuelo: La fecha de salida es invalida, favor de proveer una fecha en formato 'dd/mm/aaaa'.");
+		}	
 	}
 	
 	public String getCodigo() 
@@ -130,13 +160,16 @@ public abstract class Vuelo {
 		
 		return true;
 	}
-
+	
+	/*
+	 * Dado un dni y un nro de asiento, le quita el asiento al pasajero y lo redisponibiliza
+	 * */
 	public double cancelarPasaje(int dni, int nroAsiento)//Esta es en O(1) 
 	{
 		//Busco al pasajero dentro del vuelo por su DNI. Si no existe, el vuelo tira una excepcion. 
 		Pasajero pasajero = getPasajero(dni);
 				
-		//Le digo al pasajero que libere su asiento, esto me lo pasa con ocupado(false) y codPasje(0) 
+		//Le digo al pasajero que libere su asiento, esto me lo devuelve con ocupado(false) y codPasje(0) 
 		Asiento asiento = pasajero.removerAsiento(nroAsiento);
 		
 		//Disponibilizo nuevamente el asiento en el listado de asientos disponibles del vuelo
@@ -146,11 +179,18 @@ public abstract class Vuelo {
 		return asiento.getPrecio();
 	}
 	
+	
+	/*
+	 * Dado un codigo de pasaje y un dni, busca entre todos los asientos del pasajero el que tenga ese nuemero de pasaje
+	 * y me retorna su precio para actualziar la facturacion. Como pide la consigna, esta vez el asiento no se redisponibilza
+	 * si no que se destruye.
+	 * */
 	public double eliminarPasaje(int dni, int codPasaje) //Lo mismo que la de arriba pero no en O(1)
 	{
 		//Si el dni que me pasaron es invalido, getPasajero() se encarga de tirar una runtimeexception
 		Pasajero pasajero = getPasajero(dni);
 		
+		//Si el DNI es valido, retorno el precio del asiento a eliminar
 		return pasajero.eliminarPasaje(codPasaje);
 
 	}
@@ -171,7 +211,8 @@ public abstract class Vuelo {
 	}
 	
 	/*
-	 * El vuelo busca el asiento disponible por su numero. Cuando lo obtiene, le asigna sus caracteristicas (aOcupar, codPasaje) y llama a registrar asiento
+	 * El vuelo busca el asiento disponible por su numero. Cuando lo obtiene, le asigna sus caracteristicas (aOcupar, codPasaje)
+	 *  y llama a registrar asiento.
 	 * */
 	public int venderPasaje(Cliente cliente, int nroAsiento, boolean aOcupar, int codPasaje) 
 	{

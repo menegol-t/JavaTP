@@ -1,11 +1,6 @@
 package aerolinea;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class Privado extends Vuelo{
 	

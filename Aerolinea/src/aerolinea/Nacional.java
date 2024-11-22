@@ -1,8 +1,5 @@
 package aerolinea;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 public class Nacional extends Vuelo {
 	
 	private int refrigeriosPorPasajero;

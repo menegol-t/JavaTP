@@ -674,7 +674,7 @@ public class Aerolinea implements IAerolinea
 		 * Si recorro todo y no encuentro al cliente, bueno, el pasaje ya estaba eliminado.*/
 		while (it.hasNext()) {
 			
-			Vuelo vueloActual = (Vuelo) it.next();
+			Vuelo vueloActual = (Vuelo) it.next().getValue();
 
 			//Si encuentro al cliente, voy al vuelo a eliminar el pasaje  
 			if(vueloActual.contienePasajero(dni)) {

@@ -29,7 +29,7 @@ public class Asiento
 	{
 		if(codigo < 0) throw new RuntimeException("Asiento: El numero de asiento no puede ser negativo");
 		if(precio < 0) throw new RuntimeException("Asiento: El precio del asiento no puede ser negativo");
-		if( !( seccion.equals("Economica") || seccion.equals("Turista") || seccion.equals("Ejecutivo") || seccion.equals("Privado") ) ) throw new RuntimeException("Asiento: Seccion invalida.");
+		if( !( seccion.equals("Turista") || seccion.equals("Ejecutivo") || seccion.equals("Primera") || seccion.equals("Privado") ) ) throw new RuntimeException("Asiento: Seccion invalida.");
 	}
 	
 	public Integer getCodigo()

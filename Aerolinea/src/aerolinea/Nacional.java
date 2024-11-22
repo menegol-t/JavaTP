@@ -25,9 +25,7 @@ public class Nacional extends Vuelo {
 		if(!destino.esNacional()) throw new RuntimeException("VueloNacional: Los vuelos nacionales solo pueden ir a destinos nacionales.");
 	}
 	
-	/*
-	 * Registrar asientos no deberia registrar COMO MAXIMO el limitePasajerosPrimera y limitePasajerosEconomica?????
-	 * */
+	
 	@Override
 	public void registrarAsientosDisponibles(int[]cantAsientos, double[]precios)
 	{
@@ -35,7 +33,7 @@ public class Nacional extends Vuelo {
 		//El contador sirve para numerar los asientos y darles un codigo unico en el vuelo
 		int contador = 0;
 		
-		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Pimera]  
+		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Turista, Ejecutivo]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{	
 			//En cada posicion del array de secciones, hay un array con los asientos de esa seccion. Aca se recorre ese sub array: cantiAsientos: [ [asiento0, asiento1, asiento2], [asiento3, asiento4, asiento6] ]
@@ -51,7 +49,7 @@ public class Nacional extends Vuelo {
 				if(i == 0) //Si estamos en la primera seccion
 				{
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, precio, "Economica");
+					asientoNuevo = new Asiento(contador, precio, "Turista");
 				}
 				
 				else //Si estamos en la segunda seccion

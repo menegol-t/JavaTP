@@ -832,17 +832,17 @@ public class Aerolinea implements IAerolinea
 		 * Por un lado, el pasajero tenia un asiento a reprogramar, el cual tenia una cierta seccion.
 		 * El nuevo asiento que le estamos consiguiendo tiene otra seccion. 
 		 * Si el asiento a reprogramar era de clase "Ejecutivo", pero el nuevo asiento es de clase 
-		 * "Economica", entonces retorno false, porque ejecutivo es una clase mas alta que economica. 
+		 * "Turista", entonces retorno false, porque ejecutivo es una clase mas alta que Turista. 
 		 * */
 		
-		//Si la seccion del pasajero antes era economica, sin importar el caso, un asiento en caulqueir seccion es aceptable
-		if(seccionDelPasajeroAReprogramar.equals("Economica")) return true;
+		//Si la seccion del pasajero antes era turista, sin importar el caso, un asiento en caulqueir seccion es aceptable
+		if(seccionDelPasajeroAReprogramar.equals("Turista")) return true;
 		
-		//Si la seccion del pasajero era turista, solo seria aceptable que su nueva seccion sea o turista o ejecutivo
-		if(seccionDelPasajeroAReprogramar.equals("Turista") && (seccionDisponible.equals("Turista") || seccionDisponible.equals("Ejecutivo"))) return true;
+		//Si la seccion del pasajero era ejecutivo, solo seria aceptable que su nueva seccion sea ejecutivo o primera
+		if(seccionDelPasajeroAReprogramar.equals("Ejecutivo") && (seccionDisponible.equals("Ejecutivo") || seccionDisponible.equals("Primera"))) return true;
 		
-		//Si la seccion del pasajero era ejecutivo, solo seria aceptable que su nueva seccion sea ejecutivo
-		if(seccionDelPasajeroAReprogramar.equals("Ejecutivo") && seccionDisponible.equals("Ejecutivo")) return true;
+		//Si la seccion del pasajero era primera, solo seria aceptable que su nueva seccion sea primera
+		if(seccionDelPasajeroAReprogramar.equals("Primera") && seccionDisponible.equals("Primera")) return true;
 		
 		return false;
 	}

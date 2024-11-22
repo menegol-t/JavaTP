@@ -46,11 +46,11 @@ public class Internacional extends Vuelo{
 		//El contador sirve para numerar los asientos y darles un codigo unico dentro del vuelo
 		int contador = 0;
 		
-		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Economica, Turista, Pimera]  
+		//Se recorre el array de la cantidad de secciones que habra en el vuelo: cantiAsientos: [Turista, Ejecutivo, Primera]  
 		for(int i = 0; i < cantAsientos.length; i++)
 		{
 			
-			//Se itera la cantidad de veces que determine la seccion. Por ejemplo:[15, 10, 2] si estoy en clase Turista, iterare 10 veces, creando 10 asientos.   
+			//Se itera la cantidad de veces que determine la seccion. Por ejemplo:[15, 10, 2] si estoy en clase Ejecutivo, iterare 10 veces, creando 10 asientos.   
 			for(int j = 0; j<cantAsientos[i]; j++)
 			{
 				//incrementamos el numero de asiento
@@ -65,19 +65,19 @@ public class Internacional extends Vuelo{
 				if(i == 0) 
 				{
 					//Se crea un asiento de clase economica
-					asientoNuevo = new Asiento(contador, precio, "Economica");
+					asientoNuevo = new Asiento(contador, precio, "Turista");
 				}
 				
 				if(i == 1) //Si estamos en la segunda seccion
 				{
 					//Se crea un asiento de clase turista
-				    asientoNuevo = new Asiento(contador, precio, "Turista");
+				    asientoNuevo = new Asiento(contador, precio, "Ejecutivo");
 				}
 				
 				else //Si estamos en la tercera seccion. Segun la consigna, para un vuelo internacional, NO HAY mas de 3 secciones. 
 				{	
 					//Se crea un asiento de primera clase 
-					asientoNuevo = new Asiento(contador, precio, "Ejecutivo");	
+					asientoNuevo = new Asiento(contador, precio, "Primera");	
 				}
 				
 				//Agregamos el asiento al diccionario de asientos disponibles. 
